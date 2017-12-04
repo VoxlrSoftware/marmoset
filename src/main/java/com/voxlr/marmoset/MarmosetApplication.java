@@ -15,14 +15,6 @@ public class MarmosetApplication {
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
-    
-    @Bean
-    public ModelMapper modelMapper() {
-	ModelMapper modelMapper = new ModelMapper();
-	modelMapper.addMappings(new UserCreateMapper());
-	
-	return modelMapper;
-    }
 
     public static void main(String[] args) {
 	SpringApplication.run(MarmosetApplication.class, args);

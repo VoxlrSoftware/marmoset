@@ -4,10 +4,12 @@ import javax.validation.Valid;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,7 +45,7 @@ public class UserController {
     }
     
     @RequestMapping(method=RequestMethod.POST)
-    public ResponseEntity<?>  createUser(@RequestBody @Valid UserCreateDTO userCreateDTO, BindingResult bindingResult) {
+    public ResponseEntity<?>  createUser(@Valid @RequestBody UserCreateDTO userCreateDTO) throws MethodArgumentNotValidException {
 	User user = modelMapper.map(userCreateDTO, User.class);
 	user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
 	userRepository.save(user);

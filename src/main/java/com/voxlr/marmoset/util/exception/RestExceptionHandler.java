@@ -20,6 +20,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import com.mongodb.DuplicateKeyException;
 import com.voxlr.marmoset.util.error.ApiError;
 
 import lombok.extern.log4j.Log4j2;
@@ -28,7 +29,7 @@ import lombok.extern.log4j.Log4j2;
 @ControllerAdvice
 @Log4j2
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
-
+    
     @Override
     protected ResponseEntity<Object> handleMissingServletRequestParameter(
             MissingServletRequestParameterException ex, HttpHeaders headers,
@@ -111,6 +112,16 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         apiError.setMessage(String.format("The parameter '%s' of value '%s' could not be converted to type '%s'", ex.getName(), ex.getValue(), ex.getRequiredType().getSimpleName()));
         apiError.setDebugMessage(ex.getMessage());
         return buildResponseEntity(apiError);
+    }
+    
+    @ExceptionHandler(DuplicateKeyException.class)
+    protected ResponseEntity<Object> handleDuplicateKeyException(
+	    DuplicateKeyException ex,
+	    WebRequest request) {
+	ApiError apiError = new ApiError(BAD_REQUEST);
+	apiError.setMessage("A key was found with the same data.");
+	apiError.setDebugMessage(ex.getMessage());
+	return buildResponseEntity(apiError);
     }
 
     private ResponseEntity<Object> buildResponseEntity(ApiError apiError) {

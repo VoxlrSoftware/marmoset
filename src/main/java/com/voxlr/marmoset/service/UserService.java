@@ -11,6 +11,6 @@ public class UserService {
     UserRepository userRepository;
     
     public boolean validateUsername(String username) {
-	return userRepository.findUsernameByUsername(username) != null;
+	return userRepository.findUsernameByUsername(username) == null;
     }
 }
