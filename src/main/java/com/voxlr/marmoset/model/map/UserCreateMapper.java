@@ -9,7 +9,7 @@ public class UserCreateMapper extends PropertyMap<UserCreateDTO, User> {
 
     @Override
     protected void configure() {
-	skip().setId(null);
+	skip().setId(null); // ModelMapper would map companyId to id
     }
  
 }

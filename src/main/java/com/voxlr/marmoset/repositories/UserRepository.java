@@ -9,5 +9,5 @@ public interface UserRepository extends CrudRepository<User, String> {
     User findByUsername(String username);
     
     @Query(value="{ 'username': ?0 }", fields="{ 'username': 1, '_id': 0 }")
-    User validateUsername(String username);
+    User findUsernameByUsername(String username);
 }

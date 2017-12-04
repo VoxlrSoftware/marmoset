@@ -15,14 +15,18 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import com.voxlr.marmoset.util.error.ApiError;
 
+import lombok.extern.log4j.Log4j2;
+
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @ControllerAdvice
+@Log4j2
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @Override
@@ -52,8 +56,8 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 	    HttpHeaders headers,
 	    HttpStatus status,
 	    WebRequest request) {
-//        ServletWebRequest servletWebRequest = (ServletWebRequest) request;
-//        log.info("{} to {}", servletWebRequest.getHttpMethod(), servletWebRequest.getRequest().getServletPath());
+        ServletWebRequest servletWebRequest = (ServletWebRequest) request;
+        log.info("{} to {}", servletWebRequest.getHttpMethod(), servletWebRequest.getRequest().getServletPath());
         String error = "Malformed JSON request";
         return buildResponseEntity(new ApiError(HttpStatus.BAD_REQUEST, error, ex));
     }

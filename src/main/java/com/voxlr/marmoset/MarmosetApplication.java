@@ -20,6 +20,7 @@ public class MarmosetApplication {
     public ModelMapper modelMapper() {
 	ModelMapper modelMapper = new ModelMapper();
 	modelMapper.addMappings(new UserCreateMapper());
+	
 	return modelMapper;
     }
 
