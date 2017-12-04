@@ -1,0 +1,37 @@
+buildscript {
+	ext {
+		springBootVersion = '1.5.8.RELEASE'
+	}
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+	}
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'org.springframework.boot'
+
+group = 'com.voxlr'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = 1.8
+
+repositories {
+	mavenCentral()
+}
+
+
+dependencies {
+    compile("org.springframework.boot:spring-boot-devtools")
+	compile('org.springframework.boot:spring-boot-starter-data-mongodb')
+	compile('org.springframework.boot:spring-boot-starter-web')
+	compile('org.springframework.security:spring-security-core')
+	compile group: 'joda-time', name: 'joda-time', version: '2.3'
+	compile('org.modelmapper:modelmapper:1.1.0')
+	compile('javax.validation:validation-api:2.0.0.Final')
+	compileOnly("org.projectlombok:lombok:1.16.16")
+	testCompile('org.springframework.boot:spring-boot-starter-test')
+	compile('com.fasterxml.jackson.datatype:jackson-datatype-jsr310')
+}
