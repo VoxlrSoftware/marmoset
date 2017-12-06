@@ -1,14 +1,17 @@
 package com.voxlr.marmoset.model;
 
+import java.util.Arrays;
 import java.util.List;
 
-import javax.validation.constraints.NotNull;
-
+import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.data.mongodb.config.EnableMongoAuditing;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import com.voxlr.marmoset.auth.UserRole;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,23 +22,29 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
+@CompoundIndexes({
+    @CompoundIndex(name = "companyId_teamId", def = "{'companyId' : 1, 'teamId': 1}")
+})
 public class User extends AuditModel {
     @NotBlank
     private String companyId;
     
-    @NotNull
+    @NotBlank
+    private String teamId;
+    
+    @NotBlank
     private String firstName;
     
-    @NotNull
+    @NotBlank
     private String lastName;
     
     @NotBlank
     private String password;
     
     @NotBlank
+    @Email
     @Indexed(unique = true)
-    private String username;
+    private String email;
     
-    @DBRef
-    public List<Role> roles;
+    private List<UserRole> roles = Arrays.asList(UserRole.MEMBER);
 }

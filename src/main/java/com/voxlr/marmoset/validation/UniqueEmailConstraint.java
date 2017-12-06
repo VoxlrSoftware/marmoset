@@ -10,11 +10,11 @@ import javax.validation.Constraint;
 import javax.validation.Payload;
 
 @Documented
-@Constraint(validatedBy = UsernameValidator.class)
+@Constraint(validatedBy = UniqueEmailValidator.class)
 @Target( { ElementType.METHOD, ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface UsernameConstraint {
-    String message() default "Invalid username";
+public @interface UniqueEmailConstraint {
+    String message() default "Email must be unique.";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

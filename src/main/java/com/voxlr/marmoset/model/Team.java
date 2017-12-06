@@ -1,21 +1,21 @@
 package com.voxlr.marmoset.model;
 
+import javax.validation.constraints.NotNull;
+
 import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Document(collection = "roles")
+@Document(collection = "teams")
 @EnableMongoAuditing
 @Getter
 @Setter
-public class Role {
-    private String name;
-    private String description;
+@NoArgsConstructor
+public class Team extends AuditModel {
     
-    public Role(String name, String description) {
-	this.name = name;
-	this.description = description;
-    }
+    @NotNull
+    private String name;
 }

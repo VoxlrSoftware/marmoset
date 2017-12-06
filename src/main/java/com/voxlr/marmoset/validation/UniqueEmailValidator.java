@@ -8,16 +8,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.voxlr.marmoset.repositories.UserRepository;
 import com.voxlr.marmoset.service.UserService;
 
-public class UsernameValidator implements ConstraintValidator<UsernameConstraint, String> {
+public class UniqueEmailValidator implements ConstraintValidator<UniqueEmailConstraint, String> {
     @Autowired
     UserService userService;
     
     @Override
-    public void initialize(UsernameConstraint username) {
+    public void initialize(UniqueEmailConstraint email) {
     }
 
     @Override
-    public boolean isValid(String username, ConstraintValidatorContext context) {
-	return userService.validateUsername(username);
+    public boolean isValid(String email, ConstraintValidatorContext context) {
+	return userService.validateUniqueEmail(email);
     }
 }

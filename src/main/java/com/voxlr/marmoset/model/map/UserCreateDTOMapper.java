@@ -8,13 +8,15 @@ import com.voxlr.marmoset.model.User;
 import com.voxlr.marmoset.model.dto.UserCreateDTO;
 
 @Component
-public class UserCreateMapper extends TypeMapConfigurer<UserCreateDTO, User> {
+public class UserCreateDTOMapper extends TypeMapConfigurer<UserCreateDTO, User> {
 
     @Override
     public void configure(TypeMap<UserCreateDTO, User> typeMap) {
-	
-	typeMap.addMappings(Mapping -> {
-	    Mapping.skip(User::setId);
+
+	typeMap.addMappings(mapper -> {
+	    mapper.map(UserCreateDTO::getCompanyId, User::setCompanyId);
+	    mapper.map(UserCreateDTO::getTeamId, User::setTeamId);
+	    mapper.skip(User::setId);
 	});
     }
  

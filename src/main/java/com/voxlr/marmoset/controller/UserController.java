@@ -1,14 +1,14 @@
 package com.voxlr.marmoset.controller;
 
+import java.security.Principal;
+
 import javax.validation.Valid;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.voxlr.marmoset.model.User;
 import com.voxlr.marmoset.model.dto.UserCreateDTO;
+import com.voxlr.marmoset.model.dto.UserDTO;
 import com.voxlr.marmoset.repositories.UserRepository;
-import com.voxlr.marmoset.util.error.ApiError;
 import com.voxlr.marmoset.util.exception.EntityNotFoundException;
 
 @RestController
@@ -35,13 +35,14 @@ public class UserController {
     private ModelMapper modelMapper;
     
     @RequestMapping(method=RequestMethod.GET, value="{id}")
-    public ResponseEntity<?> getUser(@PathVariable String id) throws EntityNotFoundException {
+    public ResponseEntity<?> getUser(@PathVariable String id, Principal principal) throws EntityNotFoundException {
 	User user = userRepository.findOne(id);
 	if (user == null) {
 	    throw new EntityNotFoundException(User.class, "id", id);
 	}
 	
-	return new ResponseEntity<User>(user, HttpStatus.OK);
+	UserDTO userDTO = modelMapper.map(user, UserDTO.class);
+	return new ResponseEntity<UserDTO>(userDTO, HttpStatus.OK);
     }
     
     @RequestMapping(method=RequestMethod.POST)
@@ -49,7 +50,9 @@ public class UserController {
 	User user = modelMapper.map(userCreateDTO, User.class);
 	user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
 	userRepository.save(user);
-	return new ResponseEntity<String>(user.getId(), HttpStatus.OK);
+
+	UserDTO userDTO = modelMapper.map(user, UserDTO.class);
+	return new ResponseEntity<UserDTO>(userDTO, HttpStatus.OK);
     }
     
 }

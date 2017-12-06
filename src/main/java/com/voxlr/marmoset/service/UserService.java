@@ -10,7 +10,7 @@ public class UserService {
     @Autowired
     UserRepository userRepository;
     
-    public boolean validateUsername(String username) {
-	return userRepository.findUsernameByUsername(username) == null;
+    public boolean validateUniqueEmail(String email) {
+	return userRepository.findEmailByEmail(email) == null;
     }
 }

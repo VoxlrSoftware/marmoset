@@ -1,34 +1,28 @@
 package com.voxlr.marmoset.model.dto;
 
-import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
-
-import com.voxlr.marmoset.validation.UniqueEmailConstraint;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class UserCreateDTO {
-
+public class UserDTO {
     @NotBlank
     private String companyId;
 
     @NotBlank
     private String teamId;
-
+    
     @NotBlank
     private String firstName;
-
+    
     @NotBlank
     private String lastName;
 
     @NotBlank
-    private String password;
-
-    @NotBlank
-    @Email
-    @UniqueEmailConstraint
     private String email;
+    
+    @NotBlank
+    private String id;
 }
