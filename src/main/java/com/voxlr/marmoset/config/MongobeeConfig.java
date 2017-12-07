@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.github.mongobee.Mongobee;
+import com.voxlr.marmoset.config.properties.MongoProperties;
 
 @Configuration
 @EnableConfigurationProperties(MongoProperties.class)

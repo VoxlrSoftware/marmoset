@@ -14,6 +14,7 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 
 import com.mongodb.Mongo;
 import com.mongodb.MongoClient;
+import com.voxlr.marmoset.config.properties.MongoProperties;
 
 @Configuration
 @EnableMongoAuditing

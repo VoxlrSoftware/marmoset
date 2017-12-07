@@ -1,4 +1,4 @@
-package com.voxlr.marmoset.config;
+package com.voxlr.marmoset.config.properties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

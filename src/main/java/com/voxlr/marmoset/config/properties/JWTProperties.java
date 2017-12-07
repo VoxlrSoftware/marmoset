@@ -1,4 +1,4 @@
-package com.voxlr.marmoset.config;
+package com.voxlr.marmoset.config.properties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -9,7 +9,10 @@ import lombok.Setter;
 @Getter
 @Setter
 public class JWTProperties {
-    private String secret;
+    private String clientId;
+    private String clientSecret;
+    private String signingKey;
+    private String resourceId;
     private Long expiration;
 
 }
