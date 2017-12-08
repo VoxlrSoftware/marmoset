@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
+import com.voxlr.marmoset.auth.Authority;
 import com.voxlr.marmoset.model.persistence.User;
 
 import lombok.Getter;
@@ -38,6 +39,10 @@ public class AuthUser extends org.springframework.security.core.userdetails.User
 		.stream()
 		.map(authority -> authority.getAuthority())
 		.collect(Collectors.toSet()));
+    }
+    
+    public boolean hasAuthority(Authority authority) {
+	return authoritySet.contains(authority.getId());
     }
     
     public static AuthUser buildFromUser(User user) {

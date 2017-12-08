@@ -29,7 +29,14 @@ public enum UserRole {
     MEMBER(
 	    "Member",
 	    "View and write access to account",
-	    Authority.MODIFY_ACCOUNT);
+	    Authority.MODIFY_ACCOUNT),
+    ADMIN(
+	    "Admin",
+	    "View access across companies"),
+    SUPER_ADMIN(
+	    "SuperAdmin",
+	    "View and write access across companies"
+	    );
 
     private final String id;
     private final String description;

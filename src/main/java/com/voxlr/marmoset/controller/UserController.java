@@ -1,7 +1,5 @@
 package com.voxlr.marmoset.controller;
 
-import java.security.Principal;
-
 import javax.validation.Valid;
 
 import org.modelmapper.ModelMapper;
@@ -18,12 +16,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.voxlr.marmoset.auth.Authority;
 import com.voxlr.marmoset.model.AuthUser;
 import com.voxlr.marmoset.model.persistence.User;
 import com.voxlr.marmoset.model.persistence.dto.UserCreateDTO;
 import com.voxlr.marmoset.model.persistence.dto.UserDTO;
 import com.voxlr.marmoset.repositories.UserRepository;
 import com.voxlr.marmoset.service.AuthorizationService;
+import com.voxlr.marmoset.service.UserService;
 import com.voxlr.marmoset.util.exception.EntityNotFoundException;
 
 @RestController
@@ -33,10 +33,10 @@ public class UserController {
     UserRepository userRepository;
     
     @Autowired
-    AuthorizationService authorizationService;
+    UserService userService;
     
     @Autowired
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
+    AuthorizationService authorizationService;
     
     @Autowired
     private ModelMapper modelMapper;
@@ -48,7 +48,7 @@ public class UserController {
 	    throw new EntityNotFoundException(User.class, "id", id);
 	}
 	
-	if (!authorizationService.authorizeRead(authUser, user)) {
+	if (!authorizationService.canRead(authUser, user)) {
 	    throw new UnauthorizedUserException("Account unauthorized to view user");
 	}
 	
@@ -57,10 +57,12 @@ public class UserController {
     }
     
     @RequestMapping(method=RequestMethod.POST)
-    public ResponseEntity<?>  createUser(@Valid @RequestBody UserCreateDTO userCreateDTO) throws MethodArgumentNotValidException {
-	User user = modelMapper.map(userCreateDTO, User.class);
-	user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-	userRepository.save(user);
+    public ResponseEntity<?> createUser(@Valid @RequestBody UserCreateDTO userCreateDTO, @AuthenticationPrincipal AuthUser authUser) throws MethodArgumentNotValidException {
+	if (!authorizationService.canCreate(authUser, User.class)) {
+	    throw new UnauthorizedUserException("Account unauthorized to create user");
+	}
+
+	User user = userService.createUser(userCreateDTO, authUser);
 
 	UserDTO userDTO = modelMapper.map(user, UserDTO.class);
 	return new ResponseEntity<UserDTO>(userDTO, HttpStatus.OK);
