@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -20,13 +22,22 @@ public class AuthUser extends org.springframework.security.core.userdetails.User
     private String id;
     private String teamId;
     private String companyId;
+    private Set<String> authoritySet;
     
     public AuthUser(String username, String password, Collection<? extends GrantedAuthority> authorities) {
 	super(username, password, authorities);
+	updateAuthoritySet();
     }
     
     public AuthUser() {
 	super("", "", new ArrayList<>());
+    }
+    
+    void updateAuthoritySet() {
+	this.setAuthoritySet(this.getAuthorities()
+		.stream()
+		.map(authority -> authority.getAuthority())
+		.collect(Collectors.toSet()));
     }
     
     public static AuthUser buildFromUser(User user) {

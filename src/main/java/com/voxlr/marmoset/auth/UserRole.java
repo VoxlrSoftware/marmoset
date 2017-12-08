@@ -8,9 +8,7 @@ public enum UserRole {
 	    "CompanyAdmin",
 	    "View and write access to companies",
 	    Authority.MODIFY_COMPANY,
-	    Authority.VIEW_COMPANY,
-	    Authority.CREATE_USER,
-	    Authority.DELETE_USER),
+	    Authority.VIEW_COMPANY),
     
     COMPANY_READONLY(
 	    "CompanyReadonly",
@@ -21,9 +19,7 @@ public enum UserRole {
 	    "TeamAdmin",
 	    "View and write access to teams",
 	    Authority.MODIFY_TEAM,
-	    Authority.VIEW_TEAM,
-	    Authority.CREATE_USER,
-	    Authority.DELETE_USER),
+	    Authority.VIEW_TEAM),
     
     TEAM_READONLY(
 	    "TeamReadonly",

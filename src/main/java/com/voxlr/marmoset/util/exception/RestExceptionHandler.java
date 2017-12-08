@@ -2,6 +2,7 @@ package com.voxlr.marmoset.util.exception;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -10,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
+import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -120,6 +122,16 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 	    WebRequest request) {
 	ApiError apiError = new ApiError(BAD_REQUEST);
 	apiError.setMessage("A key was found with the same data.");
+	apiError.setDebugMessage(ex.getMessage());
+	return buildResponseEntity(apiError);
+    }
+
+    @ExceptionHandler(UnauthorizedUserException.class)
+    protected ResponseEntity<Object> handleUnauthorizedUserException(
+	    UnauthorizedUserException ex,
+	    WebRequest request) {
+	ApiError apiError = new ApiError(UNAUTHORIZED);
+	apiError.setMessage("Unauthorized to execute request.");
 	apiError.setDebugMessage(ex.getMessage());
 	return buildResponseEntity(apiError);
     }

@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,6 +23,7 @@ import com.voxlr.marmoset.model.persistence.User;
 import com.voxlr.marmoset.model.persistence.dto.UserCreateDTO;
 import com.voxlr.marmoset.model.persistence.dto.UserDTO;
 import com.voxlr.marmoset.repositories.UserRepository;
+import com.voxlr.marmoset.service.AuthorizationService;
 import com.voxlr.marmoset.util.exception.EntityNotFoundException;
 
 @RestController
@@ -31,16 +33,23 @@ public class UserController {
     UserRepository userRepository;
     
     @Autowired
+    AuthorizationService authorizationService;
+    
+    @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     
     @Autowired
     private ModelMapper modelMapper;
     
     @RequestMapping(method=RequestMethod.GET, value="{id}")
-    public ResponseEntity<?> getUser(@PathVariable String id, @AuthenticationPrincipal AuthUser activeUser) throws EntityNotFoundException {
+    public ResponseEntity<?> getUser(@PathVariable String id, @AuthenticationPrincipal AuthUser authUser) throws EntityNotFoundException {
 	User user = userRepository.findOne(id);
 	if (user == null) {
 	    throw new EntityNotFoundException(User.class, "id", id);
+	}
+	
+	if (!authorizationService.authorizeRead(authUser, user)) {
+	    throw new UnauthorizedUserException("Account unauthorized to view user");
 	}
 	
 	UserDTO userDTO = modelMapper.map(user, UserDTO.class);
