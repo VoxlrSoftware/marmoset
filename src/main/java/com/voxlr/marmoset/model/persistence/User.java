@@ -12,6 +12,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.voxlr.marmoset.auth.UserRole;
+import com.voxlr.marmoset.model.TeamScopedEntity;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,7 +26,7 @@ import lombok.Setter;
 @CompoundIndexes({
     @CompoundIndex(name = "companyId_teamId", def = "{'companyId' : 1, 'teamId': 1}")
 })
-public class User extends AuditModel {
+public class User extends AuditModel implements TeamScopedEntity {
     @NotBlank
     private String companyId;
     

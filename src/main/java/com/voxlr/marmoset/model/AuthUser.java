@@ -10,7 +10,12 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import com.voxlr.marmoset.model.persistence.User;
 
-public class AuthUser extends org.springframework.security.core.userdetails.User {
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+public class AuthUser extends org.springframework.security.core.userdetails.User implements TeamScopedEntity {
 
     private String id;
     private String teamId;
@@ -41,30 +46,4 @@ public class AuthUser extends org.springframework.security.core.userdetails.User
         
         return authUser;
     }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getTeamId() {
-        return teamId;
-    }
-
-    public void setTeamId(String teamId) {
-        this.teamId = teamId;
-    }
-
-    public String getCompanyId() {
-        return companyId;
-    }
-
-    public void setCompanyId(String companyId) {
-        this.companyId = companyId;
-    }
-
-
 }

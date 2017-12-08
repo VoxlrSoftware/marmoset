@@ -5,6 +5,8 @@ import javax.validation.constraints.NotNull;
 import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.voxlr.marmoset.model.CompanyScopedEntity;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,8 +16,11 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Team extends AuditModel {
+public class Team extends AuditModel implements CompanyScopedEntity {
     
     @NotNull
     private String name;
+    
+    @NotNull
+    private String companyId;
 }

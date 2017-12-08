@@ -8,8 +8,10 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import com.voxlr.marmoset.model.Entity;
+
 @EnableMongoAuditing
-public abstract class AuditModel {
+public abstract class AuditModel implements Entity {
     @Id
     private String id;
     
