@@ -3,7 +3,7 @@ package com.voxlr.marmoset.repositories;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
-import com.voxlr.marmoset.model.User;
+import com.voxlr.marmoset.model.persistence.User;
 
 public interface UserRepository extends CrudRepository<User, String> {
     User findByEmail(String email);

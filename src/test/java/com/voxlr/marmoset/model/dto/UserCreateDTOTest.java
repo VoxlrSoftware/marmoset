@@ -12,7 +12,8 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.voxlr.marmoset.model.User;
+import com.voxlr.marmoset.model.persistence.User;
+import com.voxlr.marmoset.model.persistence.dto.UserCreateDTO;
 
 public class UserCreateDTOTest {
     

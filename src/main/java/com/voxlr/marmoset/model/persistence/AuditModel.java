@@ -1,4 +1,4 @@
-package com.voxlr.marmoset.model;
+package com.voxlr.marmoset.model.persistence;
 
 import java.util.Date;
 

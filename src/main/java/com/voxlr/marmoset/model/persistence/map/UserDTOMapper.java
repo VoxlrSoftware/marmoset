@@ -1,11 +1,11 @@
-package com.voxlr.marmoset.model.map;
+package com.voxlr.marmoset.model.persistence.map;
 
 import org.modelmapper.TypeMap;
 import org.springframework.stereotype.Component;
 
 import com.github.rozidan.springboot.modelmapper.TypeMapConfigurer;
-import com.voxlr.marmoset.model.User;
-import com.voxlr.marmoset.model.dto.UserDTO;
+import com.voxlr.marmoset.model.persistence.User;
+import com.voxlr.marmoset.model.persistence.dto.UserDTO;
 
 @Component
 public class UserDTOMapper extends TypeMapConfigurer<User, UserDTO> {

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.voxlr.marmoset.model.Company;
+import com.voxlr.marmoset.model.persistence.Company;
 import com.voxlr.marmoset.repositories.CompanyRepository;
 import com.voxlr.marmoset.util.error.ApiError;
 import com.voxlr.marmoset.util.exception.EntityNotFoundException;

@@ -1,5 +1,8 @@
 package com.voxlr.marmoset.auth;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -14,6 +17,10 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
+import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.oauth2.provider.token.DefaultAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
@@ -70,7 +77,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     
     @Bean
     public JwtAccessTokenConverter accessTokenConverter() {
-	JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
+	JwtAccessTokenConverter converter = new MarmosetTokenEnhancer();
+	DefaultAccessTokenConverter defaultAccessTokenConverter = new DefaultAccessTokenConverter();
+	defaultAccessTokenConverter.setUserTokenConverter(new MarmosetTokenConverter());
+	converter.setAccessTokenConverter(defaultAccessTokenConverter);
 	converter.setSigningKey(jwtProperties.getSigningKey());
 	return converter;
     }

@@ -2,7 +2,7 @@ package com.voxlr.marmoset.repositories;
 
 import org.springframework.data.repository.CrudRepository;
 
-import com.voxlr.marmoset.model.Company;
+import com.voxlr.marmoset.model.persistence.Company;
 
 public interface CompanyRepository extends CrudRepository<Company, String> {
     @Override

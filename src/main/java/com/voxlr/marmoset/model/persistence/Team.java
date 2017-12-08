@@ -1,8 +1,7 @@
-package com.voxlr.marmoset.model;
+package com.voxlr.marmoset.model.persistence;
 
-import java.util.List;
+import javax.validation.constraints.NotNull;
 
-import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -10,19 +9,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Document(collection = "companies")
+@Document(collection = "teams")
 @EnableMongoAuditing
 @Getter
 @Setter
 @NoArgsConstructor
-public class Company extends AuditModel {
+public class Team extends AuditModel {
     
-    @NotBlank
+    @NotNull
     private String name;
-    
-    List<Team> teams;
-
-    public Company(String name) {
-	this.name = name;
-    }
 }
