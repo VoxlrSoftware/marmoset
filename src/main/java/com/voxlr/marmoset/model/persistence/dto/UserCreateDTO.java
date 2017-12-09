@@ -31,4 +31,6 @@ public class UserCreateDTO {
     @Email
     @UniqueEmailConstraint
     private String email;
+    
+    private String role;
 }

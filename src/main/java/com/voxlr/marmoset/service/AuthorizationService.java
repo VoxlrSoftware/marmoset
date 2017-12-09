@@ -1,12 +1,8 @@
 package com.voxlr.marmoset.service;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.springframework.stereotype.Service;
 
@@ -53,7 +49,7 @@ public class AuthorizationService {
 	);
     }
     
-    public boolean canRead(AuthUser authUser, TeamScopedEntity entity) {
+    boolean canRead(AuthUser authUser, TeamScopedEntity entity) {
 	return firstValid(
 		() -> isAdmin.apply(authUser),
 		() -> isSameUser(authUser, entity),
@@ -63,8 +59,17 @@ public class AuthorizationService {
 			isSameCompany(authUser, entity)
 		);
     }
+    
+    boolean canRead(AuthUser authUser, CompanyScopedEntity entity) {
+	return firstValid(
+		() -> isAdmin.apply(authUser),
+		() -> isSameUser(authUser, entity),
+		() -> hasAuthorities(authUser, Authority.VIEW_COMPANY) &&
+			isSameCompany(authUser, entity)
+		);
+    }
 
-    public boolean canWrite(AuthUser authUser, TeamScopedEntity entity) {
+    boolean canWrite(AuthUser authUser, TeamScopedEntity entity) {
 	return firstValid(
 		() -> isSuperAdmin.apply(authUser),
 		() -> isSameUser(authUser, entity),
@@ -72,6 +77,31 @@ public class AuthorizationService {
 			isSameTeam(authUser, entity),
 		() -> hasAuthorities(authUser, Authority.MODIFY_COMPANY) &&
 			isSameCompany(authUser, entity)
+		);
+    }
+    
+    boolean canWrite(AuthUser authUser, CompanyScopedEntity entity) {
+   	return firstValid(
+   		() -> isSuperAdmin.apply(authUser),
+   		() -> isSameUser(authUser, entity),
+   		() -> hasAuthorities(authUser, Authority.MODIFY_COMPANY) &&
+   			isSameCompany(authUser, entity)
+   		);
+       }
+    
+    public boolean canRead(AuthUser authUser, Entity entity) {
+	return firstValid(
+		() -> typeInherits(entity.getClass(), TeamScopedEntity.class) && canRead(authUser, (TeamScopedEntity) entity),
+		() -> typeInherits(entity.getClass(), CompanyScopedEntity.class) && canRead(authUser, (CompanyScopedEntity) entity),
+		() -> isAdmin.apply(authUser)
+		);
+    }
+    
+    public boolean canWrite(AuthUser authUser, Entity entity) {
+	return firstValid(
+		() -> typeInherits(entity.getClass(), TeamScopedEntity.class) && canWrite(authUser, (TeamScopedEntity) entity),
+		() -> typeInherits(entity.getClass(), CompanyScopedEntity.class) && canWrite(authUser, (CompanyScopedEntity) entity),
+		() -> isSuperAdmin.apply(authUser)
 		);
     }
     

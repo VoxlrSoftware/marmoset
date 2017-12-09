@@ -1,8 +1,5 @@
 package com.voxlr.marmoset.model.persistence;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.data.mongodb.config.EnableMongoAuditing;
@@ -47,5 +44,12 @@ public class User extends AuditModel implements TeamScopedEntity {
     @Indexed(unique = true)
     private String email;
     
-    private List<UserRole> roles = Arrays.asList(UserRole.MEMBER);
+    private UserRole role = UserRole.MEMBER;
+    
+    public void setRoleString(String role) {
+	UserRole userRole = UserRole.get(role);
+	if (userRole != null) {
+	    this.setRole(userRole);
+	}
+    }
 }

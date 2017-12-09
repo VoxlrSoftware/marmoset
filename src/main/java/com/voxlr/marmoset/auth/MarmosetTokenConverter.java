@@ -24,6 +24,7 @@ public class MarmosetTokenConverter extends DefaultUserAuthenticationConverter {
 	user.setCompanyId(map.get("companyId").toString());
 	user.setTeamId(map.get("teamId").toString());
 	user.setId(map.get("id").toString());
+	user.setRoleString(map.get("role").toString());
 	
 	return new UsernamePasswordAuthenticationToken(
 		user,

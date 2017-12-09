@@ -17,6 +17,7 @@ public class UserCreateDTOMapper extends TypeMapConfigurer<UserCreateDTO, User> 
 	    mapper.map(UserCreateDTO::getCompanyId, User::setCompanyId);
 	    mapper.map(UserCreateDTO::getTeamId, User::setTeamId);
 	    mapper.skip(User::setId);
+	    mapper.map(UserCreateDTO::getRole, User::setRoleString);
 	});
     }
  

@@ -22,6 +22,7 @@ public class MarmosetTokenEnhancer extends JwtAccessTokenConverter {
         info.put("companyId", user.getCompanyId());
         info.put("teamId", user.getTeamId());
         info.put("id", user.getId());
+        info.put("role", user.getRole().getId());
 
         DefaultOAuth2AccessToken customAccessToken = new DefaultOAuth2AccessToken(accessToken);
         customAccessToken.setAdditionalInformation(info);
