@@ -3,6 +3,7 @@ package com.voxlr.marmoset.model.persistence;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.data.mongodb.config.EnableMongoAuditing;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.voxlr.marmoset.model.CompanyScopedEntity;
@@ -22,5 +23,6 @@ public class Team extends AuditModel implements CompanyScopedEntity {
     private String name;
     
     @NotNull
+    @Indexed
     private String companyId;
 }

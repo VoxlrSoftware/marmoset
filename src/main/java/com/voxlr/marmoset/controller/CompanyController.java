@@ -24,7 +24,7 @@ import com.voxlr.marmoset.service.CompanyService;
 import com.voxlr.marmoset.util.exception.EntityNotFoundException;
 
 @RestController
-@RequestMapping("/api/companies")
+@RequestMapping("/api/company")
 public class CompanyController {
     
     @Autowired

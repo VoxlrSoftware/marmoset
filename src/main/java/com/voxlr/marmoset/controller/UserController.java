@@ -26,7 +26,7 @@ import com.voxlr.marmoset.service.UserService;
 import com.voxlr.marmoset.util.exception.EntityNotFoundException;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api/user")
 public class UserController {
     @Autowired
     UserRepository userRepository;

@@ -3,6 +3,8 @@ package com.voxlr.marmoset.model.persistence.dto;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.voxlr.marmoset.validation.CompanyExistsConstraint;
+import com.voxlr.marmoset.validation.TeamExistsConstraint;
 import com.voxlr.marmoset.validation.UniqueEmailConstraint;
 
 import lombok.Getter;
@@ -12,10 +14,10 @@ import lombok.Setter;
 @Setter
 public class UserCreateDTO {
 
-    @NotBlank
+    @CompanyExistsConstraint
     private String companyId;
 
-    @NotBlank
+    @TeamExistsConstraint
     private String teamId;
 
     @NotBlank

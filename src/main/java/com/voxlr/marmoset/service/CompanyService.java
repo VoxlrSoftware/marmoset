@@ -9,6 +9,7 @@ import com.voxlr.marmoset.model.AuthUser;
 import com.voxlr.marmoset.model.persistence.Company;
 import com.voxlr.marmoset.model.persistence.dto.CompanyCreateDTO;
 import com.voxlr.marmoset.model.persistence.dto.CompanyUpdateDTO;
+import com.voxlr.marmoset.model.persistence.dto.TeamCreateDTO;
 import com.voxlr.marmoset.repositories.CompanyRepository;
 import com.voxlr.marmoset.util.exception.EntityNotFoundException;
 
@@ -23,6 +24,13 @@ public class CompanyService {
     
     @Autowired
     private AuthorizationService authorizationService;
+    
+    @Autowired
+    private TeamService teamService;
+    
+    public boolean validateExists(String id) {
+	return companyRepository.findIdById(id) != null;
+    }
     
     public Company get(String id, AuthUser authUser) throws EntityNotFoundException {
 	Company company = companyRepository.findOne(id);
@@ -44,7 +52,13 @@ public class CompanyService {
 	}
 	
 	Company company = modelMapper.map(companyCreateDTO, Company.class);
-	companyRepository.save(company);
+	
+	company = companyRepository.save(company);
+
+	TeamCreateDTO defaultTeam = TeamCreateDTO.builder().name("Default").build();
+	teamService.createTeamInternal(company, defaultTeam);
+
+	company = companyRepository.save(company);
 	
 	return company;
     }
@@ -64,7 +78,7 @@ public class CompanyService {
 	    company.setName(companyUpdateDTO.getName());
 	}
 	
-	companyRepository.save(company);
+	company = companyRepository.save(company);
 	return company;
     }
     

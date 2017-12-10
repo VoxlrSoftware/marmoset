@@ -11,10 +11,6 @@ import com.voxlr.marmoset.service.UserService;
 public class UniqueEmailValidator implements ConstraintValidator<UniqueEmailConstraint, String> {
     @Autowired
     UserService userService;
-    
-    @Override
-    public void initialize(UniqueEmailConstraint email) {
-    }
 
     @Override
     public boolean isValid(String email, ConstraintValidatorContext context) {
