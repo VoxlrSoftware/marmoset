@@ -20,7 +20,6 @@ import com.voxlr.marmoset.model.persistence.dto.RemovedEntityDTO;
 import com.voxlr.marmoset.model.persistence.dto.UserCreateDTO;
 import com.voxlr.marmoset.model.persistence.dto.UserDTO;
 import com.voxlr.marmoset.model.persistence.dto.UserUpdateDTO;
-import com.voxlr.marmoset.repositories.UserRepository;
 import com.voxlr.marmoset.service.AuthorizationService;
 import com.voxlr.marmoset.service.UserService;
 import com.voxlr.marmoset.util.exception.EntityNotFoundException;
@@ -28,9 +27,6 @@ import com.voxlr.marmoset.util.exception.EntityNotFoundException;
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
-    @Autowired
-    UserRepository userRepository;
-    
     @Autowired
     UserService userService;
     
