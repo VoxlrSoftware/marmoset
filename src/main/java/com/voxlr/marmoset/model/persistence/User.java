@@ -11,6 +11,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import com.voxlr.marmoset.auth.UserRole;
 import com.voxlr.marmoset.model.TeamScopedEntity;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,7 +21,8 @@ import lombok.Setter;
 @EnableMongoAuditing
 @Getter
 @Setter
-@NoArgsConstructor
+@Builder
+@AllArgsConstructor
 @CompoundIndexes({
     @CompoundIndex(name = "companyId_teamId", def = "{'companyId' : 1, 'teamId': 1}")
 })
@@ -44,7 +47,12 @@ public class User extends AuditModel implements TeamScopedEntity {
     @Indexed(unique = true)
     private String email;
     
+    @Builder.Default
     private UserRole role = UserRole.MEMBER;
+    
+    public User() {
+	this.role = UserRole.MEMBER;
+    }
     
     public void setRoleString(String role) {
 	UserRole userRole = UserRole.get(role);

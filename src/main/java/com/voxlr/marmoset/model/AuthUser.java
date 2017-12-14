@@ -33,7 +33,7 @@ public class AuthUser extends org.springframework.security.core.userdetails.User
     }
     
     public AuthUser() {
-	super("", "", new ArrayList<>());
+	super("test", "test", new ArrayList<>());
     }
     
     void updateAuthoritySet() {

@@ -9,15 +9,17 @@ import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.Singular;
 
 @Document(collection = "companies")
 @EnableMongoAuditing
 @Getter
 @Setter
-@NoArgsConstructor
+@Builder
 @CompoundIndexes({
     @CompoundIndex(name = "callStrategyId", def = "{'callStrategies.id' : 1 }")
 })
@@ -26,9 +28,20 @@ public class Company extends AuditModel {
     @NotBlank
     private String name;
     
-    private List<CallStrategy> callStrategies = new ArrayList<>();
+    @Singular
+    private List<CallStrategy> callStrategies;
+    
+    public Company() {
+	callStrategies = new ArrayList<CallStrategy>();
+    }
 
     public Company(String name) {
+	super();
 	this.name = name;
+    }
+    
+    public Company(String name, List<CallStrategy> callStrategies) {
+	this.name = name;
+	this.callStrategies = callStrategies;
     }
 }

@@ -10,7 +10,14 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import com.voxlr.marmoset.model.Entity;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@NoArgsConstructor
 @EnableMongoAuditing
+@Getter
+@Setter
 public abstract class AuditModel implements Entity {
     @Id
     private String id;

@@ -1,0 +1,52 @@
+package com.voxlr.marmoset.util;
+
+import java.util.Arrays;
+import java.util.Date;
+import java.util.UUID;
+
+import com.voxlr.marmoset.model.AuthUser;
+import com.voxlr.marmoset.model.persistence.AuditModel;
+import com.voxlr.marmoset.model.persistence.CallStrategy;
+import com.voxlr.marmoset.model.persistence.Company;
+import com.voxlr.marmoset.model.persistence.User;
+import com.voxlr.marmoset.model.persistence.Company.CompanyBuilder;
+
+public class EntityTestUtils {
+    public static String generateId() {
+	return UUID.randomUUID().toString();
+    }
+    
+    public static <T extends AuditModel> T createAuditableEntity(T entity) {
+	entity.setId(generateId());
+	entity.setCreateDate(new Date());
+	entity.setLastModified(new Date());
+	return entity;
+    }
+    
+    public static CallStrategy createCallStrategy(String phrase) {
+	return CallStrategy.builder()
+		.phrase(phrase)
+		.createDate(new Date())
+		.modifiedDate(new Date())
+		.build();
+    }
+    
+    public static Company createCompany(String name, String... phrases) {
+	CompanyBuilder builder = Company.builder()
+		.name(name);
+	
+	Arrays.stream(phrases).forEach(phrase -> {
+	    builder.callStrategy(createCallStrategy(phrase));
+	});
+	
+	return createAuditableEntity(builder.build());
+    }
+    
+    public static AuthUser createAuthUser() {
+	User user = createAuditableEntity(User.builder()
+		.email("test@test.com")
+		.password("Password")
+		.build());
+	return AuthUser.buildFromUser(user);
+    }
+}

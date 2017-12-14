@@ -8,6 +8,7 @@ import javax.validation.constraints.NotNull;
 import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -33,6 +34,7 @@ public class Call extends AuditModel implements CompanyScopedEntity, UserScopedE
     private String companyId;
     @NotNull
     private String userId;
+    @Indexed
     private String callSid;
     private String employeeNumber;
     private String customerNumber;

@@ -1,5 +1,20 @@
 package com.voxlr.marmoset.model.persistence.dto;
 
-public class CallDTO {
+import java.util.List;
 
+import com.mongodb.BasicDBObject;
+import com.voxlr.marmoset.model.persistence.CallAnalysis;
+import com.voxlr.marmoset.model.persistence.CallStatistic;
+
+public class CallDTO {
+    private String companyId;
+    private String userId;
+    private String callSid;
+    private String employeeNumber;
+    private String customerNumber;
+    private String recordingUrl;
+    private BasicDBObject externalReferences;
+    private List<String> strategyList;
+    private CallStatistic statistics;
+    private CallAnalysis analysis;
 }

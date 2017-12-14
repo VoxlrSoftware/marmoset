@@ -11,6 +11,7 @@ import com.voxlr.marmoset.model.AuthUser;
 import com.voxlr.marmoset.model.CompanyScopedEntity;
 import com.voxlr.marmoset.model.Entity;
 import com.voxlr.marmoset.model.TeamScopedEntity;
+import com.voxlr.marmoset.model.UserScopedEntity;
 
 @Service
 public class AuthorizationService {
@@ -108,9 +109,11 @@ public class AuthorizationService {
     public boolean canCreate(AuthUser authUser, Class<? extends Entity> toCreate) {
 	return firstValid(
 		() -> isSuperAdmin.apply(authUser),
+		() -> typeInherits(toCreate, UserScopedEntity.class) &&
+			hasAuthorities(authUser, Authority.MODIFY_ACCOUNT),
 		() -> typeInherits(toCreate, TeamScopedEntity.class) &&
 			hasAuthorities(authUser, Authority.MODIFY_TEAM),
-			() -> typeInherits(toCreate, CompanyScopedEntity.class) &&
+		() -> typeInherits(toCreate, CompanyScopedEntity.class) &&
 			hasAuthorities(authUser, Authority.MODIFY_COMPANY)
 		);
     }
