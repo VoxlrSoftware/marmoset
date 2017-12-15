@@ -63,6 +63,7 @@ dependencies {
 	compile('org.javassist:javassist:3.18.2-GA')
 	compile('com.github.mongobee:mongobee:0.13')
 	compileOnly("org.projectlombok:lombok:1.16.16")
+	compile('org.glassfish:javax.json:1.1')
 	testCompile('org.springframework.boot:spring-boot-starter-test')
     testCompile('org.springframework.security:spring-security-test')
 	testCompile('de.flapdoodle.embed:de.flapdoodle.embed.mongo')
