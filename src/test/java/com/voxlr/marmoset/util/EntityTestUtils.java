@@ -8,8 +8,9 @@ import com.voxlr.marmoset.model.AuthUser;
 import com.voxlr.marmoset.model.persistence.AuditModel;
 import com.voxlr.marmoset.model.persistence.CallStrategy;
 import com.voxlr.marmoset.model.persistence.Company;
-import com.voxlr.marmoset.model.persistence.User;
 import com.voxlr.marmoset.model.persistence.Company.CompanyBuilder;
+import com.voxlr.marmoset.model.persistence.User;
+import com.voxlr.marmoset.model.persistence.User.UserBuilder;
 
 public class EntityTestUtils {
     public static String generateId() {
@@ -38,6 +39,13 @@ public class EntityTestUtils {
 	Arrays.stream(phrases).forEach(phrase -> {
 	    builder.callStrategy(createCallStrategy(phrase));
 	});
+	
+	return createAuditableEntity(builder.build());
+    }
+    
+    public static User createUser(String firstName) {
+	UserBuilder builder = User.builder()
+		.firstName(firstName);
 	
 	return createAuditableEntity(builder.build());
     }

@@ -20,7 +20,6 @@ import com.voxlr.marmoset.model.persistence.dto.RemovedEntityDTO;
 import com.voxlr.marmoset.model.persistence.dto.UserCreateDTO;
 import com.voxlr.marmoset.model.persistence.dto.UserDTO;
 import com.voxlr.marmoset.model.persistence.dto.UserUpdateDTO;
-import com.voxlr.marmoset.service.AuthorizationService;
 import com.voxlr.marmoset.service.UserService;
 import com.voxlr.marmoset.util.exception.EntityNotFoundException;
 
@@ -31,20 +30,17 @@ public class UserController {
     UserService userService;
     
     @Autowired
-    AuthorizationService authorizationService;
-    
-    @Autowired
     private ModelMapper modelMapper;
     
     @RequestMapping(method=RequestMethod.GET, value="{id}")
-    public ResponseEntity<?> getUser(@PathVariable String id, @AuthenticationPrincipal AuthUser authUser) throws EntityNotFoundException {
+    public ResponseEntity<?> get(@PathVariable String id, @AuthenticationPrincipal AuthUser authUser) throws EntityNotFoundException {
 	User user = userService.get(id, authUser);
 	UserDTO userDTO = modelMapper.map(user, UserDTO.class);
 	return new ResponseEntity<UserDTO>(userDTO, HttpStatus.OK);
     }
     
     @RequestMapping(method=RequestMethod.POST)
-    public ResponseEntity<?> createUser(@Valid @RequestBody UserCreateDTO userCreateDTO, @AuthenticationPrincipal AuthUser authUser) throws MethodArgumentNotValidException {
+    public ResponseEntity<?> create(@Valid @RequestBody UserCreateDTO userCreateDTO, @AuthenticationPrincipal AuthUser authUser) throws MethodArgumentNotValidException {
 	User user = userService.create(userCreateDTO, authUser);
 
 	UserDTO userDTO = modelMapper.map(user, UserDTO.class);
@@ -52,7 +48,7 @@ public class UserController {
     }
     
     @RequestMapping(method=RequestMethod.PUT, value="{id}")
-    public ResponseEntity<?> updateUser(@PathVariable String id,
+    public ResponseEntity<?> update(@PathVariable String id,
 	    @Valid @RequestBody UserUpdateDTO userUpdateDTO,
 	    @AuthenticationPrincipal AuthUser authUser) throws EntityNotFoundException {
 	userUpdateDTO.setId(id);
@@ -63,7 +59,7 @@ public class UserController {
     }
     
     @RequestMapping(method=RequestMethod.DELETE, value="{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable String id,
+    public ResponseEntity<?> delete(@PathVariable String id,
 	    @AuthenticationPrincipal AuthUser authUser) throws EntityNotFoundException {
 	userService.delete(id, authUser);
 	

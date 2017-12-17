@@ -4,30 +4,26 @@ import static com.voxlr.marmoset.util.EntityTestUtils.createCompany;
 import static com.voxlr.marmoset.util.json.ContainsKeyMatcher.containsKey;
 import static com.voxlr.marmoset.util.json.JsonUtils.jsonFromString;
 import static javax.json.Json.createObjectBuilder;
-import static javax.json.Json.createReader;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
-import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 
-import javax.json.Json;
 import javax.json.JsonObject;
-import javax.xml.ws.Response;
 
 import org.json.JSONException;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.modelmapper.ModelMapper;
@@ -37,7 +33,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -50,10 +45,11 @@ import com.voxlr.marmoset.model.AuthUser;
 import com.voxlr.marmoset.model.persistence.Company;
 import com.voxlr.marmoset.model.persistence.dto.CompanyCreateDTO;
 import com.voxlr.marmoset.model.persistence.dto.CompanyDTO;
+import com.voxlr.marmoset.model.persistence.dto.CompanyUpdateDTO;
+import com.voxlr.marmoset.model.persistence.dto.RemovedEntityDTO;
 import com.voxlr.marmoset.repositories.CompanyRepository;
 import com.voxlr.marmoset.service.CompanyService;
 import com.voxlr.marmoset.test.IntegrationTest;
-import com.voxlr.marmoset.util.error.ApiError;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebMvcTest(CompanyController.class)
@@ -70,7 +66,8 @@ public class CompanyControllerTest extends IntegrationTest {
     @MockBean
     private CompanyRepository companyRepository;
     
-    @MockBean AuthUser authUser;
+    @MockBean
+    private AuthUser authUser;
     
     @Autowired
     private ModelMapper modelMapper;
@@ -82,14 +79,6 @@ public class CompanyControllerTest extends IntegrationTest {
     @Before
     public void setup() throws JsonProcessingException {
 	expected = mapper.writeValueAsString(modelMapper.map(mockCompany, CompanyDTO.class));
-    }
-    
-    private void validateStatus(MvcResult result, HttpStatus status) {
-	assertEquals(result.getResponse().getStatus(), status.value());
-    }
-    
-    private void validateResponse(MvcResult result, String expected) throws UnsupportedEncodingException, JSONException {
-	JSONAssert.assertEquals(expected, result.getResponse().getContentAsString(), false);
     }
     
     @Test
@@ -119,12 +108,13 @@ public class CompanyControllerTest extends IntegrationTest {
 		.content(body);
 	MvcResult result = mvc.perform(requestBuilder).andReturn();
 
+	verify(companyService, times(1)).create(any(CompanyCreateDTO.class), any(AuthUser.class));
 	validateStatus(result, HttpStatus.OK);
 	validateResponse(result, expected);
     }
     
     @Test
-    public void postWithInvalidBodyShouldThrowException() throws Exception {
+    public void postWithInvalidBodyShouldReturnException() throws Exception {
 	RequestBuilder requestBuilder = post("/api/company")
 		.accept(APPLICATION_JSON)
 		.contentType(APPLICATION_JSON);
@@ -132,9 +122,56 @@ public class CompanyControllerTest extends IntegrationTest {
 	
 	validateStatus(result, HttpStatus.BAD_REQUEST);
 	
+	JsonObject response = jsonFromString(result.getResponse().getContentAsString());
+	assertThat(response, containsKey("apierror"));
+	JsonObject error = response.getJsonObject("apierror");
+	assertThat(error.getString("message"), is("Malformed JSON request"));
+    }
+    
+    @Test
+    public void putShouldReturnValidCompany() throws Exception {
+	when(companyService.update(any(CompanyUpdateDTO.class), any(AuthUser.class)))
+	.thenReturn(mockCompany);
+	
+	String body = createObjectBuilder()
+		.add("name", "Test Company").build().toString();
+	RequestBuilder requestBuilder = put("/api/company/" + mockCompany.getId())
+		.accept(APPLICATION_JSON)
+		.contentType(APPLICATION_JSON)
+		.content(body);
+	MvcResult result = mvc.perform(requestBuilder).andReturn();
+	
+	verify(companyService, times(1)).update(any(CompanyUpdateDTO.class), any(AuthUser.class));
+	validateStatus(result, HttpStatus.OK);
+	validateResponse(result, expected);
+    }
+    
+    @Test
+    public void putWithInvalidBodyShouldReturnException() throws Exception {
+	RequestBuilder requestBuilder = put("/api/company/" + mockCompany.getId())
+		.accept(APPLICATION_JSON)
+		.contentType(APPLICATION_JSON);
+	MvcResult result = mvc.perform(requestBuilder).andReturn();
+	
+	validateStatus(result, HttpStatus.BAD_REQUEST);
 	
 	JsonObject response = jsonFromString(result.getResponse().getContentAsString());
 	assertThat(response, containsKey("apierror"));
+	JsonObject error = response.getJsonObject("apierror");
+	assertThat(error.getString("message"), is("Malformed JSON request"));
+    }
+    
+    @Test
+    public void deleteShouldReturnValidResponse() throws Exception {
+	RequestBuilder requestBuilder = delete("/api/company/" + mockCompany.getId())
+		.accept(APPLICATION_JSON)
+		.contentType(APPLICATION_JSON);
+	MvcResult result = mvc.perform(requestBuilder).andReturn();
+	
+	RemovedEntityDTO responseDTO = new RemovedEntityDTO(mockCompany.getId());
+	String expected = mapper.writeValueAsString(responseDTO);
+	validateStatus(result, HttpStatus.OK);
+	validateResponse(result, expected);
     }
 
 }

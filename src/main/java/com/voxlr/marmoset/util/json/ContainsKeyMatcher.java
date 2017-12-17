@@ -3,7 +3,6 @@ package com.voxlr.marmoset.util.json;
 import javax.json.JsonObject;
 
 import org.hamcrest.Description;
-import org.hamcrest.Factory;
 import org.hamcrest.TypeSafeMatcher;
 
 public class ContainsKeyMatcher extends TypeSafeMatcher<JsonObject> {
@@ -23,7 +22,6 @@ public class ContainsKeyMatcher extends TypeSafeMatcher<JsonObject> {
       return item.containsKey(expected);
    }
 
-   @Factory
    public static ContainsKeyMatcher containsKey(String expected) {
       return new ContainsKeyMatcher(expected);
    }
