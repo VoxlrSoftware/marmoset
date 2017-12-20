@@ -28,6 +28,12 @@ test {
     }
 }
 
+task unitTest(type: Test) {
+    useJUnit {
+        includeCategories 'com.voxlr.marmoset.test.UnitTest'
+    }
+}
+
 task integrationTest(type: Test) {
     useJUnit {
         includeCategories 'com.voxlr.marmoset.test.IntegrationTest'

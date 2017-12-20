@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.UUID;
 
+import com.voxlr.marmoset.auth.UserRole;
 import com.voxlr.marmoset.model.AuthUser;
 import com.voxlr.marmoset.model.persistence.AuditModel;
 import com.voxlr.marmoset.model.persistence.CallStrategy;
@@ -51,9 +52,14 @@ public class EntityTestUtils {
     }
     
     public static AuthUser createAuthUser() {
+	return createAuthUser(UserRole.SUPER_ADMIN);
+    }
+    
+    public static AuthUser createAuthUser(UserRole role) {
 	User user = createAuditableEntity(User.builder()
 		.email("test@test.com")
 		.password("Password")
+		.role(role)
 		.build());
 	return AuthUser.buildFromUser(user);
     }

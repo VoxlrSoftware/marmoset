@@ -1,5 +1,7 @@
 package com.voxlr.marmoset.service;
 
+import static com.voxlr.marmoset.util.CompareUtils.safeEquals;
+
 import java.util.Arrays;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -12,26 +14,38 @@ import com.voxlr.marmoset.model.CompanyScopedEntity;
 import com.voxlr.marmoset.model.Entity;
 import com.voxlr.marmoset.model.TeamScopedEntity;
 import com.voxlr.marmoset.model.UserScopedEntity;
+import com.voxlr.marmoset.model.persistence.Company;
+import com.voxlr.marmoset.util.CompareUtils;
 
 @Service
 public class AuthorizationService {
 
-    
-    
     boolean isSameUser(AuthUser authUser, Entity entity) {
-	return authUser.getId().equals(entity.getId());
+	return safeEquals(authUser.getId(), entity.getId());
+    }
+    
+    boolean isSameCompany(AuthUser authUser, Company entity) {
+	return safeEquals(authUser.getCompanyId(), entity.getId());
     }
     
     boolean isSameCompany(AuthUser authUser, CompanyScopedEntity entity) {
-	return authUser.getCompanyId().equals(entity.getCompanyId());
+	return safeEquals(authUser.getCompanyId(), entity.getCompanyId());
     }
     
     boolean isSameTeam(AuthUser authUser, TeamScopedEntity entity) {
-	return authUser.getTeamId().equals(entity.getTeamId());
+	return safeEquals(authUser.getTeamId(), entity.getTeamId());
     }
     
     boolean typeInherits(Class<? extends Entity> type, Class parentClass) {
 	return parentClass.isAssignableFrom(type);
+    }
+    
+    boolean typeIs(Entity entity, Class entityClass) {
+	return typeIs(entity.getClass(), entityClass);
+    }
+    
+    boolean typeIs(Class<? extends Entity> type, Class entityClass) {
+	return type.equals(entityClass);
     }
     
     boolean hasAuthorities(AuthUser authUser, Authority... authorities) {
@@ -40,7 +54,7 @@ public class AuthorizationService {
 	);
     }
     
-    Function<AuthUser, Boolean> isAdmin = authUser -> hasAuthorities(authUser, Authority.VIEW_ALL);
+    Function<AuthUser, Boolean> isAdmin = authUser -> hasAuthorities(authUser, Authority.VIEW_ALL) || hasAuthorities(authUser, Authority.MODIFY_ALL);
     Function<AuthUser, Boolean> isSuperAdmin = authUser -> hasAuthorities(authUser, Authority.MODIFY_ALL);
     
     @SafeVarargs
@@ -50,9 +64,15 @@ public class AuthorizationService {
 	);
     }
     
-    boolean canRead(AuthUser authUser, TeamScopedEntity entity) {
+    private boolean canRead(AuthUser authUser, Company entity) {
 	return firstValid(
-		() -> isAdmin.apply(authUser),
+		() -> hasAuthorities(authUser, Authority.VIEW_COMPANY) &&
+			isSameCompany(authUser, entity)
+		);
+    }
+    
+    private boolean canRead(AuthUser authUser, TeamScopedEntity entity) {
+	return firstValid(
 		() -> isSameUser(authUser, entity),
 		() -> hasAuthorities(authUser, Authority.VIEW_TEAM) && 
 			isSameTeam(authUser, entity),
@@ -61,18 +81,23 @@ public class AuthorizationService {
 		);
     }
     
-    boolean canRead(AuthUser authUser, CompanyScopedEntity entity) {
+    private boolean canRead(AuthUser authUser, CompanyScopedEntity entity) {
 	return firstValid(
-		() -> isAdmin.apply(authUser),
 		() -> isSameUser(authUser, entity),
 		() -> hasAuthorities(authUser, Authority.VIEW_COMPANY) &&
 			isSameCompany(authUser, entity)
 		);
     }
-
-    boolean canWrite(AuthUser authUser, TeamScopedEntity entity) {
+    
+    private boolean canWrite(AuthUser authUser, Company entity) {
 	return firstValid(
-		() -> isSuperAdmin.apply(authUser),
+		() -> hasAuthorities(authUser, Authority.MODIFY_COMPANY) &&
+			isSameCompany(authUser, entity)
+		);
+    }
+
+    private boolean canWrite(AuthUser authUser, TeamScopedEntity entity) {
+	return firstValid(
 		() -> isSameUser(authUser, entity),
 		() -> hasAuthorities(authUser, Authority.MODIFY_TEAM) && 
 			isSameTeam(authUser, entity),
@@ -81,9 +106,8 @@ public class AuthorizationService {
 		);
     }
     
-    boolean canWrite(AuthUser authUser, CompanyScopedEntity entity) {
+    private boolean canWrite(AuthUser authUser, CompanyScopedEntity entity) {
    	return firstValid(
-   		() -> isSuperAdmin.apply(authUser),
    		() -> isSameUser(authUser, entity),
    		() -> hasAuthorities(authUser, Authority.MODIFY_COMPANY) &&
    			isSameCompany(authUser, entity)
@@ -94,6 +118,7 @@ public class AuthorizationService {
 	return firstValid(
 		() -> typeInherits(entity.getClass(), TeamScopedEntity.class) && canRead(authUser, (TeamScopedEntity) entity),
 		() -> typeInherits(entity.getClass(), CompanyScopedEntity.class) && canRead(authUser, (CompanyScopedEntity) entity),
+		() -> typeIs(entity, Company.class) && canRead(authUser, (Company)entity),
 		() -> isAdmin.apply(authUser)
 		);
     }
@@ -102,19 +127,20 @@ public class AuthorizationService {
 	return firstValid(
 		() -> typeInherits(entity.getClass(), TeamScopedEntity.class) && canWrite(authUser, (TeamScopedEntity) entity),
 		() -> typeInherits(entity.getClass(), CompanyScopedEntity.class) && canWrite(authUser, (CompanyScopedEntity) entity),
+		() -> typeIs(entity, Company.class) && canWrite(authUser, (Company)entity),
 		() -> isSuperAdmin.apply(authUser)
 		);
     }
     
     public boolean canCreate(AuthUser authUser, Class<? extends Entity> toCreate) {
 	return firstValid(
-		() -> isSuperAdmin.apply(authUser),
 		() -> typeInherits(toCreate, UserScopedEntity.class) &&
 			hasAuthorities(authUser, Authority.MODIFY_ACCOUNT),
 		() -> typeInherits(toCreate, TeamScopedEntity.class) &&
 			hasAuthorities(authUser, Authority.MODIFY_TEAM),
 		() -> typeInherits(toCreate, CompanyScopedEntity.class) &&
-			hasAuthorities(authUser, Authority.MODIFY_COMPANY)
+			hasAuthorities(authUser, Authority.MODIFY_COMPANY),
+		() -> isSuperAdmin.apply(authUser)
 		);
     }
 }

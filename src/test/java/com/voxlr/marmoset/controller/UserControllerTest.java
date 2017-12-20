@@ -21,24 +21,19 @@ import javax.json.JsonObject;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.rozidan.springboot.modelmapper.testing.WithModelMapper;
 import com.voxlr.marmoset.model.AuthUser;
 import com.voxlr.marmoset.model.persistence.User;
-import com.voxlr.marmoset.model.persistence.dto.CompanyUpdateDTO;
 import com.voxlr.marmoset.model.persistence.dto.RemovedEntityDTO;
 import com.voxlr.marmoset.model.persistence.dto.UserCreateDTO;
 import com.voxlr.marmoset.model.persistence.dto.UserDTO;
@@ -47,13 +42,11 @@ import com.voxlr.marmoset.repositories.UserRepository;
 import com.voxlr.marmoset.service.CompanyService;
 import com.voxlr.marmoset.service.TeamService;
 import com.voxlr.marmoset.service.UserService;
-import com.voxlr.marmoset.test.IntegrationTest;
+import com.voxlr.marmoset.test.ControllerTest;
 
-@RunWith(SpringJUnit4ClassRunner.class)
 @WebMvcTest(UserController.class)
 @AutoConfigureMockMvc(secure=false)
-@WithModelMapper
-public class UserControllerTest extends IntegrationTest {
+public class UserControllerTest extends ControllerTest {
 
     @Autowired
     private MockMvc mvc;
@@ -72,9 +65,6 @@ public class UserControllerTest extends IntegrationTest {
     
     @MockBean
     private AuthUser authUser;
-    
-    @Autowired
-    private ModelMapper modelMapper;
     
     ObjectMapper mapper = new ObjectMapper();
     User mockUser;
