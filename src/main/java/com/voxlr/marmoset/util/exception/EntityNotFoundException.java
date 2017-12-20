@@ -6,8 +6,10 @@ import java.util.stream.IntStream;
 
 import org.springframework.util.StringUtils;
 
+@SuppressWarnings("serial")
 public class EntityNotFoundException extends Exception {
 
+    @SuppressWarnings("rawtypes")
     public EntityNotFoundException(Class clazz, String... searchParamsMap) {
         super(EntityNotFoundException.generateMessage(clazz.getSimpleName(), 
         	toMap(String.class, String.class, (Object[])searchParamsMap)));

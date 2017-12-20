@@ -1,18 +1,14 @@
 package com.voxlr.marmoset.service;
 
-import static com.voxlr.marmoset.util.EntityTestUtils.createAuthUser;
-import static com.voxlr.marmoset.util.EntityTestUtils.createCompany;
 import static com.voxlr.marmoset.util.AssertUtils.wrapAssertException;
 import static com.voxlr.marmoset.util.AssertUtils.wrapNoException;
+import static com.voxlr.marmoset.util.EntityTestUtils.createAuthUser;
+import static com.voxlr.marmoset.util.EntityTestUtils.createCompany;
 import static com.voxlr.marmoset.util.ListUtils.listOf;
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.isNotNull;
-import static org.mockito.Matchers.notNull;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -30,7 +26,6 @@ import com.voxlr.marmoset.model.AuthUser;
 import com.voxlr.marmoset.model.persistence.Company;
 import com.voxlr.marmoset.model.persistence.dto.CompanyCreateDTO;
 import com.voxlr.marmoset.model.persistence.dto.CompanyUpdateDTO;
-import com.voxlr.marmoset.model.persistence.dto.TeamCreateDTO;
 import com.voxlr.marmoset.repositories.CompanyRepository;
 import com.voxlr.marmoset.test.IntegrationTest;
 import com.voxlr.marmoset.util.exception.EntityNotFoundException;
