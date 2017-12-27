@@ -3,15 +3,21 @@ package com.voxlr.marmoset.model.persistence.dto;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 
-import com.voxlr.marmoset.validation.CompanyExistsConstraint;
-import com.voxlr.marmoset.validation.TeamExistsConstraint;
-import com.voxlr.marmoset.validation.UniqueEmailConstraint;
+import com.voxlr.marmoset.validation.constraint.CompanyExistsConstraint;
+import com.voxlr.marmoset.validation.constraint.TeamExistsConstraint;
+import com.voxlr.marmoset.validation.constraint.UniqueEmailConstraint;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class UserCreateDTO {
 
     @CompanyExistsConstraint

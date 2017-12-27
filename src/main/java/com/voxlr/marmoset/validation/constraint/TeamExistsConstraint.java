@@ -1,4 +1,4 @@
-package com.voxlr.marmoset.validation;
+package com.voxlr.marmoset.validation.constraint;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -10,11 +10,11 @@ import javax.validation.Constraint;
 import javax.validation.Payload;
 
 @Documented
-@Constraint(validatedBy = UniqueEmailValidator.class)
+@Constraint(validatedBy = TeamExistsValidator.class)
 @Target( { ElementType.METHOD, ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface UniqueEmailConstraint {
-    String message() default "Email must be unique.";
+public @interface TeamExistsConstraint {
+    String message() default "Team must be valid.";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

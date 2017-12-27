@@ -10,7 +10,7 @@ import com.github.rozidan.springboot.modelmapper.testing.WithModelMapper;
 
 @Category(IntegrationTest.class)
 @RunWith(SpringJUnit4ClassRunner.class)
-@WithModelMapper
+@WithModelMapper(basePackages = "com.voxlr.marmoset")
 public abstract class IntegrationTest {
     
     @Autowired

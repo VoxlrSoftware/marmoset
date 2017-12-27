@@ -36,14 +36,14 @@ public enum Authority {
 	});
 	
 	capabilities = new HashMap<Authority, Set<Authority>>();
-	capabilities.put(MODIFY_ACCOUNT, new HashSet<Authority>(Arrays.asList(MODIFY_TEAM, MODIFY_COMPANY, MODIFY_ALL)));
-	capabilities.put(MODIFY_TEAM, new HashSet<Authority>(Arrays.asList(MODIFY_COMPANY, MODIFY_ALL)));
-	capabilities.put(MODIFY_COMPANY, new HashSet<Authority>(Arrays.asList(MODIFY_ALL)));
-	capabilities.put(MODIFY_ALL, new HashSet<Authority>());
+	capabilities.put(MODIFY_ACCOUNT, new HashSet<Authority>(Arrays.asList(MODIFY_ACCOUNT, MODIFY_TEAM, MODIFY_COMPANY, MODIFY_ALL)));
+	capabilities.put(MODIFY_TEAM, new HashSet<Authority>(Arrays.asList(MODIFY_TEAM, MODIFY_COMPANY, MODIFY_ALL)));
+	capabilities.put(MODIFY_COMPANY, new HashSet<Authority>(Arrays.asList(MODIFY_COMPANY, MODIFY_ALL)));
+	capabilities.put(MODIFY_ALL, new HashSet<Authority>(Arrays.asList(MODIFY_ALL)));
 
-	capabilities.put(VIEW_TEAM, new HashSet<Authority>(Arrays.asList(MODIFY_TEAM, VIEW_COMPANY, MODIFY_COMPANY, VIEW_ALL, MODIFY_ALL)));
-	capabilities.put(VIEW_COMPANY, new HashSet<Authority>(Arrays.asList(VIEW_ALL, MODIFY_ALL)));
-	capabilities.put(VIEW_ALL, new HashSet<Authority>());
+	capabilities.put(VIEW_TEAM, new HashSet<Authority>(Arrays.asList(VIEW_TEAM, MODIFY_TEAM, VIEW_COMPANY, MODIFY_COMPANY, VIEW_ALL, MODIFY_ALL)));
+	capabilities.put(VIEW_COMPANY, new HashSet<Authority>(Arrays.asList(VIEW_COMPANY, VIEW_ALL, MODIFY_ALL)));
+	capabilities.put(VIEW_ALL, new HashSet<Authority>(Arrays.asList(VIEW_ALL, MODIFY_ALL)));
     }
     
     public static Authority get(String authority) {

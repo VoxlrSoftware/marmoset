@@ -2,7 +2,7 @@ package com.voxlr.marmoset.model.persistence.dto;
 
 import org.hibernate.validator.constraints.NotBlank;
 
-import com.voxlr.marmoset.validation.CompanyExistsConstraint;
+import com.voxlr.marmoset.validation.constraint.CompanyExistsConstraint;
 
 import lombok.Builder;
 import lombok.Getter;

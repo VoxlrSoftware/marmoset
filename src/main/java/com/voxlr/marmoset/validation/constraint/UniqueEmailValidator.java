@@ -1,4 +1,4 @@
-package com.voxlr.marmoset.validation;
+package com.voxlr.marmoset.validation.constraint;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
