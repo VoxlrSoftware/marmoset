@@ -1,6 +1,7 @@
 package com.voxlr.marmoset.service;
 
 
+import static com.voxlr.marmoset.util.EntityTestUtils.createAuditableEntity;
 import static com.voxlr.marmoset.util.AssertUtils.wrapAssertException;
 import static com.voxlr.marmoset.util.AssertUtils.wrapNoException;
 import static com.voxlr.marmoset.util.EntityTestUtils.createAuthUser;
@@ -77,14 +78,14 @@ public class UserServiceTest extends IntegrationTest {
     
     @Before
     public void setup() {
-	mockUser = User.builder()
+	mockUser = createAuditableEntity(User.builder()
 		    .firstName("Test")
 		    .lastName("User")
 		    .email("test.user@test.com")
 		    .password(bCryptPasswordEncoder.encode("Password"))
 		    .companyId("123")
 		    .teamId("123")
-		    .build();
+		    .build());
 	userCreateDTO = UserCreateDTO.builder()
 		.firstName("TestA")
 		.lastName("TestB")

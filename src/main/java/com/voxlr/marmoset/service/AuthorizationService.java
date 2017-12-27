@@ -15,7 +15,6 @@ import com.voxlr.marmoset.model.Entity;
 import com.voxlr.marmoset.model.TeamScopedEntity;
 import com.voxlr.marmoset.model.UserScopedEntity;
 import com.voxlr.marmoset.model.persistence.Company;
-import com.voxlr.marmoset.util.CompareUtils;
 
 @Service
 public class AuthorizationService {
@@ -50,7 +49,7 @@ public class AuthorizationService {
     
     boolean hasAuthorities(AuthUser authUser, Authority... authorities) {
 	return Arrays.stream(authorities).allMatch(authority -> 
-		authUser.hasAuthority(authority)
+		authUser.hasCapability(authority)
 	);
     }
     

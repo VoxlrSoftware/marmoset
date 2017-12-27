@@ -1,18 +1,14 @@
 package com.voxlr.marmoset.validation.handler;
 
-import java.util.function.Consumer;
-
-import com.google.common.base.Supplier;
 import com.voxlr.marmoset.auth.Authority;
 import com.voxlr.marmoset.model.AuthUser;
 
-public class UserTeamValidationHandler implements ValidationHandler<String> {
+public class UserTeamValidationHandler extends ValidationHandler<String> {
 
-    public void validate(AuthUser authUser, Supplier<String> getter, Consumer<String> setter) {
-	String teamId = getter.get();
-	
-	if (!authUser.hasCapability(Authority.MODIFY_COMPANY) || teamId == null) {
-	    setter.accept(authUser.getTeamId());
+    @Override
+    void validate(AuthUser authUser, String input, ValidationResult<String> result) {
+	if (!authUser.hasCapability(Authority.MODIFY_COMPANY) || input == null) {
+	    result.setResult(authUser.getTeamId());
 	}
     }
 

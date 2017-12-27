@@ -23,7 +23,7 @@ public class UserCreateValidator implements Validator<UserCreateDTO> {
 	userTeamValidationHandler.validate(
 		authUser, entity::getTeamId, entity::setTeamId);
 	userRoleValidationHandler.validate(
-		authUser, entity::getRole, null);
+		authUser, entity::getRole);
     }
 
 }

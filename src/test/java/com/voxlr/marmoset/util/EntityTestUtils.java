@@ -7,6 +7,7 @@ import java.util.UUID;
 import com.voxlr.marmoset.auth.UserRole;
 import com.voxlr.marmoset.model.AuthUser;
 import com.voxlr.marmoset.model.persistence.AuditModel;
+import com.voxlr.marmoset.model.persistence.Call;
 import com.voxlr.marmoset.model.persistence.CallStrategy;
 import com.voxlr.marmoset.model.persistence.Company;
 import com.voxlr.marmoset.model.persistence.Company.CompanyBuilder;

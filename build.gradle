@@ -64,6 +64,7 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-actuator") {
         exclude(group: 'org.springframework.boot', module: 'spring-boot-starter-logging')
     }
+    
 	compile('javax.validation:validation-api:2.0.0.Final')
 	compile('com.fasterxml.jackson.datatype:jackson-datatype-jsr310')
 	compile('org.javassist:javassist:3.18.2-GA')
@@ -71,6 +72,8 @@ dependencies {
 	compileOnly("org.projectlombok:lombok:1.16.16")
 	compile('org.glassfish:javax.json:1.1')
     compile('org.hamcrest:java-hamcrest:2.0.0.0')
+    compile('com.googlecode.libphonenumber:libphonenumber:4.3')
+    
 	testCompile('org.springframework.boot:spring-boot-starter-test')
     testCompile('org.springframework.security:spring-security-test')
 	testCompile('de.flapdoodle.embed:de.flapdoodle.embed.mongo')

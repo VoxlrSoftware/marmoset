@@ -16,6 +16,8 @@ import com.mongodb.BasicDBObject;
 import com.voxlr.marmoset.model.CompanyScopedEntity;
 import com.voxlr.marmoset.model.UserScopedEntity;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -29,6 +31,8 @@ import lombok.Setter;
     @CompoundIndex(name = "companyId_createDate", def = "{'companyId' : 1, 'createDate': 1}"),
     @CompoundIndex(name = "userId_createDate", def = "{'userId': 1, 'createDate': 1}")
 })
+@Builder
+@AllArgsConstructor
 public class Call extends AuditModel implements CompanyScopedEntity, UserScopedEntity {
     @NotNull
     private String companyId;
@@ -39,8 +43,14 @@ public class Call extends AuditModel implements CompanyScopedEntity, UserScopedE
     private String employeeNumber;
     private String customerNumber;
     private String recordingUrl;
+    
+    @Builder.Default
     private BasicDBObject externalReferences = new BasicDBObject();
+    
+    @Builder.Default
     private List<String> strategyList = new ArrayList<>();
+    
+    @Builder.Default
     private CallStatistic statistics = new CallStatistic();
     @DBRef(lazy = true)
     private CallAnalysis analysis;
