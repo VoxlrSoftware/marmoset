@@ -22,6 +22,10 @@ repositories {
 	mavenCentral()
 }
 
+bootRun {
+    systemProperties System.properties
+}
+
 test {
     useJUnit {
         includeCategories 'com.voxlr.marmoset.test.UnitTest'
@@ -35,12 +39,11 @@ task unitTest(type: Test) {
 }
 
 task integrationTest(type: Test) {
+    // environment SPRING_PROFILES_ACTIVE: environment.SPRING_PROFILES_ACTIVE ?: "test"
     useJUnit {
         includeCategories 'com.voxlr.marmoset.test.IntegrationTest'
     }
 }
-
-
 
 dependencies {
     compile("org.springframework.boot:spring-boot-devtools")
@@ -76,5 +79,6 @@ dependencies {
     
 	testCompile('org.springframework.boot:spring-boot-starter-test')
     testCompile('org.springframework.security:spring-security-test')
-	testCompile('de.flapdoodle.embed:de.flapdoodle.embed.mongo')
+	testCompile('de.flapdoodle.embed:de.flapdoodle.embed.mongo:1.50.5')
+    compile('cz.jirutka.spring:embedmongo-spring:1.3.1')
 }

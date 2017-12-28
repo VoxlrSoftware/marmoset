@@ -11,6 +11,8 @@ import com.voxlr.marmoset.model.persistence.Call;
 import com.voxlr.marmoset.model.persistence.CallStrategy;
 import com.voxlr.marmoset.model.persistence.Company;
 import com.voxlr.marmoset.model.persistence.Company.CompanyBuilder;
+import com.voxlr.marmoset.model.persistence.Team;
+import com.voxlr.marmoset.model.persistence.Team.TeamBuilder;
 import com.voxlr.marmoset.model.persistence.User;
 import com.voxlr.marmoset.model.persistence.User.UserBuilder;
 
@@ -45,11 +47,25 @@ public class EntityTestUtils {
 	return createAuditableEntity(builder.build());
     }
     
-    public static User createUser(String firstName) {
-	UserBuilder builder = User.builder()
-		.firstName(firstName);
+    public static Team createTeam(String companyId, String name) {
+	TeamBuilder builder = Team.builder()
+		.companyId(companyId)
+		.name(name);
 	
 	return createAuditableEntity(builder.build());
+	
+    }
+    
+    public static User createUser(String companyId, String teamId) {
+	UserBuilder builder = User.builder()
+		.companyId(companyId)
+		.teamId(teamId);
+	
+	return createAuditableEntity(builder.build());
+    }
+    
+    public static Call createCall(String userId) {
+	return createAuditableEntity(Call.builder().userId(userId).build());
     }
     
     public static AuthUser createAuthUser() {

@@ -16,9 +16,11 @@ import com.voxlr.marmoset.model.persistence.User;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 
 @Getter
 @Setter
+@Accessors(chain = true)
 public class AuthUser extends org.springframework.security.core.userdetails.User implements TeamScopedEntity {
 
     private String id;

@@ -8,15 +8,21 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.voxlr.marmoset.model.CompanyScopedEntity;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 
 @Document(collection = "teams")
 @EnableMongoAuditing
 @Getter
 @Setter
 @NoArgsConstructor
+@Builder
+@AllArgsConstructor
+@Accessors(chain = true)
 public class Team extends AuditModel implements CompanyScopedEntity {
     
     @NotNull

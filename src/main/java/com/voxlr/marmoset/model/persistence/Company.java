@@ -11,9 +11,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.Singular;
+import lombok.experimental.Accessors;
 
 @Document(collection = "companies")
 @EnableMongoAuditing
@@ -23,6 +23,7 @@ import lombok.Singular;
 @CompoundIndexes({
     @CompoundIndex(name = "callStrategyId", def = "{'callStrategies.id' : 1 }")
 })
+@Accessors(chain = true)
 public class Company extends AuditModel {
     
     @NotBlank

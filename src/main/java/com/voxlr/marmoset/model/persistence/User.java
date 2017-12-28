@@ -15,6 +15,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 
 @Document(collection = "users")
 @EnableMongoAuditing
@@ -23,9 +24,11 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 @CompoundIndexes({
+    @CompoundIndex(name = "id_companyId_teamId", def = "{'_id': 1, 'companyId': 1, 'teamId': 1}"),
     @CompoundIndex(name = "active_email", def = "{'isDeleted': 1, 'email': 1}"),
     @CompoundIndex(name = "active_companyId_teamId", def = "{'isDeleted': 1, 'companyId' : 1, 'teamId': 1}")
 })
+@Accessors(chain = true)
 public class User extends AuditModel implements TeamScopedEntity {
     @NotBlank
     private String companyId;

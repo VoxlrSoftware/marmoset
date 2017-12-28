@@ -8,17 +8,11 @@ import static com.voxlr.marmoset.util.ListUtils.listOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.when;
 
 import java.util.List;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 
 import com.voxlr.marmoset.auth.UserRole;
@@ -26,41 +20,19 @@ import com.voxlr.marmoset.model.AuthUser;
 import com.voxlr.marmoset.model.persistence.Company;
 import com.voxlr.marmoset.model.persistence.dto.CompanyCreateDTO;
 import com.voxlr.marmoset.model.persistence.dto.CompanyUpdateDTO;
-import com.voxlr.marmoset.repositories.CompanyRepository;
 import com.voxlr.marmoset.test.IntegrationTest;
 import com.voxlr.marmoset.util.exception.EntityNotFoundException;
 
 public class CompanyServiceTest extends IntegrationTest {
-
-    @TestConfiguration
-    static class EmployeeServiceImplTestContextConfiguration {
-  
-        @Bean
-        public CompanyService companyService() {
-            return new CompanyService();
-        }
-        
-        @Bean
-        public AuthorizationService authorizationService() {
-            return new AuthorizationService();
-        }
-    }
     
     @Autowired
     private CompanyService companyService;
     
-    @MockBean
-    private CompanyRepository companyRepository;
-    
-    @MockBean
-    private TeamService teamService;
-    
     Company mockCompany = createCompany("Test Company", "Random phrase");
     
-    @Before
-    public void setup() {
-	when(companyRepository.findOne(mockCompany.getId())).thenReturn(mockCompany);
-	when(companyRepository.save(any(Company.class))).thenAnswer(i -> i.getArguments()[0]);
+    @Override
+    public void beforeTest() {
+	mockCompany = createCompany("Test Company", "Random phrase");
     }
     
     @Test
@@ -73,32 +45,36 @@ public class CompanyServiceTest extends IntegrationTest {
     
     @Test
     public void getShouldReturnCompanyForValidAccounts() throws Exception {
-	List<UserRole> roles = listOf(
-		UserRole.SUPER_ADMIN,
-		UserRole.ADMIN,
-		UserRole.COMPANY_ADMIN,
-		UserRole.COMPANY_READONLY);
+	List<AuthUser> authUsers = listOf(
+		createAuthUser(UserRole.SUPER_ADMIN),
+		createAuthUser(UserRole.ADMIN),
+		createAuthUser(UserRole.COMPANY_ADMIN).setCompanyId(mockCompany.getId()),
+		createAuthUser(UserRole.COMPANY_READONLY).setCompanyId(mockCompany.getId())
+		);
+
+	persistenceUtils.save(mockCompany);
 	
-	roles.stream().forEach(role -> {
+	authUsers.stream().forEach(authUser -> {
 	    wrapNoException(() -> {
-		AuthUser authUser = createAuthUser(role);
 		authUser.setCompanyId(mockCompany.getId());
 		Company company = companyService.get(mockCompany.getId(), authUser);
-		assertThat(company, is(mockCompany));
+		assertThat(company, is(notNullValue()));
 	    });
 	});
     }
     
     @Test
     public void getShouldFailForInvalidAccounts() throws Exception {
-	List<UserRole> roles = listOf(
-		UserRole.TEAM_ADMIN,
-		UserRole.TEAM_READONLY,
-		UserRole.MEMBER);
+	List<AuthUser> authUsers = listOf(
+		createAuthUser(UserRole.TEAM_ADMIN).setCompanyId(mockCompany.getId()),
+		createAuthUser(UserRole.TEAM_READONLY).setCompanyId(mockCompany.getId()),
+		createAuthUser(UserRole.MEMBER).setCompanyId(mockCompany.getId())
+		);
+
+	persistenceUtils.save(mockCompany);
 	
-	roles.stream().forEach(role -> {
+	authUsers.stream().forEach(authUser -> {
 	    wrapAssertException(() -> {
-		AuthUser authUser = createAuthUser(role);
 		authUser.setCompanyId(mockCompany.getId());
 		Company company = companyService.get(mockCompany.getId(), authUser);
 	    }, UnauthorizedUserException.class);
@@ -107,13 +83,15 @@ public class CompanyServiceTest extends IntegrationTest {
     
     @Test
     public void getShouldFailWhenCompanyIdIsDifferent() throws Exception {
-	List<UserRole> roles = listOf(
-		UserRole.COMPANY_ADMIN,
-		UserRole.COMPANY_READONLY);
+	List<AuthUser> authUsers = listOf(
+		createAuthUser(UserRole.COMPANY_ADMIN).setCompanyId("123"),
+		createAuthUser(UserRole.COMPANY_READONLY).setCompanyId("123")
+		);
+
+	persistenceUtils.save(mockCompany);
 	
-	roles.stream().forEach(role -> {
+	authUsers.stream().forEach(authUser -> {
 	    wrapAssertException(() -> {
-		AuthUser authUser = createAuthUser(role);
 		Company company = companyService.get(mockCompany.getId(), authUser);
 	    }, UnauthorizedUserException.class);
 	});
@@ -121,15 +99,16 @@ public class CompanyServiceTest extends IntegrationTest {
     
     @Test
     public void createShouldReturnNewCompanyForValidAccounts() throws Exception {
-	List<UserRole> roles = listOf(
-		UserRole.SUPER_ADMIN);
+	List<AuthUser> authUsers = listOf(
+		createAuthUser(UserRole.SUPER_ADMIN)
+		);
 	
 	CompanyCreateDTO companyCreateDTO = CompanyCreateDTO.builder()
 		.name("TestCompany").build();
 	
-	roles.stream().forEach(role -> {
+	authUsers.stream().forEach(authUser -> {
+	    persistenceUtils.removeAll(Company.class);
 	    wrapNoException(() -> {
-		AuthUser authUser = createAuthUser(role);
 		Company company = companyService.create(companyCreateDTO, authUser);
 		assertThat(company, is(notNullValue()));
 	    });
@@ -138,20 +117,21 @@ public class CompanyServiceTest extends IntegrationTest {
     
     @Test
     public void createShouldFailForInvalidAccounts() throws Exception {
-	List<UserRole> roles = listOf(
-		UserRole.ADMIN,
-		UserRole.COMPANY_ADMIN,
-		UserRole.COMPANY_READONLY,
-		UserRole.TEAM_ADMIN,
-		UserRole.TEAM_READONLY,
-		UserRole.MEMBER);
+	List<AuthUser> authUsers = listOf(
+		createAuthUser(UserRole.ADMIN),
+		createAuthUser(UserRole.COMPANY_ADMIN).setCompanyId("123"),
+		createAuthUser(UserRole.COMPANY_READONLY).setCompanyId("123"),
+		createAuthUser(UserRole.TEAM_ADMIN).setCompanyId("123"),
+		createAuthUser(UserRole.TEAM_READONLY).setCompanyId("123"),
+		createAuthUser(UserRole.MEMBER).setCompanyId("123")
+		);
 	
 	CompanyCreateDTO companyCreateDTO = CompanyCreateDTO.builder()
 		.name("TestCompany").build();
 	
-	roles.stream().forEach(role -> {
+	authUsers.stream().forEach(authUser -> {
+	    persistenceUtils.removeAll(Company.class);
 	    wrapAssertException(() -> {
-		AuthUser authUser = createAuthUser(role);
 		Company company = companyService.create(companyCreateDTO, authUser);
 	    }, UnauthorizedUserException.class);
 	});
@@ -170,17 +150,18 @@ public class CompanyServiceTest extends IntegrationTest {
     
     @Test
     public void updateShouldBeSuccessfulWithValidAccounts() throws Exception {
-	List<UserRole> roles = listOf(
-		UserRole.SUPER_ADMIN,
-		UserRole.COMPANY_ADMIN);
+	List<AuthUser> authUsers = listOf(
+		createAuthUser(UserRole.SUPER_ADMIN),
+		createAuthUser(UserRole.COMPANY_ADMIN).setCompanyId(mockCompany.getId())
+		);
 	
 	CompanyUpdateDTO companyUpdateDTO = modelMapper.map(mockCompany, CompanyUpdateDTO.class);
 	companyUpdateDTO.setName("New name");
 	
-	roles.stream().forEach(role -> {
+	authUsers.stream().forEach(authUser -> {
+	    persistenceUtils.removeAll(Company.class);
+	    persistenceUtils.save(mockCompany);
 	    wrapNoException(() -> {
-		AuthUser authUser = createAuthUser(role);
-		authUser.setCompanyId(mockCompany.getId());
 		Company company = companyService.update(companyUpdateDTO, authUser);
 		assertThat(company.getName(), is("New name"));
 	    });
@@ -189,18 +170,21 @@ public class CompanyServiceTest extends IntegrationTest {
     
     @Test
     public void updateShouldFailWithInvalidAccounts() throws Exception {
-	List<UserRole> roles = listOf(
-		UserRole.ADMIN,
-		UserRole.COMPANY_READONLY,
-		UserRole.TEAM_ADMIN,
-		UserRole.TEAM_READONLY,
-		UserRole.MEMBER);
+	List<AuthUser> authUsers = listOf(
+		createAuthUser(UserRole.ADMIN),
+		createAuthUser(UserRole.COMPANY_READONLY).setCompanyId("123"),
+		createAuthUser(UserRole.TEAM_ADMIN).setCompanyId("123"),
+		createAuthUser(UserRole.TEAM_READONLY).setCompanyId("123"),
+		createAuthUser(UserRole.MEMBER).setCompanyId("123")
+		);
 	
 	CompanyUpdateDTO companyUpdateDTO = modelMapper.map(mockCompany, CompanyUpdateDTO.class);
 	companyUpdateDTO.setName("New name");
-	roles.stream().forEach(role -> {
+
+	persistenceUtils.save(mockCompany);
+	
+	authUsers.stream().forEach(authUser -> {
 	    wrapAssertException(() -> {
-		AuthUser authUser = createAuthUser(role);
 		Company company = companyService.update(companyUpdateDTO, authUser);
 	    }, UnauthorizedUserException.class);
 	});
@@ -216,13 +200,15 @@ public class CompanyServiceTest extends IntegrationTest {
     
     @Test
     public void deleteShouldBeSuccessfulWithValidAccounts() throws Exception {
-	List<UserRole> roles = listOf(
-		UserRole.SUPER_ADMIN,
-		UserRole.COMPANY_ADMIN);
+	List<AuthUser> authUsers = listOf(
+		createAuthUser(UserRole.SUPER_ADMIN),
+		createAuthUser(UserRole.COMPANY_ADMIN).setCompanyId("123")
+		);
 	
-	roles.stream().forEach(role -> {
+	authUsers.stream().forEach(authUser -> {
+	    persistenceUtils.removeAll(Company.class);
+	    persistenceUtils.save(mockCompany);
 	    wrapNoException(() -> {
-		AuthUser authUser = createAuthUser(role);
 		authUser.setCompanyId(mockCompany.getId());
 		companyService.delete(mockCompany.getId(), authUser);
 	    });
@@ -231,16 +217,18 @@ public class CompanyServiceTest extends IntegrationTest {
     
     @Test
     public void deleteShouldFailWithInvalidAccounts() throws Exception {
-	List<UserRole> roles = listOf(
-		UserRole.ADMIN,
-		UserRole.COMPANY_READONLY,
-		UserRole.TEAM_ADMIN,
-		UserRole.TEAM_READONLY,
-		UserRole.MEMBER);
+	List<AuthUser> authUsers = listOf(
+		createAuthUser(UserRole.ADMIN),
+		createAuthUser(UserRole.COMPANY_READONLY).setCompanyId("123"),
+		createAuthUser(UserRole.TEAM_ADMIN).setCompanyId("123"),
+		createAuthUser(UserRole.TEAM_READONLY).setCompanyId("123"),
+		createAuthUser(UserRole.MEMBER).setCompanyId("123")
+		);
+
+	persistenceUtils.save(mockCompany);
 	
-	roles.stream().forEach(role -> {
+	authUsers.stream().forEach(authUser -> {
 	    wrapAssertException(() -> {
-		AuthUser authUser = createAuthUser(role);
 		authUser.setCompanyId(mockCompany.getId());
 		companyService.delete(mockCompany.getId(), authUser);
 	    }, UnauthorizedUserException.class);
