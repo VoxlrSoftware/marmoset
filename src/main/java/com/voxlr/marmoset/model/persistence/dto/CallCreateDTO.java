@@ -2,6 +2,8 @@ package com.voxlr.marmoset.model.persistence.dto;
 
 import java.util.List;
 
+import javax.validation.constraints.NotBlank;
+
 import com.voxlr.marmoset.validation.constraint.PhoneNumberValidConstraint;
 
 import lombok.AllArgsConstructor;
@@ -17,6 +19,7 @@ import lombok.Singular;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CallCreateDTO {
+    @NotBlank
     private String callSid;
     
     @PhoneNumberValidConstraint

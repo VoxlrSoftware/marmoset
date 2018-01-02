@@ -13,6 +13,9 @@ buildscript {
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
+apply plugin: 'application'
+
+applicationDefaultJvmArgs = ["-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005" ]
 
 group = 'com.voxlr'
 version = '0.0.1-SNAPSHOT'

@@ -1,4 +1,4 @@
-package com.voxlr.marmoset.model.persistence.dto;
+package com.voxlr.marmoset.model.dto;
 
 import lombok.Getter;
 import lombok.Setter;

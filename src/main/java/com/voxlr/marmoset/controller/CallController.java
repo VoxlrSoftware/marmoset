@@ -34,5 +34,4 @@ public class CallController {
 	CallDTO callDTO = modelMapper.map(call, CallDTO.class);
 	return new ResponseEntity<CallDTO>(callDTO, HttpStatus.OK);
     }
-    
 }
