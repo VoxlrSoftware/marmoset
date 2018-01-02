@@ -17,7 +17,7 @@ import cz.jirutka.spring.embedmongo.EmbeddedMongoFactoryBean;
 @Configuration
 @EnableMongoAuditing
 @EnableMongoRepositories(basePackages = "com.voxlr.marmoset.repositories")
-public class MongoTestConfig {
+public class MongoDevConfig {
     
     private static final String MONGO_DB_URL = "localhost";
     private static final String MONGO_DB_NAME = "embeded_db";

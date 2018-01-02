@@ -8,6 +8,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -21,6 +22,8 @@ import javax.json.JsonObject;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -43,9 +46,10 @@ import com.voxlr.marmoset.service.CompanyService;
 import com.voxlr.marmoset.service.TeamService;
 import com.voxlr.marmoset.service.UserService;
 import com.voxlr.marmoset.test.ControllerTest;
+import com.voxlr.marmoset.util.exception.EntityNotFoundException;
 
 @WebMvcTest(UserController.class)
-@AutoConfigureMockMvc(secure=false)
+@AutoConfigureMockMvc(secure = false)
 public class UserControllerTest extends ControllerTest {
 
     @Autowired
@@ -84,8 +88,31 @@ public class UserControllerTest extends ControllerTest {
     }
     
     @Test
+    public void getShouldReturnExceptionIfEntityDoesNotExist() throws Exception {
+ 	when(userService.get(anyString(), any(AuthUser.class)))
+ 	.thenAnswer(new Answer<User>() {
+
+ 	    @Override
+ 	    public User answer(InvocationOnMock invocation) throws Throwable {
+ 		throw new EntityNotFoundException(User.class, "id", (String)invocation.getArguments()[0]);
+ 	    }
+ 	});
+ 	
+ 	String fakeId = "123";
+ 	RequestBuilder requestBuilder = get(
+ 		"/api/user/" + fakeId).accept(APPLICATION_JSON);
+ 	MvcResult result = mvc.perform(requestBuilder).andReturn();
+ 	validateStatus(result, HttpStatus.NOT_FOUND);
+ 	JsonObject response = jsonFromString(result.getResponse().getContentAsString());
+ 	assertThat(response, containsKey("apierror"));
+ 	
+ 	JsonObject error = response.getJsonObject("apierror");
+ 	assertThat(error.getString("message"), is("User was not found for parameters {id=" + fakeId + "}"));
+    }
+    
+    @Test
     public void getShouldReturnValidUser() throws Exception {
-	when(userService.get(anyString(), any(AuthUser.class)))
+	when(userService.get(eq(mockUser.getId()), any(AuthUser.class)))
 	.thenReturn(mockUser);
 	
 	RequestBuilder requestBuilder = get(

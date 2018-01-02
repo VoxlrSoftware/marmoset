@@ -2,7 +2,7 @@ package com.voxlr.marmoset.model.persistence.dto;
 
 import java.util.List;
 
-import javax.validation.constraints.NotBlank;
+import org.hibernate.validator.constraints.NotBlank;
 
 import com.voxlr.marmoset.validation.constraint.PhoneNumberValidConstraint;
 

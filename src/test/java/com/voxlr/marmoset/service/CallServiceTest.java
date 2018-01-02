@@ -1,5 +1,7 @@
 package com.voxlr.marmoset.service;
 
+import static com.voxlr.marmoset.model.CallOutcome.NONE;
+import static com.voxlr.marmoset.model.CallOutcome.VOICEMAIL;
 import static com.voxlr.marmoset.util.AssertUtils.wrapAssertException;
 import static com.voxlr.marmoset.util.AssertUtils.wrapNoException;
 import static com.voxlr.marmoset.util.EntityTestUtils.createAuthUser;
@@ -26,10 +28,11 @@ import com.voxlr.marmoset.model.persistence.Company;
 import com.voxlr.marmoset.model.persistence.Team;
 import com.voxlr.marmoset.model.persistence.User;
 import com.voxlr.marmoset.model.persistence.dto.CallCreateDTO;
-import com.voxlr.marmoset.test.IntegrationTest;
+import com.voxlr.marmoset.model.persistence.dto.CallUpdateDTO;
+import com.voxlr.marmoset.test.DataTest;
 import com.voxlr.marmoset.util.exception.EntityNotFoundException;
 
-public class CallServiceTest extends IntegrationTest {
+public class CallServiceTest extends DataTest {
     
     @Autowired
     private CallService callService;
@@ -108,8 +111,8 @@ public class CallServiceTest extends IntegrationTest {
     public void createShouldBeInvalidForAccounts() throws Exception {
 	List<AuthUser> authUsers = listOf(
 		createAuthUser(UserRole.ADMIN),
-		createAuthUser(UserRole.COMPANY_READONLY),
-		createAuthUser(UserRole.TEAM_READONLY)
+		createAuthUser(UserRole.COMPANY_READONLY).setCompanyId(mockCompany.getId()),
+		createAuthUser(UserRole.TEAM_READONLY).setTeamId(mockCompany.getId())
 		);
 	
 	CallCreateDTO callCreateDTO = CallCreateDTO.builder()
@@ -122,8 +125,128 @@ public class CallServiceTest extends IntegrationTest {
 	
 	authUsers.stream().forEach(authUser -> {
 	    wrapAssertException(() -> {
-		authUser.setCompanyId("team123");
 		Call call = callService.create(callCreateDTO, authUser);
+	    }, UnauthorizedUserException.class);
+	});
+    }
+    
+    @Test
+    public void newCallShouldHaveInitializedValues() {
+	CallCreateDTO callCreateDTO = CallCreateDTO.builder()
+		.callSid(UUID.randomUUID().toString())
+		.employeeNumber("+11234567890")
+		.customerNumber("+11234567890")
+		.strategy("Phrase 1")
+		.strategy("Phrase 2")
+		.build();
+	AuthUser authUser = createAuthUser();
+	Call call = callService.create(callCreateDTO, authUser);
+	assertThat(call.getStatistics(), is(notNullValue()));
+	assertThat(call.getCallOutcome(), is(NONE));
+	assertThat(call.getExternalReferences(), is(notNullValue()));
+    }
+    
+    @Test
+    public void updateShouldThrowExceptionIfEntityDoesNotExist() throws Exception {
+	CallUpdateDTO callUpdateDTO = CallUpdateDTO.builder()
+		.id("123")
+		.callOutcome(VOICEMAIL)
+		.build();
+	wrapAssertException(() -> {
+	    AuthUser authUser = createAuthUser();
+	    Call call = callService.update(callUpdateDTO, authUser);
+	}, EntityNotFoundException.class);
+    }
+    
+    @Test
+    public void updateShouldBeValidForAccounts() throws Exception {
+	List<AuthUser> authUsers = listOf(
+		createAuthUser(UserRole.SUPER_ADMIN),
+		createAuthUser(UserRole.COMPANY_ADMIN).setCompanyId(mockCompany.getId()),
+		createAuthUser(UserRole.TEAM_ADMIN).setTeamId(mockTeam.getId()),
+		createAuthUser(UserRole.MEMBER).setId(mockUser.getId())
+		);
+	
+	CallUpdateDTO callUpdateDTO = CallUpdateDTO.builder()
+		.id(mockCall.getId())
+		.callOutcome(VOICEMAIL)
+		.build();
+	
+	authUsers.stream().forEach(authUser -> {
+	    wrapNoException(() -> {
+		persistenceUtils.removeAllAndSave(Call.class, mockCall);
+		Call call = callService.update(callUpdateDTO, authUser);
+		assertThat(call, is(notNullValue()));
+		assertThat(call.getCallOutcome(), is(VOICEMAIL));
+	    });
+	});
+    }
+    
+    @Test
+    public void updateShouldBeInvalidForAccounts() throws Exception {
+	List<AuthUser> authUsers = listOf(
+		createAuthUser(UserRole.ADMIN),
+		createAuthUser(UserRole.COMPANY_ADMIN).setCompanyId("123"),
+		createAuthUser(UserRole.COMPANY_READONLY).setCompanyId(mockCompany.getId()),
+		createAuthUser(UserRole.TEAM_ADMIN).setTeamId("123"),
+		createAuthUser(UserRole.TEAM_READONLY).setTeamId(mockCompany.getId()),
+		createAuthUser(UserRole.MEMBER).setId("123")
+		);
+	
+	CallUpdateDTO callUpdateDTO = CallUpdateDTO.builder()
+		.id(mockCall.getId())
+		.callOutcome(VOICEMAIL)
+		.build();
+	
+	authUsers.stream().forEach(authUser -> {
+	    wrapAssertException(() -> {
+		persistenceUtils.removeAllAndSave(Call.class, mockCall);
+		Call call = callService.update(callUpdateDTO, authUser);
+	    }, UnauthorizedUserException.class);
+	});
+    }
+    
+    @Test
+    public void deleteShouldThrowExceptionIfEntityDoesNotExist() throws Exception {
+	wrapAssertException(() -> {
+	    AuthUser authUser = createAuthUser();
+	    callService.delete("123", authUser);
+	}, EntityNotFoundException.class);
+    }
+    
+    @Test
+    public void deleteShouldBeValidForAccounts() throws Exception {
+	List<AuthUser> authUsers = listOf(
+		createAuthUser(UserRole.SUPER_ADMIN),
+		createAuthUser(UserRole.COMPANY_ADMIN).setCompanyId(mockCompany.getId()),
+		createAuthUser(UserRole.TEAM_ADMIN).setTeamId(mockTeam.getId()),
+		createAuthUser(UserRole.MEMBER).setId(mockUser.getId())
+		);
+	
+	authUsers.stream().forEach(authUser -> {
+	    wrapNoException(() -> {
+		persistenceUtils.removeAllAndSave(Call.class, mockCall);
+		callService.delete(mockCall.getId(), authUser);
+	    });
+	});
+    }
+    
+    @Test
+    public void deleteShouldBeInvalidForAccounts() throws Exception {
+	List<AuthUser> authUsers = listOf(
+		createAuthUser(UserRole.ADMIN),
+		createAuthUser(UserRole.COMPANY_ADMIN).setCompanyId("123"),
+		createAuthUser(UserRole.COMPANY_READONLY).setCompanyId(mockCompany.getId()),
+		createAuthUser(UserRole.TEAM_ADMIN).setTeamId("123"),
+		createAuthUser(UserRole.TEAM_READONLY).setTeamId(mockCompany.getId()),
+		createAuthUser(UserRole.MEMBER).setId("123")
+		);
+	
+	persistenceUtils.save(mockCall);
+	
+	authUsers.stream().forEach(authUser -> {
+	    wrapAssertException(() -> {
+		callService.delete(mockCall.getId(), authUser);
 	    }, UnauthorizedUserException.class);
 	});
     }

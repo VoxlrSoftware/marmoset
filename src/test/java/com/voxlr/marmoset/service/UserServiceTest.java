@@ -26,10 +26,10 @@ import com.voxlr.marmoset.model.persistence.Team;
 import com.voxlr.marmoset.model.persistence.User;
 import com.voxlr.marmoset.model.persistence.dto.UserCreateDTO;
 import com.voxlr.marmoset.model.persistence.dto.UserUpdateDTO;
-import com.voxlr.marmoset.test.IntegrationTest;
+import com.voxlr.marmoset.test.DataTest;
 import com.voxlr.marmoset.util.exception.EntityNotFoundException;
 
-public class UserServiceTest extends IntegrationTest {
+public class UserServiceTest extends DataTest {
     
     @Autowired
     private UserService userService;

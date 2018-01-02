@@ -23,6 +23,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.Singular;
 
 @Document(collection = "calls")
 @EnableMongoAuditing
@@ -48,19 +49,17 @@ public class Call extends AuditModel implements UserScopedEntity {
     private String customerNumber;
     @Field("recUrl")
     private String recordingUrl;
-    @Builder.Default
+
     @Field("outcome")
     private String callOutcome = NONE;
     
-    @Builder.Default
     @Field("extRef")
     private BasicDBObject externalReferences = new BasicDBObject();
     
-    @Builder.Default
     @Field("strategies")
+    @Singular("strategy")
     private List<String> strategyList = new ArrayList<>();
     
-    @Builder.Default
     @Field("stats")
     private CallStatistic statistics = new CallStatistic();
     @DBRef(lazy = true)

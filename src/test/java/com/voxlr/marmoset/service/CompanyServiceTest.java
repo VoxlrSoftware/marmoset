@@ -20,10 +20,10 @@ import com.voxlr.marmoset.model.AuthUser;
 import com.voxlr.marmoset.model.persistence.Company;
 import com.voxlr.marmoset.model.persistence.dto.CompanyCreateDTO;
 import com.voxlr.marmoset.model.persistence.dto.CompanyUpdateDTO;
-import com.voxlr.marmoset.test.IntegrationTest;
+import com.voxlr.marmoset.test.DataTest;
 import com.voxlr.marmoset.util.exception.EntityNotFoundException;
 
-public class CompanyServiceTest extends IntegrationTest {
+public class CompanyServiceTest extends DataTest {
     
     @Autowired
     private CompanyService companyService;

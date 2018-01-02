@@ -57,15 +57,15 @@ public class AuthorizationService {
 	return safeEquals(authUser.getTeamId(), entity.getTeamId());
     }
     
-    boolean typeInherits(Class<? extends Entity> type, Class parentClass) {
+    boolean typeInherits(Class<? extends Entity> type, Class<?> parentClass) {
 	return parentClass.isAssignableFrom(type);
     }
     
-    boolean typeIs(Entity entity, Class entityClass) {
+    boolean typeIs(Entity entity, Class<?> entityClass) {
 	return typeIs(entity.getClass(), entityClass);
     }
     
-    boolean typeIs(Class<? extends Entity> type, Class entityClass) {
+    boolean typeIs(Class<? extends Entity> type, Class<?> entityClass) {
 	return type.equals(entityClass);
     }
     
@@ -127,6 +127,16 @@ public class AuthorizationService {
 		);
     }
 
+    private boolean canWrite(AuthUser authUser, UserScopedEntity entity) {
+	return firstValid(
+		() -> isSameUser(authUser, entity),
+		() -> hasAuthorities(authUser, Authority.MODIFY_TEAM) && 
+			isSameTeam(authUser, entity),
+		() -> hasAuthorities(authUser, Authority.MODIFY_COMPANY) &&
+			isSameCompany(authUser, entity)
+		);
+    }
+    
     private boolean canWrite(AuthUser authUser, TeamScopedEntity entity) {
 	return firstValid(
 		() -> isSameUser(authUser, entity),
@@ -157,6 +167,7 @@ public class AuthorizationService {
     
     public boolean canWrite(AuthUser authUser, Entity entity) {
 	return firstValid(
+		() -> typeInherits(entity.getClass(), UserScopedEntity.class) && canWrite(authUser, (UserScopedEntity)entity),
 		() -> typeInherits(entity.getClass(), TeamScopedEntity.class) && canWrite(authUser, (TeamScopedEntity) entity),
 		() -> typeInherits(entity.getClass(), CompanyScopedEntity.class) && canWrite(authUser, (CompanyScopedEntity) entity),
 		() -> typeIs(entity, Company.class) && canWrite(authUser, (Company)entity),

@@ -5,16 +5,14 @@ import static org.junit.Assert.assertEquals;
 import java.io.UnsupportedEncodingException;
 
 import org.json.JSONException;
-import org.modelmapper.ModelMapper;
+import org.junit.runner.RunWith;
 import org.skyscreamer.jsonassert.JSONAssert;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MvcResult;
 
+@RunWith(SpringRunner.class)
 public class ControllerTest extends IntegrationTest {
-    
-    @Autowired
-    protected ModelMapper modelMapper;
 
     protected void validateStatus(MvcResult result, HttpStatus status) {
 	assertEquals(result.getResponse().getStatus(), status.value());

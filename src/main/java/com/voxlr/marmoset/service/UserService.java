@@ -106,7 +106,7 @@ public class UserService {
 	}
 	
 	if (!authorizationService.canWrite(authUser, user)) {
-	    throw new UnauthorizedUserException("Account unauthorized to delete company");
+	    throw new UnauthorizedUserException("Account unauthorized to delete user");
 	}
 	
 	user.setDeleted(true);

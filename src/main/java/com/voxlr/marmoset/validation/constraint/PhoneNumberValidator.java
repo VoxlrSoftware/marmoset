@@ -10,9 +10,12 @@ public class PhoneNumberValidator implements ConstraintValidator<PhoneNumberVali
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
-	PhoneNumber phoneNumber = new PhoneNumber();
-	phoneNumber.setRawInput(value);
-	return PhoneNumberUtil.getInstance().isValidNumber(phoneNumber);
+	try {
+	    PhoneNumber phoneNumber = PhoneNumberUtil.getInstance().parse(value, "US");
+	    return PhoneNumberUtil.getInstance().isPossibleNumber(phoneNumber);
+	} catch (Exception e) {
+	    return false;
+	}
     }
 
 }

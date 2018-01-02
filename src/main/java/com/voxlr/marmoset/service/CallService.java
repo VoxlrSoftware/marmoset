@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.voxlr.marmoset.model.AuthUser;
 import com.voxlr.marmoset.model.persistence.Call;
 import com.voxlr.marmoset.model.persistence.dto.CallCreateDTO;
+import com.voxlr.marmoset.model.persistence.dto.CallUpdateDTO;
 import com.voxlr.marmoset.repositories.CallRepository;
 import com.voxlr.marmoset.util.exception.EntityNotFoundException;
 
@@ -23,7 +24,7 @@ public class CallService {
     @Autowired
     private ModelMapper modelMapper;
     
-    public Call get(String id, AuthUser authUser) throws EntityNotFoundException {
+    public Call get(String id, AuthUser authUser) throws Exception {
 	Call call = callRepository.findOne(id);
 	
 	if (call == null) {
@@ -48,6 +49,38 @@ public class CallService {
 	
 	call = callRepository.save(call);
 	return call;
+    }
+    
+    public Call update(CallUpdateDTO callUpdateDTO, AuthUser authUser) throws Exception {
+	Call call = callRepository.findOne(callUpdateDTO.getId());
+	
+	if (call == null) {
+	    throw new EntityNotFoundException(Call.class, "id", callUpdateDTO.getId());
+	}
+	
+	if (!authorizationService.canWrite(authUser, call)) {
+	    throw new UnauthorizedUserException("Account unauthorized to view call.");
+	}
+	
+	if (callUpdateDTO.getCallOutcome() != null) {
+	    call.setCallOutcome(callUpdateDTO.getCallOutcome());
+	}
+	
+	return call;
+    }
+    
+    public void delete(String id, AuthUser authUser) throws Exception {
+	Call call = callRepository.findOne(id);
+	
+	if (call == null) {
+	    throw new EntityNotFoundException(Call.class, "id", id);
+	}
+	
+	if (!authorizationService.canWrite(authUser, call)) {
+	    throw new UnauthorizedUserException("Account unauthorized to delete call");
+	}
+	
+	callRepository.delete(call);
     }
 
 }
