@@ -1,8 +1,8 @@
 package com.voxlr.marmoset.controller;
 
 import static com.voxlr.marmoset.util.EntityTestUtils.createAuditableEntity;
-import static com.voxlr.marmoset.util.json.ContainsKeyMatcher.containsKey;
-import static com.voxlr.marmoset.util.json.JsonUtils.jsonFromString;
+import static com.voxlr.marmoset.util.JsonUtils.jsonFromString;
+import static com.voxlr.marmoset.util.matcher.ContainsKeyMatcher.containsKey;
 import static javax.json.Json.createObjectBuilder;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;

@@ -1,8 +1,12 @@
 package com.voxlr.marmoset.controller;
 
+import static com.voxlr.marmoset.model.CallOutcome.VOICEMAIL;
 import static com.voxlr.marmoset.util.EntityTestUtils.createAuditableEntity;
-import static com.voxlr.marmoset.util.json.ContainsKeyMatcher.containsKey;
-import static com.voxlr.marmoset.util.json.JsonUtils.jsonFromString;
+import static com.voxlr.marmoset.util.JsonUtils.jsonFromString;
+import static com.voxlr.marmoset.util.JsonUtils.pluck;
+import static com.voxlr.marmoset.util.ListUtils.listOf;
+import static com.voxlr.marmoset.util.StreamUtils.asStream;
+import static com.voxlr.marmoset.util.matcher.ContainsKeyMatcher.containsKey;
 import static javax.json.Json.createArrayBuilder;
 import static javax.json.Json.createObjectBuilder;
 import static org.hamcrest.CoreMatchers.is;
@@ -14,23 +18,26 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.json.JsonObject;
-import javax.validation.ConstraintValidatorContext;
+import javax.json.JsonValue;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MockMvc;
@@ -40,14 +47,15 @@ import org.springframework.test.web.servlet.RequestBuilder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.voxlr.marmoset.model.AuthUser;
+import com.voxlr.marmoset.model.dto.RemovedEntityDTO;
 import com.voxlr.marmoset.model.persistence.Call;
 import com.voxlr.marmoset.model.persistence.dto.CallCreateDTO;
 import com.voxlr.marmoset.model.persistence.dto.CallDTO;
+import com.voxlr.marmoset.model.persistence.dto.CallUpdateDTO;
 import com.voxlr.marmoset.repositories.CallRepository;
 import com.voxlr.marmoset.service.CallService;
 import com.voxlr.marmoset.test.ControllerTest;
 import com.voxlr.marmoset.util.exception.EntityNotFoundException;
-import com.voxlr.marmoset.validation.constraint.PhoneNumberValidator;
 
 @WebMvcTest(CallController.class)
 @AutoConfigureMockMvc(secure = false)
@@ -55,9 +63,6 @@ public class CallControllerTest extends ControllerTest {
 
    @Autowired
    private MockMvc mvc;
-   
-   @Mock
-   private PhoneNumberValidator phoneNumberValidator;
    
    @MockBean
    private CallRepository callRepository;
@@ -123,13 +128,97 @@ public class CallControllerTest extends ControllerTest {
    public void postShouldReturnValidCall() throws Exception {
        when(callService.create(any(CallCreateDTO.class), any(AuthUser.class)))
        	.thenReturn(mockCall);
-       when(phoneNumberValidator.isValid(anyString(), any(ConstraintValidatorContext.class)))
-       	.thenReturn(true);
        
        MvcResult result = doPostWithCall();
        verify(callService, times(1)).create(any(CallCreateDTO.class), any(AuthUser.class));
        validateStatus(result, HttpStatus.OK);
        validateResponse(result, expected);
+   }
+   
+   @Test
+   public void postShouldReturnErrorIfCallSidIsInvalid() throws Exception {
+       when(callService.create(any(CallCreateDTO.class), any(AuthUser.class)))
+      	.thenReturn(mockCall);
+       
+       mockCall.setCallSid("");
+       MvcResult result = doPostWithCall();
+       
+       validateStatus(result, HttpStatus.BAD_REQUEST);
+       JsonObject response = jsonFromString(result.getResponse().getContentAsString());
+       assertThat(response, containsKey("apierror"));
+       
+       JsonObject error = response.getJsonObject("apierror");
+       assertThat(error.getString("message"), is("Validation error"));
+       assertThat(error.getJsonArray("subErrors").getJsonObject(0).getString("field"),	is("callSid"));
+   }
+   
+   @Test
+   public void postShouldReturnErrorIfPhoneNumbersAreInvalid() throws Exception {
+       when(callService.create(any(CallCreateDTO.class), any(AuthUser.class)))
+      	.thenReturn(mockCall);
+       
+       mockCall.setEmployeeNumber("12345");
+       mockCall.setCustomerNumber("56789");
+       MvcResult result = doPostWithCall();
+       
+       validateStatus(result, HttpStatus.BAD_REQUEST);
+       JsonObject response = jsonFromString(result.getResponse().getContentAsString());
+       assertThat(response, containsKey("apierror"));
+       
+       JsonObject error = response.getJsonObject("apierror");
+       assertThat(error.getString("message"), is("Validation error"));
+       
+       List<String> expectedFields = listOf("customerNumber", "employeeNumber");
+       List<JsonValue> fields = pluck(error.getJsonArray("subErrors"), "field");
+       fields.stream().allMatch(x -> expectedFields.contains(x));
+   }
+   
+   @Test
+   public void postShouldReturnErrorWithInvalidBody() throws Exception {
+       RequestBuilder requestBuilder = post("/api/call")
+		.accept(APPLICATION_JSON)
+		.contentType(APPLICATION_JSON);
+	MvcResult result = mvc.perform(requestBuilder).andReturn();
+	
+	validateStatus(result, HttpStatus.BAD_REQUEST);
+	
+	JsonObject response = jsonFromString(result.getResponse().getContentAsString());
+	assertThat(response, containsKey("apierror"));
+	JsonObject error = response.getJsonObject("apierror");
+	assertThat(error.getString("message"), is("Malformed JSON request"));
+   }
+   
+   @Test
+   public void putShouldReturnValidCall() throws Exception {
+       when(callService.update(any(CallUpdateDTO.class), any(AuthUser.class)))
+     	.thenReturn(mockCall);
+       
+       String body = createObjectBuilder()
+		.add("callOutcome", VOICEMAIL).build().toString();
+	RequestBuilder requestBuilder = put("/api/call/" + mockCall.getId())
+		.accept(APPLICATION_JSON)
+		.contentType(APPLICATION_JSON)
+		.content(body);
+	MvcResult result = mvc.perform(requestBuilder).andReturn();
+	
+	verify(callService, times(1)).update(any(CallUpdateDTO.class), any(AuthUser.class));
+	validateStatus(result, HttpStatus.OK);
+	validateResponse(result, expected);
+   }
+   
+   @Test
+   public void putShouldReturnErrorWithInvalidBody() throws Exception {
+       RequestBuilder requestBuilder = put("/api/call/" + mockCall.getId())
+		.accept(APPLICATION_JSON)
+		.contentType(APPLICATION_JSON);
+	MvcResult result = mvc.perform(requestBuilder).andReturn();
+	
+	validateStatus(result, HttpStatus.BAD_REQUEST);
+	
+	JsonObject response = jsonFromString(result.getResponse().getContentAsString());
+	assertThat(response, containsKey("apierror"));
+	JsonObject error = response.getJsonObject("apierror");
+	assertThat(error.getString("message"), is("Malformed JSON request"));
    }
    
    private MvcResult doPostWithCall() throws Exception {

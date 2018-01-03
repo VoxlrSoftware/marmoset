@@ -1,4 +1,4 @@
-package com.voxlr.marmoset.util.json;
+package com.voxlr.marmoset.util.matcher;
 
 import javax.json.JsonObject;
 
