@@ -18,6 +18,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
+@SuppressWarnings("serial")
 @Getter
 @Setter
 @Accessors(chain = true)

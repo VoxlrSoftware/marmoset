@@ -1,8 +1,8 @@
 package com.voxlr.marmoset.validation.handler;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.AccessLevel;
 
 @Getter
 @Setter

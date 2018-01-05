@@ -1,5 +1,7 @@
 package com.voxlr.marmoset.auth;
 
+import java.util.Arrays;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -54,6 +56,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 	http
+	.cors()
+	.and()
         .sessionManagement()
         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         .and()
@@ -81,9 +85,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
-      final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-      source.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
-      return source;
+	CorsConfiguration configuration = new CorsConfiguration();
+	configuration.setAllowCredentials(true);
+	configuration.setAllowedOrigins(Arrays.asList("*"));
+	configuration.setAllowedMethods(Arrays.asList("*"));
+	configuration.setAllowedHeaders(Arrays.asList("*"));
+	UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+	source.registerCorsConfiguration("/**", configuration);
+	return source;
+//      final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//      source.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
+//      return source;
     }
     
     @Bean

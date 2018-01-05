@@ -1,8 +1,8 @@
 package com.voxlr.marmoset.util;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.fail;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 public class AssertUtils {
 

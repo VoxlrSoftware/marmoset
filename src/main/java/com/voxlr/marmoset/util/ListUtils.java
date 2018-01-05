@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 public class ListUtils {
 
+    @SafeVarargs
     public static <T> List<T> listOf(T... items) {
 	return Arrays.stream(items).collect(Collectors.toList());
     }
