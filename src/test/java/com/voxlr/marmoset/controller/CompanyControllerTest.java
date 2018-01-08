@@ -59,7 +59,7 @@ public class CompanyControllerTest extends ControllerTest {
     private AuthUser authUser;
     
     ObjectMapper mapper = new ObjectMapper();
-    Company mockCompany = createCompany("Test Company", "Random phrase");
+    Company mockCompany = createCompany("Test Company", "Random phrase").setPhoneNumber("+19099446352");
     String expected;
     
     @Before
@@ -86,7 +86,8 @@ public class CompanyControllerTest extends ControllerTest {
 	.thenReturn(mockCompany);
 	
 	String body = createObjectBuilder()
-			.add("name", "Test Company").build().toString();
+			.add("name", "Test Company")
+			.add("phoneNumber", "+19099446352").build().toString();
 	
 	RequestBuilder requestBuilder = post("/api/company")
 		.accept(APPLICATION_JSON)
@@ -97,6 +98,30 @@ public class CompanyControllerTest extends ControllerTest {
 	verify(companyService, times(1)).create(any(CompanyCreateDTO.class), any(AuthUser.class));
 	validateStatus(result, HttpStatus.OK);
 	validateResponse(result, expected);
+    }
+    
+    @Test
+    public void postWithInvalidPhoneNumberShouldReturnException() throws Exception {
+	when(companyService.create(any(CompanyCreateDTO.class), any(AuthUser.class)))
+	.thenReturn(mockCompany);
+	
+	String body = createObjectBuilder()
+			.add("name", "Test Company")
+			.add("phoneNumber", "+11234567890").build().toString();
+	
+	RequestBuilder requestBuilder = post("/api/company")
+		.accept(APPLICATION_JSON)
+		.contentType(APPLICATION_JSON)
+		.content(body);
+	MvcResult result = mvc.perform(requestBuilder).andReturn();
+
+	validateStatus(result, HttpStatus.BAD_REQUEST);
+	JsonObject response = jsonFromString(result.getResponse().getContentAsString());
+	assertThat(response, containsKey("apierror"));
+	
+	JsonObject error = response.getJsonObject("apierror");
+	assertThat(error.getString("message"), is("Validation error"));
+	assertThat(error.getJsonArray("subErrors").getJsonObject(0).getString("field"),	is("phoneNumber"));
     }
     
     @Test
@@ -120,7 +145,8 @@ public class CompanyControllerTest extends ControllerTest {
 	.thenReturn(mockCompany);
 	
 	String body = createObjectBuilder()
-		.add("name", "Test Company").build().toString();
+		.add("name", "Test Company")
+		.add("phoneNumber", "+19099446352").build().toString();
 	RequestBuilder requestBuilder = put("/api/company/" + mockCompany.getId())
 		.accept(APPLICATION_JSON)
 		.contentType(APPLICATION_JSON)
@@ -130,6 +156,25 @@ public class CompanyControllerTest extends ControllerTest {
 	verify(companyService, times(1)).update(any(CompanyUpdateDTO.class), any(AuthUser.class));
 	validateStatus(result, HttpStatus.OK);
 	validateResponse(result, expected);
+    }
+    
+    @Test
+    public void putWithInvalidPhoneNumberShouldReturnException() throws Exception {
+	String body = createObjectBuilder()
+		.add("phoneNumber", "+11234567890").build().toString();
+	RequestBuilder requestBuilder = put("/api/company/" + mockCompany.getId())
+		.accept(APPLICATION_JSON)
+		.contentType(APPLICATION_JSON)
+		.content(body);
+	MvcResult result = mvc.perform(requestBuilder).andReturn();
+	
+	validateStatus(result, HttpStatus.BAD_REQUEST);
+	JsonObject response = jsonFromString(result.getResponse().getContentAsString());
+	assertThat(response, containsKey("apierror"));
+	
+	JsonObject error = response.getJsonObject("apierror");
+	assertThat(error.getString("message"), is("Validation error"));
+	assertThat(error.getJsonArray("subErrors").getJsonObject(0).getString("field"),	is("phoneNumber"));
     }
     
     @Test

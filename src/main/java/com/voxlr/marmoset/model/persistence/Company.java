@@ -9,8 +9,12 @@ import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.voxlr.marmoset.validation.constraint.PhoneNumberValidConstraint;
+
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.Singular;
 import lombok.experimental.Accessors;
@@ -20,6 +24,8 @@ import lombok.experimental.Accessors;
 @Getter
 @Setter
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @CompoundIndexes({
     @CompoundIndex(name = "callStrategyId", def = "{'callStrategies.id' : 1 }")
 })
@@ -29,20 +35,9 @@ public class Company extends AuditModel {
     @NotBlank
     private String name;
     
+    @PhoneNumberValidConstraint
+    private String phoneNumber;
+    
     @Singular
-    private List<CallStrategy> callStrategies;
-    
-    public Company() {
-	callStrategies = new ArrayList<CallStrategy>();
-    }
-
-    public Company(String name) {
-	super();
-	this.name = name;
-    }
-    
-    public Company(String name, List<CallStrategy> callStrategies) {
-	this.name = name;
-	this.callStrategies = callStrategies;
-    }
+    private List<CallStrategy> callStrategies = new ArrayList<CallStrategy>();
 }

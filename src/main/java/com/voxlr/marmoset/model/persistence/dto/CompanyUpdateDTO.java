@@ -1,5 +1,7 @@
 package com.voxlr.marmoset.model.persistence.dto;
 
+import com.voxlr.marmoset.validation.constraint.PhoneNumberValidConstraint;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,7 +15,9 @@ import lombok.Setter;
 @AllArgsConstructor
 public class CompanyUpdateDTO {
 
-    private String name;
-
     private String id;
+    private String name;
+    
+    @PhoneNumberValidConstraint
+    private String phoneNumber;
 }

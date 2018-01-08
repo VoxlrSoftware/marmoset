@@ -78,6 +78,10 @@ public class CompanyService {
 	    company.setName(companyUpdateDTO.getName());
 	}
 	
+	if (companyUpdateDTO.getPhoneNumber() != null) {
+	    company.setPhoneNumber(companyUpdateDTO.getPhoneNumber());
+	}
+	
 	company = companyRepository.save(company);
 	return company;
     }
