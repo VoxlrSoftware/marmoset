@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.voxlr.marmoset.model.PhoneNumberHolder;
 import com.voxlr.marmoset.validation.constraint.PhoneNumberValidConstraint;
 
 import lombok.AllArgsConstructor;
@@ -36,7 +37,7 @@ public class Company extends AuditModel {
     private String name;
     
     @PhoneNumberValidConstraint
-    private String phoneNumber;
+    private PhoneNumberHolder phoneNumber;
     
     @Singular
     private List<CallStrategy> callStrategies = new ArrayList<CallStrategy>();

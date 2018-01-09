@@ -55,7 +55,6 @@ public class UserServiceTest extends DataTest {
 	userCreateDTO = UserCreateDTO.builder()
 		.firstName("TestA")
 		.lastName("TestB")
-		.password("Random")
 		.companyId(company.getId())
 		.teamId(team.getId())
 		.email("testa.testb@gmail.com").build();
@@ -130,6 +129,16 @@ public class UserServiceTest extends DataTest {
 	    AuthUser authUser = createAuthUser(UserRole.MEMBER);
 	    User user = userService.get(mockUser.getId(), authUser);
 	}, UnauthorizedUserException.class);
+    }
+    
+    @Test
+    public void getUsersByCompanyShouldReturnList() throws Exception {
+//	persistenceUtils.save(mockUser);
+//	AuthUser authUser = createAuthUser();
+//	Page<User> users = userService.getUsersByCompany(company.getId(), authUser);
+//	assertThat(users, is(notNullValue()));
+//	assertThat(users.size(), is(1));
+//	assertThat(users.get(0).getId(), is(mockUser.getId()));
     }
     
     @Test
@@ -314,7 +323,7 @@ public class UserServiceTest extends DataTest {
 		persistenceUtils.removeAll(User.class);
 		persistenceUtils.save(mockUser);
 		User user = userService.delete(mockUser.getId(), authUser);
-		assertThat(user.isDeleted(), is(true));
+		assertThat(user.isInactive(), is(true));
 	    });
 	});
     }
@@ -351,7 +360,6 @@ public class UserServiceTest extends DataTest {
 		assertThat(user.getCompanyId(), is(company.getId()));
 		assertThat(user.getTeamId(), is(team.getId()));
 		assertThat(user.getRole(), is(role));
-		assertThat(bCryptPasswordEncoder.matches("Random", user.getPassword()), is(true));
 	    });
 	});
     }

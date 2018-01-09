@@ -33,6 +33,7 @@ import org.springframework.test.web.servlet.RequestBuilder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.voxlr.marmoset.model.AuthUser;
+import com.voxlr.marmoset.model.PhoneNumberHolder;
 import com.voxlr.marmoset.model.dto.RemovedEntityDTO;
 import com.voxlr.marmoset.model.persistence.Company;
 import com.voxlr.marmoset.model.persistence.dto.CompanyCreateDTO;
@@ -59,7 +60,8 @@ public class CompanyControllerTest extends ControllerTest {
     private AuthUser authUser;
     
     ObjectMapper mapper = new ObjectMapper();
-    Company mockCompany = createCompany("Test Company", "Random phrase").setPhoneNumber("+19099446352");
+    Company mockCompany = createCompany("Test Company", "Random phrase")
+	    .setPhoneNumber(new PhoneNumberHolder("+19099446352"));
     String expected;
     
     @Before
@@ -87,7 +89,8 @@ public class CompanyControllerTest extends ControllerTest {
 	
 	String body = createObjectBuilder()
 			.add("name", "Test Company")
-			.add("phoneNumber", "+19099446352").build().toString();
+			.add("phoneNumber", createObjectBuilder().add("number", "+19099446352").build())
+			.build().toString();
 	
 	RequestBuilder requestBuilder = post("/api/company")
 		.accept(APPLICATION_JSON)
@@ -107,7 +110,8 @@ public class CompanyControllerTest extends ControllerTest {
 	
 	String body = createObjectBuilder()
 			.add("name", "Test Company")
-			.add("phoneNumber", "+11234567890").build().toString();
+			.add("phoneNumber", createObjectBuilder().add("number", "+11234567890").build())
+			.build().toString();
 	
 	RequestBuilder requestBuilder = post("/api/company")
 		.accept(APPLICATION_JSON)
@@ -146,7 +150,8 @@ public class CompanyControllerTest extends ControllerTest {
 	
 	String body = createObjectBuilder()
 		.add("name", "Test Company")
-		.add("phoneNumber", "+19099446352").build().toString();
+		.add("phoneNumber", createObjectBuilder().add("number", "+19099446352").build())
+		.build().toString();
 	RequestBuilder requestBuilder = put("/api/company/" + mockCompany.getId())
 		.accept(APPLICATION_JSON)
 		.contentType(APPLICATION_JSON)
@@ -161,7 +166,8 @@ public class CompanyControllerTest extends ControllerTest {
     @Test
     public void putWithInvalidPhoneNumberShouldReturnException() throws Exception {
 	String body = createObjectBuilder()
-		.add("phoneNumber", "+11234567890").build().toString();
+		.add("phoneNumber", createObjectBuilder().add("number", "+11234567890").build())
+		.build().toString();
 	RequestBuilder requestBuilder = put("/api/company/" + mockCompany.getId())
 		.accept(APPLICATION_JSON)
 		.contentType(APPLICATION_JSON)

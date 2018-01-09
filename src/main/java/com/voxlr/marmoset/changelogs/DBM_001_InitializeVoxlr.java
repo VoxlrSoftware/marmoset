@@ -65,7 +65,7 @@ public class DBM_001_InitializeVoxlr {
 				.add("teamId", teamId)
 				.add("password", bCryptPasswordEncoder.encode("V0xlrAdmin"))
 				.add("createDate", new Date())
-				.add("isDeleted", false)
+				.add("inactive", false)
 				.add("role", UserRole.SUPER_ADMIN.toString()).get();
 	WriteResult result = collection.update(query, update, true, false);
 	if (result.getN() != 1) {

@@ -1,12 +1,17 @@
 package com.voxlr.marmoset.service;
 
+import java.util.UUID;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.stereotype.Service;
 
 import com.voxlr.marmoset.model.AuthUser;
+import com.voxlr.marmoset.model.persistence.Company;
 import com.voxlr.marmoset.model.persistence.User;
 import com.voxlr.marmoset.model.persistence.dto.UserCreateDTO;
 import com.voxlr.marmoset.model.persistence.dto.UserUpdateDTO;
@@ -30,6 +35,9 @@ public class UserService {
     @Autowired
     ValidationService validationService;
     
+    @Autowired
+    CompanyService companyService;
+    
     public boolean validateUniqueEmail(String email) {
 	return userRepository.findEmailByEmail(email) == null;
     }
@@ -48,6 +56,13 @@ public class UserService {
 	return user;
     }
     
+    public Page<User> getUsersByCompany(String companyId, Pageable pageable, AuthUser authUser) throws EntityNotFoundException {
+	Company company = companyService.get(companyId, authUser);
+	
+	Page<User> users = userRepository.findAllByCompany(company.getId(), pageable);
+	return users;
+    }
+    
     public User create(UserCreateDTO userCreateDTO, AuthUser authUser) {
 	if (!authorizationService.canCreate(authUser, User.class)) {
 	    throw new UnauthorizedUserException("Account unauthorized to create user");
@@ -56,7 +71,7 @@ public class UserService {
 	validationService.validate(authUser, userCreateDTO);
 	
 	User user = modelMapper.map(userCreateDTO, User.class);
-	user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+	user.setPassword(bCryptPasswordEncoder.encode(UUID.randomUUID().toString().substring(0, 15)));
 	user = userRepository.save(user);
 	
 	return user;
@@ -109,7 +124,7 @@ public class UserService {
 	    throw new UnauthorizedUserException("Account unauthorized to delete user");
 	}
 	
-	user.setDeleted(true);
+	user.setInactive(true);
 	return userRepository.save(user);
     }
 }

@@ -2,6 +2,7 @@ package com.voxlr.marmoset.model.persistence.dto;
 
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.voxlr.marmoset.model.PhoneNumberHolder;
 import com.voxlr.marmoset.validation.constraint.PhoneNumberValidConstraint;
 
 import lombok.Builder;
@@ -17,5 +18,5 @@ public class CompanyCreateDTO {
     private String name;
     
     @PhoneNumberValidConstraint
-    private String phoneNumber;
+    private PhoneNumberHolder phoneNumber;
 }

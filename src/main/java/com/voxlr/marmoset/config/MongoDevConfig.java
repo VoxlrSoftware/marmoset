@@ -27,6 +27,7 @@ public class MongoDevConfig {
         EmbeddedMongoFactoryBean mongo = new EmbeddedMongoFactoryBean();
         mongo.setBindIp(MONGO_DB_URL);
         MongoClient mongoClient = mongo.getObject();
+        mongoClient.dropDatabase(MONGO_DB_NAME);
         MongoTemplate mongoTemplate = new MongoTemplate(mongoClient, MONGO_DB_NAME);
         return mongoTemplate;
     }

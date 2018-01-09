@@ -17,6 +17,7 @@ import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserExc
 
 import com.voxlr.marmoset.auth.UserRole;
 import com.voxlr.marmoset.model.AuthUser;
+import com.voxlr.marmoset.model.PhoneNumberHolder;
 import com.voxlr.marmoset.model.persistence.Company;
 import com.voxlr.marmoset.model.persistence.dto.CompanyCreateDTO;
 import com.voxlr.marmoset.model.persistence.dto.CompanyUpdateDTO;
@@ -28,11 +29,11 @@ public class CompanyServiceTest extends DataTest {
     @Autowired
     private CompanyService companyService;
     
-    Company mockCompany = createCompany("Test Company", "Random phrase");
+    Company mockCompany;
     
     @Override
     public void beforeTest() {
-	mockCompany = createCompany("Test Company", "Random phrase");
+	mockCompany = createCompany("Test Company", "Random phrase").setPhoneNumber(new PhoneNumberHolder("+119099446352"));
     }
     
     @Test
@@ -59,6 +60,7 @@ public class CompanyServiceTest extends DataTest {
 		authUser.setCompanyId(mockCompany.getId());
 		Company company = companyService.get(mockCompany.getId(), authUser);
 		assertThat(company, is(notNullValue()));
+		assertThat(company.getPhoneNumber().getNumber(), is("+119099446352"));
 	    });
 	});
     }

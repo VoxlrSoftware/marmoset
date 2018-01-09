@@ -33,9 +33,6 @@ public class UserCreateDTO {
     private String lastName;
 
     @NotBlank
-    private String password;
-
-    @NotBlank
     @Email
     @UniqueEmailConstraint
     private String email;

@@ -1,6 +1,6 @@
 package com.voxlr.marmoset.model.persistence.dto;
 
-import org.hibernate.validator.constraints.NotBlank;
+import java.util.Date;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -8,24 +8,21 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UserDTO {
-    @NotBlank
     private String companyId;
 
-    @NotBlank
     private String teamId;
     
-    @NotBlank
     private String firstName;
     
-    @NotBlank
     private String lastName;
+    
+    private String fullName;
 
-    @NotBlank
     private String email;
     
-    @NotBlank
     private String id;
     
-    @NotBlank
     private String role;
+    
+    private Date createDate;
 }

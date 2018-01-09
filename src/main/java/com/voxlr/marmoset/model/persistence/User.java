@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.voxlr.marmoset.auth.UserRole;
 import com.voxlr.marmoset.model.TeamScopedEntity;
@@ -25,8 +26,8 @@ import lombok.experimental.Accessors;
 @AllArgsConstructor
 @CompoundIndexes({
     @CompoundIndex(name = "id_companyId_teamId", def = "{'_id': 1, 'companyId': 1, 'teamId': 1}"),
-    @CompoundIndex(name = "active_email", def = "{'isDeleted': 1, 'email': 1}"),
-    @CompoundIndex(name = "active_companyId_teamId", def = "{'isDeleted': 1, 'companyId' : 1, 'teamId': 1}")
+    @CompoundIndex(name = "active_email", def = "{'inactive': 1, 'email': 1}"),
+    @CompoundIndex(name = "active_companyId_teamId", def = "{'inactive': 1, 'companyId' : 1, 'teamId': 1}")
 })
 @Accessors(chain = true)
 public class User extends AuditModel implements TeamScopedEntity {
@@ -45,8 +46,9 @@ public class User extends AuditModel implements TeamScopedEntity {
     @NotBlank
     private String password;
     
+    @Field("inactive")
     @Builder.Default
-    private boolean isDeleted = false;
+    private boolean isInactive = false;
     
     @NotBlank
     @Email
@@ -65,5 +67,9 @@ public class User extends AuditModel implements TeamScopedEntity {
 	if (userRole != null) {
 	    this.setRole(userRole);
 	}
+    }
+    
+    public String getFullName() {
+	return firstName + " " + lastName;
     }
 }

@@ -40,7 +40,7 @@ public class CompanyService {
 	}
 	
 	if (!authorizationService.canRead(authUser, company)) {
-	    throw new UnauthorizedUserException("Account unauthorized to view user");
+	    throw new UnauthorizedUserException("Account unauthorized to view company");
 	}
 	
 	return company;
