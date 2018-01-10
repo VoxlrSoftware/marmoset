@@ -71,7 +71,7 @@ public class UserService {
 	validationService.validate(authUser, userCreateDTO);
 	
 	User user = modelMapper.map(userCreateDTO, User.class);
-	user.setPassword(bCryptPasswordEncoder.encode(UUID.randomUUID().toString().substring(0, 15)));
+	user.setPassword(bCryptPasswordEncoder.encode("Password"));
 	user = userRepository.save(user);
 	
 	return user;

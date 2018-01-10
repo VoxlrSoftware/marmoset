@@ -16,6 +16,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -44,6 +46,7 @@ public class UserController extends ApiController implements InitializingBean {
     @Autowired private UserService userService;
     @Autowired private MapperUtils mapperUtils;
     @Autowired private ModelMapper modelMapper;
+    @Autowired private JavaMailSender emailSender;
     
     private PageableHandler pageableHandler;
     
@@ -75,6 +78,7 @@ public class UserController extends ApiController implements InitializingBean {
 	User user = userService.create(userCreateDTO, authUser);
 
 	UserDTO userDTO = modelMapper.map(user, UserDTO.class);
+	sendNewUserEmail(user);
 	return new ResponseEntity<UserDTO>(userDTO, HttpStatus.OK);
     }
     
@@ -108,5 +112,13 @@ public class UserController extends ApiController implements InitializingBean {
 	Map<String, List<String>> sortMap = new HashMap<>();
 	sortMap.put("fullName", listOf("firstName", "lastName"));
 	pageableHandler = new PageableHandler(sortMap);
+    }
+    
+    private void sendNewUserEmail(User user) {
+	SimpleMailMessage message = new SimpleMailMessage();
+	message.setTo(user.getEmail());
+	message.setSubject("Welcome to Voxlr!");
+	message.setText("Welcome to Voxlr");
+	emailSender.send(message);
     }
 }
