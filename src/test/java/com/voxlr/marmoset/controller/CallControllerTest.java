@@ -43,6 +43,7 @@ import org.springframework.test.web.servlet.RequestBuilder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.voxlr.marmoset.model.AuthUser;
+import com.voxlr.marmoset.model.PhoneNumberHolder;
 import com.voxlr.marmoset.model.persistence.Call;
 import com.voxlr.marmoset.model.persistence.dto.CallCreateDTO;
 import com.voxlr.marmoset.model.persistence.dto.CallDTO;
@@ -74,8 +75,8 @@ public class CallControllerTest extends ControllerTest {
        mockCall = createAuditableEntity(
 	       Call.builder()
 	       .callSid(UUID.randomUUID().toString())
-	       .employeeNumber("+19099446352")
-	       .customerNumber("+19099446352")
+	       .employeeNumber(new PhoneNumberHolder("+19099446352"))
+	       .customerNumber(new PhoneNumberHolder("+19099446352"))
 	       .companyId("123")
 	       .strategy("How are you?")
 	       .userId("123")
@@ -152,8 +153,8 @@ public class CallControllerTest extends ControllerTest {
        when(callService.create(any(CallCreateDTO.class), any(AuthUser.class)))
       	.thenReturn(mockCall);
        
-       mockCall.setEmployeeNumber("12345");
-       mockCall.setCustomerNumber("56789");
+       mockCall.setEmployeeNumber(new PhoneNumberHolder("56789"));
+       mockCall.setCustomerNumber(new PhoneNumberHolder("56789"));
        MvcResult result = doPostWithCall();
        
        validateStatus(result, HttpStatus.BAD_REQUEST);
@@ -219,8 +220,8 @@ public class CallControllerTest extends ControllerTest {
    private MvcResult doPostWithCall() throws Exception {
 	String body = createObjectBuilder()
 		.add("callSid", mockCall.getCallSid())
-		.add("employeeNumber", mockCall.getEmployeeNumber())
-		.add("customerNumber", mockCall.getCustomerNumber())
+		.add("employeeNumber", createObjectBuilder().add("number", mockCall.getEmployeeNumber().getNumber()).build())
+		.add("customerNumber", createObjectBuilder().add("number", mockCall.getCustomerNumber().getNumber()).build())
 		.add("strategyList", createArrayBuilder()
 			.add("This is a phrase").build())
 		.build().toString();

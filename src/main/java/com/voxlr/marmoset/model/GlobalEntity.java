@@ -1,5 +1,5 @@
 package com.voxlr.marmoset.model;
 
-public interface Entity {
+public interface GlobalEntity {
     String getId();
 }

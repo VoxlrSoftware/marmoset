@@ -5,8 +5,15 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.springframework.web.bind.annotation.RequestMethod;
+
+import com.voxlr.marmoset.service.CallbackService.CallbackType;
+import com.voxlr.marmoset.service.CallbackService.Platform;
+
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Callback {
-    String forPath();
+    CallbackType type();
+    RequestMethod[] methods() default { RequestMethod.POST };
+    Platform platform();
 }

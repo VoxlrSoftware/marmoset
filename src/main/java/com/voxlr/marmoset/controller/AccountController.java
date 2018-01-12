@@ -12,21 +12,32 @@ import org.springframework.web.bind.annotation.RestController;
 import com.voxlr.marmoset.model.AuthUser;
 import com.voxlr.marmoset.model.persistence.User;
 import com.voxlr.marmoset.model.persistence.dto.UserDTO;
+import com.voxlr.marmoset.service.TwilioService;
 import com.voxlr.marmoset.service.UserService;
+import com.voxlr.marmoset.service.ValidationRequestService;
 import com.voxlr.marmoset.util.exception.EntityNotFoundException;
 
 @RestController
-@RequestMapping("/api/account")
-public class AccountController {
+public class AccountController extends ApiController {
+    public static final String ACCOUNT = "/account";
+    
     @Autowired
-    UserService userService;
+    private UserService userService;
+    
+    @Autowired
+    private ValidationRequestService validationRequestService;
+    
+    @Autowired
+    private TwilioService twilioService;
     
     @Autowired
     private ModelMapper modelMapper;
     
-    @RequestMapping(method=RequestMethod.GET)
+    @RequestMapping(
+	    method=RequestMethod.GET,
+	    value=ACCOUNT)
     public ResponseEntity<?> get(@AuthenticationPrincipal AuthUser authUser) throws EntityNotFoundException {
-	User user = userService.get(authUser.getId(), authUser);
+	User user = userService.get(authUser);
 	UserDTO userDTO = modelMapper.map(user, UserDTO.class);
 	return new ResponseEntity<UserDTO>(userDTO, HttpStatus.OK);
     }

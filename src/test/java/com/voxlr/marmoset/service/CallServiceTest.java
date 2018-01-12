@@ -23,6 +23,7 @@ import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserExc
 
 import com.voxlr.marmoset.auth.UserRole;
 import com.voxlr.marmoset.model.AuthUser;
+import com.voxlr.marmoset.model.PhoneNumberHolder;
 import com.voxlr.marmoset.model.persistence.Call;
 import com.voxlr.marmoset.model.persistence.Company;
 import com.voxlr.marmoset.model.persistence.Team;
@@ -92,8 +93,8 @@ public class CallServiceTest extends DataTest {
 	
 	CallCreateDTO callCreateDTO = CallCreateDTO.builder()
 		.callSid(UUID.randomUUID().toString())
-		.employeeNumber("+11234567890")
-		.customerNumber("+11234567890")
+		.employeeNumber(new PhoneNumberHolder("+11234567890"))
+		.customerNumber(new PhoneNumberHolder("+11234567890"))
 		.strategy("Phrase 1")
 		.strategy("Phrase 2")
 		.build();
@@ -117,8 +118,8 @@ public class CallServiceTest extends DataTest {
 	
 	CallCreateDTO callCreateDTO = CallCreateDTO.builder()
 		.callSid(UUID.randomUUID().toString())
-		.employeeNumber("+11234567890")
-		.customerNumber("+11234567890")
+		.employeeNumber(new PhoneNumberHolder("+11234567890"))
+		.customerNumber(new PhoneNumberHolder("+11234567890"))
 		.strategy("Phrase 1")
 		.strategy("Phrase 2")
 		.build();
@@ -134,8 +135,8 @@ public class CallServiceTest extends DataTest {
     public void newCallShouldHaveInitializedValues() {
 	CallCreateDTO callCreateDTO = CallCreateDTO.builder()
 		.callSid(UUID.randomUUID().toString())
-		.employeeNumber("+11234567890")
-		.customerNumber("+11234567890")
+		.employeeNumber(new PhoneNumberHolder("+11234567890"))
+		.customerNumber(new PhoneNumberHolder("+11234567890"))
 		.strategy("Phrase 1")
 		.strategy("Phrase 2")
 		.build();

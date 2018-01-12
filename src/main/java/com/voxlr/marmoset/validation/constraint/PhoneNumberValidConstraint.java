@@ -15,6 +15,7 @@ import javax.validation.Payload;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PhoneNumberValidConstraint {
     String message() default "Phone number must be valid.";
+    boolean required() default false;
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

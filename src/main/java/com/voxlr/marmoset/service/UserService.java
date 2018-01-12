@@ -42,6 +42,10 @@ public class UserService {
 	return userRepository.findEmailByEmail(email) == null;
     }
     
+    public User get(AuthUser authUser) throws EntityNotFoundException {
+	return get(authUser.getId(), authUser);
+    }
+    
     public User get(String id, AuthUser authUser) throws EntityNotFoundException {
 	User user = userRepository.findOne(id);
 	

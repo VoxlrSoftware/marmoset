@@ -16,6 +16,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.mongodb.BasicDBObject;
+import com.voxlr.marmoset.model.PhoneNumberHolder;
 import com.voxlr.marmoset.model.UserScopedEntity;
 
 import lombok.AllArgsConstructor;
@@ -43,10 +44,12 @@ public class Call extends AuditModel implements UserScopedEntity {
     private String userId;
     @Indexed
     private String callSid;
+    
     @Field("empNum")
-    private String employeeNumber;
+    private PhoneNumberHolder employeeNumber;
     @Field("custNum")
-    private String customerNumber;
+    private PhoneNumberHolder customerNumber;
+    
     @Field("recUrl")
     private String recordingUrl;
 

@@ -7,6 +7,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import com.voxlr.marmoset.config.properties.AppProperties;
+import com.voxlr.marmoset.util.MapperUtils;
+
 @SpringBootApplication
 @Configuration
 public class MarmosetApplication {
@@ -21,6 +24,16 @@ public class MarmosetApplication {
 	return new PropertySourcesPlaceholderConfigurer();
     }
 
+    @Bean
+    public static MapperUtils mapperUtils() {
+	return new MapperUtils();
+    }
+    
+    @Bean
+    public AppProperties appProperties() {
+	return new AppProperties();
+    }
+    
     public static void main(String[] args) {
 	SpringApplication.run(MarmosetApplication.class, args);
     }

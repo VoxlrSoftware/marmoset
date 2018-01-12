@@ -2,6 +2,8 @@ package com.voxlr.marmoset.model.persistence.dto;
 
 import java.util.Date;
 
+import com.voxlr.marmoset.model.PhoneNumberHolder;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -25,4 +27,6 @@ public class UserDTO {
     private String role;
     
     private Date createDate;
+    
+    private PhoneNumberHolder phoneNumber;
 }

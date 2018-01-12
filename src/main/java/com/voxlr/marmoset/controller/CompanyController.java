@@ -24,8 +24,7 @@ import com.voxlr.marmoset.service.CompanyService;
 import com.voxlr.marmoset.util.exception.EntityNotFoundException;
 
 @RestController
-@RequestMapping("/api/company")
-public class CompanyController {
+public class CompanyController extends ApiController {
     public static final String COMPANY = "/company";
     
     @Autowired
@@ -37,7 +36,8 @@ public class CompanyController {
     @Autowired
     private ModelMapper modelMapper;
     
-    @RequestMapping(method=RequestMethod.GET, value="{id}")
+    @RequestMapping(method=RequestMethod.GET,
+	    value=COMPANY + "/{id}")
     public ResponseEntity<?> getCompany(@PathVariable String id,
 	    @AuthenticationPrincipal AuthUser authUser) throws EntityNotFoundException {
 	Company company = companyService.get(id, authUser);
@@ -46,7 +46,8 @@ public class CompanyController {
 	return new ResponseEntity<CompanyDTO>(companyDTO, HttpStatus.OK);
     }
     
-    @RequestMapping(method=RequestMethod.POST)
+    @RequestMapping(method=RequestMethod.POST,
+	    value = COMPANY)
     public ResponseEntity<?> createCompany(@Valid @RequestBody CompanyCreateDTO companyCreateDTO, @AuthenticationPrincipal AuthUser authUser) {
 	Company company = companyService.create(companyCreateDTO, authUser);
 	CompanyDTO companyDTO = modelMapper.map(company, CompanyDTO.class);
@@ -54,7 +55,8 @@ public class CompanyController {
 	return new ResponseEntity<CompanyDTO>(companyDTO, HttpStatus.OK);
     }
     
-    @RequestMapping(method=RequestMethod.PUT, value="{id}")
+    @RequestMapping(method=RequestMethod.PUT,
+	    value=COMPANY + "/{id}")
     public ResponseEntity<?> updateCompany(@PathVariable String id,
 	    @Valid @RequestBody CompanyUpdateDTO companyUpdateDTO,
 	    @AuthenticationPrincipal AuthUser authUser) throws EntityNotFoundException {
@@ -65,7 +67,8 @@ public class CompanyController {
 	return new ResponseEntity<CompanyDTO>(companyDTO, HttpStatus.OK);
     }
     
-    @RequestMapping(method=RequestMethod.DELETE, value="{id}")
+    @RequestMapping(method=RequestMethod.DELETE,
+	    value=COMPANY + "/{id}")
     public ResponseEntity<?> deleteCompany(@PathVariable String id,
 	    @AuthenticationPrincipal AuthUser authUser) throws EntityNotFoundException {
 	companyService.delete(id, authUser);

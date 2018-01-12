@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import com.voxlr.marmoset.auth.Authority;
 import com.voxlr.marmoset.model.AuthUser;
 import com.voxlr.marmoset.model.CompanyScopedEntity;
-import com.voxlr.marmoset.model.Entity;
+import com.voxlr.marmoset.model.GlobalEntity;
 import com.voxlr.marmoset.model.TeamScopedEntity;
 import com.voxlr.marmoset.model.UserScopedEntity;
 import com.voxlr.marmoset.model.persistence.Company;
@@ -25,7 +25,7 @@ public class AuthorizationService {
     @Autowired
     private UserRepository userRepository;
 
-    boolean isSameUser(AuthUser authUser, Entity entity) {
+    boolean isSameUser(AuthUser authUser, GlobalEntity entity) {
 	return safeEquals(authUser.getId(), entity.getId());
     }
     
@@ -57,15 +57,15 @@ public class AuthorizationService {
 	return safeEquals(authUser.getTeamId(), entity.getTeamId());
     }
     
-    boolean typeInherits(Class<? extends Entity> type, Class<?> parentClass) {
+    boolean typeInherits(Class<? extends GlobalEntity> type, Class<?> parentClass) {
 	return parentClass.isAssignableFrom(type);
     }
     
-    boolean typeIs(Entity entity, Class<?> entityClass) {
+    boolean typeIs(GlobalEntity entity, Class<?> entityClass) {
 	return typeIs(entity.getClass(), entityClass);
     }
     
-    boolean typeIs(Class<? extends Entity> type, Class<?> entityClass) {
+    boolean typeIs(Class<? extends GlobalEntity> type, Class<?> entityClass) {
 	return type.equals(entityClass);
     }
     
@@ -155,7 +155,7 @@ public class AuthorizationService {
    		);
        }
     
-    public boolean canRead(AuthUser authUser, Entity entity) {
+    public boolean canRead(AuthUser authUser, GlobalEntity entity) {
 	return firstValid(
 		() -> typeInherits(entity.getClass(), UserScopedEntity.class) && canRead(authUser, (UserScopedEntity)entity),
 		() -> typeInherits(entity.getClass(), TeamScopedEntity.class) && canRead(authUser, (TeamScopedEntity) entity),
@@ -165,7 +165,7 @@ public class AuthorizationService {
 		);
     }
     
-    public boolean canWrite(AuthUser authUser, Entity entity) {
+    public boolean canWrite(AuthUser authUser, GlobalEntity entity) {
 	return firstValid(
 		() -> typeInherits(entity.getClass(), UserScopedEntity.class) && canWrite(authUser, (UserScopedEntity)entity),
 		() -> typeInherits(entity.getClass(), TeamScopedEntity.class) && canWrite(authUser, (TeamScopedEntity) entity),
@@ -175,7 +175,7 @@ public class AuthorizationService {
 		);
     }
     
-    public boolean canCreate(AuthUser authUser, Class<? extends Entity> toCreate) {
+    public boolean canCreate(AuthUser authUser, Class<? extends GlobalEntity> toCreate) {
 	return firstValid(
 		() -> typeInherits(toCreate, UserScopedEntity.class) &&
 			hasAuthorities(authUser, Authority.MODIFY_ACCOUNT),

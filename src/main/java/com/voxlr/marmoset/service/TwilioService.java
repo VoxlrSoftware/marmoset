@@ -1,21 +1,37 @@
 package com.voxlr.marmoset.service;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static com.voxlr.marmoset.util.PathUtils.combinePaths;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Service;
 
+import com.twilio.Twilio;
+import com.twilio.exception.ApiException;
+import com.twilio.http.HttpMethod;
 import com.twilio.jwt.client.ClientCapability;
 import com.twilio.jwt.client.OutgoingClientScope;
+import com.twilio.rest.api.v2010.account.ValidationRequest;
+import com.twilio.rest.api.v2010.account.ValidationRequestCreator;
+import com.twilio.type.PhoneNumber;
+import com.voxlr.marmoset.config.properties.AppProperties;
 import com.voxlr.marmoset.config.properties.TwilioProperties;
+import com.voxlr.marmoset.controller.CallbackController;
+import com.voxlr.marmoset.model.PhoneNumberHolder;
+import com.voxlr.marmoset.service.CallbackService.CallbackType;
+import com.voxlr.marmoset.service.CallbackService.Platform;
 
 @Service
 @EnableConfigurationProperties(TwilioProperties.class)
-public class TwilioService {
+public class TwilioService implements InitializingBean {
 
     @Autowired
     private TwilioProperties twilioProperties;
+    
+    @Autowired
+    private AppProperties appProperties;
     
     public String getClientToken() {
 	OutgoingClientScope outgoingClientScope = 
@@ -25,5 +41,27 @@ public class TwilioService {
 		.scopes(newArrayList(outgoingClientScope)).build();
 	
 	return capability.toJwt();
+    }
+    
+    public ValidationRequest validatePhoneNumber(PhoneNumberHolder phoneNumberHolder) throws ApiException {
+	ValidationRequestCreator creator = ValidationRequest.creator(
+		new PhoneNumber(phoneNumberHolder.getNumber()))
+		.setStatusCallbackMethod(HttpMethod.POST)
+		.setStatusCallback(combinePaths(
+			appProperties.getExternalApiUrl(),
+			CallbackController.CALLBACK,
+			CallbackService.generatePath(CallbackType.VALIDATION, Platform.TWILIO)));
+	
+	if (phoneNumberHolder.hasExtension()) {
+	    creator.setExtension(phoneNumberHolder.getExtension());
+	}
+	
+	ValidationRequest request = creator.create();
+	return request;
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+	Twilio.init(twilioProperties.getSid(), twilioProperties.getToken());
     }
 }

@@ -10,6 +10,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.voxlr.marmoset.auth.UserRole;
+import com.voxlr.marmoset.model.PhoneNumberHolder;
+import com.voxlr.marmoset.model.Phoneable;
 import com.voxlr.marmoset.model.TeamScopedEntity;
 
 import lombok.AllArgsConstructor;
@@ -30,7 +32,7 @@ import lombok.experimental.Accessors;
     @CompoundIndex(name = "active_companyId_teamId", def = "{'inactive': 1, 'companyId' : 1, 'teamId': 1}")
 })
 @Accessors(chain = true)
-public class User extends AuditModel implements TeamScopedEntity {
+public class User extends AuditModel implements TeamScopedEntity, Phoneable<User> {
     @NotBlank
     private String companyId;
     
@@ -45,6 +47,8 @@ public class User extends AuditModel implements TeamScopedEntity {
     
     @NotBlank
     private String password;
+    
+    private PhoneNumberHolder phoneNumber;
     
     @Field("inactive")
     @Builder.Default

@@ -9,10 +9,18 @@ import com.voxlr.marmoset.model.PhoneNumberHolder;
 
 public class PhoneNumberValidator implements ConstraintValidator<PhoneNumberValidConstraint, PhoneNumberHolder>{
 
+    private boolean isRequired;
+    
+    @Override
+    public void initialize(PhoneNumberValidConstraint constraintAnnotation) {
+        isRequired = constraintAnnotation.required();
+        ConstraintValidator.super.initialize(constraintAnnotation);
+    }
+    
     @Override
     public boolean isValid(PhoneNumberHolder value, ConstraintValidatorContext context) {
 	if (value == null) {
-	    return true;
+	    return !isRequired;
 	}
 	
 	try {

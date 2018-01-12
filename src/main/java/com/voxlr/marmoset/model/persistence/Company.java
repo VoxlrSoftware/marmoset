@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.voxlr.marmoset.model.PhoneNumberHolder;
+import com.voxlr.marmoset.model.Phoneable;
 import com.voxlr.marmoset.validation.constraint.PhoneNumberValidConstraint;
 
 import lombok.AllArgsConstructor;
@@ -31,7 +32,7 @@ import lombok.experimental.Accessors;
     @CompoundIndex(name = "callStrategyId", def = "{'callStrategies.id' : 1 }")
 })
 @Accessors(chain = true)
-public class Company extends AuditModel {
+public class Company extends AuditModel implements Phoneable<Company> {
     
     @NotBlank
     private String name;

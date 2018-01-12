@@ -2,8 +2,7 @@ package com.voxlr.marmoset.changelogs;
 
 import java.util.Date;
 
-import org.springframework.data.mongodb.core.MongoTemplate;import org.springframework.data.mongodb.core.query.CriteriaDefinition;
-import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.github.mongobee.changeset.ChangeLog;

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.voxlr.marmoset.model.PhoneNumberHolder;
 import com.voxlr.marmoset.validation.constraint.PhoneNumberValidConstraint;
 
 import lombok.AllArgsConstructor;
@@ -23,10 +24,10 @@ public class CallCreateDTO {
     private String callSid;
     
     @PhoneNumberValidConstraint
-    private String employeeNumber;
+    private PhoneNumberHolder employeeNumber;
     
     @PhoneNumberValidConstraint
-    private String customerNumber;
+    private PhoneNumberHolder customerNumber;
 
     @Singular("strategy")
     private List<String> strategyList;

@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
 
-import com.voxlr.marmoset.model.Entity;
+import com.voxlr.marmoset.model.persistence.Entity;
 
 public class PersistenceUtils {
     
