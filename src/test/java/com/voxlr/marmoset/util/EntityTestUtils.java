@@ -1,8 +1,11 @@
 package com.voxlr.marmoset.util;
 
-import java.util.Arrays;
+import static com.voxlr.marmoset.util.ListUtils.listOf;
+
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.IntStream;
 
 import com.voxlr.marmoset.auth.UserRole;
 import com.voxlr.marmoset.model.AuthUser;
@@ -28,21 +31,23 @@ public class EntityTestUtils {
 	return entity;
     }
     
-    public static CallStrategy createCallStrategy(String phrase) {
-	return CallStrategy.builder()
-		.phrase(phrase)
-		.createDate(new Date())
-		.modifiedDate(new Date())
+    public static CallStrategy createCallStrategy(String name, List<String> phrases) {
+	CallStrategy callStrategy = CallStrategy.builder()
+		.phrases(phrases)
 		.build();
+	callStrategy.setCreateDate(new Date());
+	callStrategy.setLastModified(new Date());
+	return callStrategy;
     }
     
     public static Company createCompany(String name, String... phrases) {
 	CompanyBuilder builder = Company.builder()
 		.name(name);
 	
-	Arrays.stream(phrases).forEach(phrase -> {
-	    builder.callStrategy(createCallStrategy(phrase));
-	});
+	IntStream.range(0, phrases.length)
+		.forEach(idx -> {
+		    builder.callStrategy(createCallStrategy("Phrase " + idx, listOf(phrases[idx])));
+		});
 	
 	return createAuditableEntity(builder.build());
     }

@@ -1,11 +1,17 @@
 package com.voxlr.marmoset.service;
 
+import static com.google.common.collect.Lists.newArrayList;
+
+import java.util.List;
+import java.util.Optional;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.stereotype.Service;
 
 import com.voxlr.marmoset.model.AuthUser;
+import com.voxlr.marmoset.model.persistence.CallStrategy;
 import com.voxlr.marmoset.model.persistence.Company;
 import com.voxlr.marmoset.model.persistence.dto.CompanyCreateDTO;
 import com.voxlr.marmoset.model.persistence.dto.CompanyUpdateDTO;
@@ -80,6 +86,32 @@ public class CompanyService {
 	
 	if (companyUpdateDTO.getPhoneNumber() != null) {
 	    company.setPhoneNumber(companyUpdateDTO.getPhoneNumber());
+	}
+	
+	if (companyUpdateDTO.getCallStrategies() != null) {
+	    List<CallStrategy> newStrategies = newArrayList();
+	    List<CallStrategy> currentStrategies = company.getCallStrategies();
+	    
+	    companyUpdateDTO.getCallStrategies().stream().forEach(strategyDTO -> {
+		CallStrategy strategy = null;
+		
+		if (strategyDTO.getId() != null) {
+		    Optional<CallStrategy> currentStrategy = 
+			    currentStrategies.stream().filter(x -> x.getId().equals(strategyDTO.getId())).findFirst();
+		    if (currentStrategy.isPresent()) {
+			strategy = currentStrategy.get();
+		    }
+		}
+		
+		if (strategy == null) {
+		    strategy = CallStrategy.createNew();
+		}
+		
+		strategy.update(strategyDTO.getName(), strategyDTO.getPhrases());
+		newStrategies.add(strategy);
+	    });
+	    
+	    company.setCallStrategies(newStrategies);
 	}
 	
 	company = companyRepository.save(company);

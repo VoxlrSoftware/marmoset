@@ -15,6 +15,6 @@ public class CompanyDTO {
     private String id;
     private String name;
     private PhoneNumberHolder phoneNumber;
-    private List<String> callStrategies = new ArrayList<String>() {
+    private List<CallStrategyDTO> callStrategies = new ArrayList<CallStrategyDTO>() {
     };
 }

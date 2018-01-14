@@ -24,6 +24,7 @@ import lombok.Getter;
 @Service
 public class CallbackService implements ApplicationContextAware, InitializingBean {
     public static enum CallbackType {
+	CALL("call"),
 	RECORDING("recording"),
 	VALIDATION("validation");
 	

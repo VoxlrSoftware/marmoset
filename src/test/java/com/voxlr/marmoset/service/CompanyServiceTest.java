@@ -18,7 +18,9 @@ import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserExc
 import com.voxlr.marmoset.auth.UserRole;
 import com.voxlr.marmoset.model.AuthUser;
 import com.voxlr.marmoset.model.PhoneNumberHolder;
+import com.voxlr.marmoset.model.persistence.CallStrategy;
 import com.voxlr.marmoset.model.persistence.Company;
+import com.voxlr.marmoset.model.persistence.dto.CallStrategyDTO;
 import com.voxlr.marmoset.model.persistence.dto.CompanyCreateDTO;
 import com.voxlr.marmoset.model.persistence.dto.CompanyUpdateDTO;
 import com.voxlr.marmoset.test.DataTest;
@@ -33,7 +35,11 @@ public class CompanyServiceTest extends DataTest {
     
     @Override
     public void beforeTest() {
-	mockCompany = createCompany("Test Company", "Random phrase").setPhoneNumber(new PhoneNumberHolder("+119099446352"));
+	mockCompany = createCompany("Test Company", "Random phrase")
+		.setPhoneNumber(new PhoneNumberHolder("+119099446352"))
+		.setCallStrategies(listOf(
+			CallStrategy.createNew()
+				.update("Test Phrase", listOf("This is a test phrase"))));
     }
     
     @Test
@@ -190,6 +196,35 @@ public class CompanyServiceTest extends DataTest {
 		Company company = companyService.update(companyUpdateDTO, authUser);
 	    }, UnauthorizedUserException.class);
 	});
+    }
+    
+    @Test
+    public void updateShouldHandleCallStrategyUpdates() throws Exception {
+	CompanyUpdateDTO companyUpdateDTO = CompanyUpdateDTO.builder()
+		.id(mockCompany.getId()).build();
+	CallStrategyDTO callStrategyDTO =  modelMapper.map(mockCompany.getCallStrategies().get(0), CallStrategyDTO.class);
+	callStrategyDTO.setName("Updated Name");
+	
+	CallStrategyDTO callStrategyDTO2 = CallStrategyDTO.builder()
+		.name("New Strategy")
+		.phrases(listOf("This is a new phrase")).build();
+	
+	companyUpdateDTO.setCallStrategies(listOf(callStrategyDTO, callStrategyDTO2));
+	
+	persistenceUtils.save(mockCompany);
+	
+	Company company = companyService.update(companyUpdateDTO, createAuthUser());
+	assertThat(company.getCallStrategies().size(), is(2));
+	
+	CallStrategy firstStrategy = company.getCallStrategies().get(0);
+	assertThat(firstStrategy.getId(), is(mockCompany.getCallStrategies().get(0).getId()));
+	assertThat(firstStrategy.getName(), is("Updated Name"));
+	
+	CallStrategy secondStrategy = company.getCallStrategies().get(1);
+	assertThat(secondStrategy.getId(), is(notNullValue()));
+	assertThat(secondStrategy.getName(), is("New Strategy"));
+	assertThat(secondStrategy.getPhrases().size(), is(1));
+	assertThat(secondStrategy.getPhrases().get(0), is("This is a new phrase"));
     }
     
     @Test

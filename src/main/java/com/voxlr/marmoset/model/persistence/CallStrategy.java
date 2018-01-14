@@ -1,12 +1,13 @@
 package com.voxlr.marmoset.model.persistence;
 
 import java.util.Date;
-import java.util.UUID;
+import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
-import org.springframework.format.annotation.DateTimeFormat;
+import org.bson.types.ObjectId;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,24 +16,31 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
-public class CallStrategy {
-    @Builder.Default
-    private String id = UUID.randomUUID().toString();
+public class CallStrategy extends AuditModel {
+    private String name;
     
     @NotNull
-    private String phrase;
+    private List<String> phrases;
     
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    private Date createDate;
-    
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    private Date modifiedDate;
+    public CallStrategy update(String name, List<String> phrases) {
+	if (name != null) {
+	    this.name = name;
+	}
+	
+	if (phrases != null) {
+	    this.phrases = phrases;
+	}
+	
+	this.setLastModified(new Date());
+	return this;
+    }
 
-    public CallStrategy(String id, String phrase, Date createDate, Date modifiedDate) {
-	this.id = id;
-	this.phrase = phrase;
-	this.createDate = createDate;
-	this.modifiedDate = modifiedDate;
+    public static CallStrategy createNew() {
+	CallStrategy callStrategy = new CallStrategy();
+	callStrategy.setId(new ObjectId().toHexString());
+	callStrategy.setCreateDate(new Date());
+	return callStrategy;
     }
 }
