@@ -38,6 +38,23 @@ public class CompanyService {
 	return companyRepository.findIdById(id) != null;
     }
     
+    public CallStrategy findCallStrategy(String companyId, String strategyId) throws EntityNotFoundException {
+	Company company = companyRepository.findOne(companyId);
+	
+	if (company == null) {
+	    throw new EntityNotFoundException(Company.class, "id", companyId);
+	}
+	
+	Optional<CallStrategy> strategy = company.getCallStrategies().stream()
+		.filter(x -> x.getId().equals(strategyId)).findFirst();
+	
+	if (!strategy.isPresent()) {
+	    throw new EntityNotFoundException(CallStrategy.class, "id", strategyId);
+	}
+	
+	return strategy.get();
+    }
+    
     public Company get(String id, AuthUser authUser) throws EntityNotFoundException {
 	Company company = companyRepository.findOne(id);
 	

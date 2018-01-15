@@ -15,21 +15,29 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.voxlr.marmoset.model.AuthUser;
 import com.voxlr.marmoset.model.persistence.Call;
+import com.voxlr.marmoset.model.persistence.CallRequest;
 import com.voxlr.marmoset.model.persistence.dto.CallCreateDTO;
 import com.voxlr.marmoset.model.persistence.dto.CallDTO;
+import com.voxlr.marmoset.model.persistence.dto.CallRequestCreateDTO;
+import com.voxlr.marmoset.model.persistence.dto.CallRequestDTO;
 import com.voxlr.marmoset.model.persistence.dto.CallUpdateDTO;
 import com.voxlr.marmoset.service.CallService;
+import com.voxlr.marmoset.util.exception.EntityNotFoundException;
 
 @RestController
-@RequestMapping("/api/call")
-public class CallController {
+public class CallController extends ApiController {
+    public static final String CALL = "/call";
+    public static final String CALL_REQUEST = CALL + "/request";
+    
     @Autowired
     private CallService callService;
     
     @Autowired
     private ModelMapper modelMapper;
     
-    @RequestMapping(method = RequestMethod.GET, value = "{id}")
+    @RequestMapping(
+	    method = RequestMethod.GET,
+	    value = CALL + "/{id}")
     public ResponseEntity<?> get(
 	    @PathVariable String id,
 	    @AuthenticationPrincipal AuthUser authUser) throws Exception {
@@ -38,7 +46,21 @@ public class CallController {
 	return new ResponseEntity<CallDTO>(callDTO, HttpStatus.OK);
     }
     
-    @RequestMapping(method = RequestMethod.POST)
+    @RequestMapping(
+	    method = RequestMethod.POST,
+	    value = CALL_REQUEST)
+    public ResponseEntity<?> createRequest(
+	    @Valid @RequestBody CallRequestCreateDTO callRequestCreateDTO,
+	    @AuthenticationPrincipal AuthUser authUser) throws EntityNotFoundException {
+	CallRequest callRequest = callService.createRequest(callRequestCreateDTO, authUser);
+	
+	CallRequestDTO callRequestDTO = modelMapper.map(callRequest, CallRequestDTO.class);
+	return new ResponseEntity<CallRequestDTO>(callRequestDTO, HttpStatus.OK);
+    }
+    
+    @RequestMapping(
+	    method = RequestMethod.POST,
+	    value = CALL)
     public ResponseEntity<?> create(
 	    @Valid @RequestBody CallCreateDTO callCreateDTO,
 	    @AuthenticationPrincipal AuthUser authUser) {
@@ -48,7 +70,9 @@ public class CallController {
 	return new ResponseEntity<CallDTO>(callDTO, HttpStatus.OK);
     }
     
-    @RequestMapping(method = RequestMethod.PUT, value = "{id}")
+    @RequestMapping(
+	    method = RequestMethod.PUT,
+	    value = CALL + "/{id}")
     public ResponseEntity<?> update(
 	    @PathVariable String id,
 	    @Valid @RequestBody CallUpdateDTO callUpdateDTO,

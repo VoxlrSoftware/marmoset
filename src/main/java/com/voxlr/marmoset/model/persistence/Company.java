@@ -5,8 +5,6 @@ import java.util.List;
 
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.data.mongodb.config.EnableMongoAuditing;
-import org.springframework.data.mongodb.core.index.CompoundIndex;
-import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.voxlr.marmoset.model.PhoneNumberHolder;
@@ -28,9 +26,6 @@ import lombok.experimental.Accessors;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@CompoundIndexes({
-    @CompoundIndex(name = "callStrategyId", def = "{'callStrategies.id' : 1 }")
-})
 @Accessors(chain = true)
 public class Company extends AuditModel implements Phoneable<Company> {
     

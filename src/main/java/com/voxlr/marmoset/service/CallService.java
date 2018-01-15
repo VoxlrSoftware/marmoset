@@ -7,19 +7,29 @@ import org.springframework.stereotype.Service;
 
 import com.voxlr.marmoset.model.AuthUser;
 import com.voxlr.marmoset.model.persistence.Call;
+import com.voxlr.marmoset.model.persistence.CallRequest;
+import com.voxlr.marmoset.model.persistence.CallStrategy;
 import com.voxlr.marmoset.model.persistence.dto.CallCreateDTO;
+import com.voxlr.marmoset.model.persistence.dto.CallRequestCreateDTO;
 import com.voxlr.marmoset.model.persistence.dto.CallUpdateDTO;
 import com.voxlr.marmoset.repositories.CallRepository;
+import com.voxlr.marmoset.repositories.CallRequestRepository;
 import com.voxlr.marmoset.util.exception.EntityNotFoundException;
 
 @Service
 public class CallService {
     
     @Autowired
+    private CompanyService companyService;
+    
+    @Autowired
     private AuthorizationService authorizationService;
     
     @Autowired
     private CallRepository callRepository;
+    
+    @Autowired
+    private CallRequestRepository callRequestRepository;
     
     @Autowired
     private ModelMapper modelMapper;
@@ -36,6 +46,25 @@ public class CallService {
 	}
 	
 	return call;
+    }
+    
+    public CallRequest createRequest(CallRequestCreateDTO callRequestCreateDTO, AuthUser authUser) throws EntityNotFoundException {
+	if (!authorizationService.canCreate(authUser, Call.class)) {
+	    throw new UnauthorizedUserException("Account unauthorized to create call");
+	}
+	CallStrategy callStrategy = companyService.findCallStrategy(authUser.getCompanyId(),
+		callRequestCreateDTO.getStrategyId());
+	
+	CallRequest request = CallRequest.builder()
+		.employeeNumber(callRequestCreateDTO.getCallerId())
+		.customerNumber(callRequestCreateDTO.getCustomerNumber())
+		.userId(authUser.getId())
+		.callStrategy(callStrategy)
+		.build();
+	
+	request = callRequestRepository.save(request);
+	
+	return request;
     }
     
     public Call create(CallCreateDTO callCreateDTO, AuthUser authUser) {

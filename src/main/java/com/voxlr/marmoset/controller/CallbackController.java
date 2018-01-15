@@ -18,6 +18,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.voxlr.marmoset.callback.CallbackBody;
 import com.voxlr.marmoset.model.dto.CallbackResult;
 import com.voxlr.marmoset.service.CallbackService;
 import com.voxlr.marmoset.util.exception.HandlerNotFoundException;
@@ -52,7 +53,7 @@ public class CallbackController extends ApiController {
 	ObjectNode body = objectMapper.valueToTree(request.getParameterMap());
 	
 	CallbackResult result = callbackService.getHandler(type, platform, request.getMethod())
-		.handleRequest(requestPath, body);
+		.handleRequest(requestPath, new CallbackBody(body));
 	return new ResponseEntity<CallbackResult>(result, result.getStatus());
     }
     

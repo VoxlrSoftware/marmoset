@@ -23,12 +23,4 @@ public abstract class AuditModel extends Entity {
     @LastModifiedDate
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Date lastModified;
-    
-    public Date getCreateDate() {
-	return createDate;
-    }
-    
-    public Date getLastModifiedDate() {
-	return lastModified;
-    }
 }

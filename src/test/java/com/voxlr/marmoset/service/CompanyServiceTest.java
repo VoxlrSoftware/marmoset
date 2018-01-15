@@ -106,6 +106,16 @@ public class CompanyServiceTest extends DataTest {
     }
     
     @Test
+    public void getCompanyStrategyShouldReturnMatchingStrategy() throws Exception {
+	persistenceUtils.save(mockCompany);
+	
+	CallStrategy strategy = mockCompany.getCallStrategies().get(0);
+	CallStrategy foundStrategy = companyService.findCallStrategy(mockCompany.getId(), strategy.getId());
+	assertThat(foundStrategy, is(notNullValue()));
+	assertThat(foundStrategy.getName(), is(strategy.getName()));
+    }
+    
+    @Test
     public void createShouldReturnNewCompanyForValidAccounts() throws Exception {
 	List<AuthUser> authUsers = listOf(
 		createAuthUser(UserRole.SUPER_ADMIN)
