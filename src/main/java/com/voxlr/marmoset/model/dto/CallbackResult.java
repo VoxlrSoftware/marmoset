@@ -1,9 +1,11 @@
 package com.voxlr.marmoset.model.dto;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -11,17 +13,28 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class CallbackResult {
+@AllArgsConstructor
+public class CallbackResult<T> {
     @JsonIgnore
     private HttpStatus status = HttpStatus.OK;
-    private String result = "Callback accepted.";
+    private MediaType contentType = MediaType.APPLICATION_JSON;
+    private T result;
     
-    public CallbackResult(String result) {
+    public CallbackResult(T result) {
 	this.result = result;
     }
     
-    public CallbackResult(String result, HttpStatus status) {
+    public CallbackResult(T result, HttpStatus status) {
 	this.result = result;
 	this.status = status;
+    }
+    
+    public CallbackResult(T result, MediaType contentType) {
+	this.result = result;
+	this.contentType = contentType;
+    }
+    
+    public static CallbackResult<String> createDefaultResult() {
+	return new CallbackResult<String>("Callback accepted.");
     }
 }

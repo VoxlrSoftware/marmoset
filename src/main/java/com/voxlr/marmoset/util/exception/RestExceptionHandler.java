@@ -143,6 +143,14 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         apiError.setMessage(ex.getMessage());
         return buildResponseEntity(apiError);
     }
+    
+    @ExceptionHandler(CallbackException.class)
+    protected ResponseEntity<Object> handlerCallbackException(
+	    CallbackException ex) {
+	ApiError apiError = new ApiError(ex.getStatus());
+        apiError.setMessage(ex.getMessage());
+        return buildResponseEntity(apiError);
+    }
 
     private ResponseEntity<Object> buildResponseEntity(ApiError apiError) {
         return new ResponseEntity<>(apiError, apiError.getStatus());

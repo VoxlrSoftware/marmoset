@@ -13,4 +13,5 @@ public class CallRequestDTO {
     private PhoneNumberHolder employeeNumber;
     private PhoneNumberHolder customerNumber;
     private String userId;
+    private String companyId;
 }

@@ -15,15 +15,15 @@ import com.twilio.jwt.client.ClientCapability;
 import com.twilio.jwt.client.OutgoingClientScope;
 import com.twilio.rest.api.v2010.account.ValidationRequest;
 import com.twilio.rest.api.v2010.account.ValidationRequestCreator;
-import com.twilio.type.PhoneNumber;
+import com.twilio.twiml.VoiceResponse;
 import com.twilio.twiml.voice.Dial;
 import com.twilio.twiml.voice.Number;
-import com.twilio.twiml.VoiceResponse;
-import com.twilio.twiml.TwiMLException;
+import com.twilio.type.PhoneNumber;
 import com.voxlr.marmoset.config.properties.AppProperties;
 import com.voxlr.marmoset.config.properties.TwilioProperties;
 import com.voxlr.marmoset.controller.CallbackController;
 import com.voxlr.marmoset.model.PhoneNumberHolder;
+import com.voxlr.marmoset.model.persistence.Call;
 import com.voxlr.marmoset.service.CallbackService.CallbackType;
 import com.voxlr.marmoset.service.CallbackService.Platform;
 
@@ -64,23 +64,20 @@ public class TwilioService implements InitializingBean {
 	return request;
     }
     
-    public boolean initializeCall(String callerId) {
-	Number number = new Number.Builder(callerId).build();
+    public String initializeCall(Call callRequest) {
+	Number number = new Number.Builder(callRequest.getCustomerNumber().getNumber()).build();
 	Dial dial = new Dial.Builder().record(Dial.Record
 		.RECORD_FROM_RINGING_DUAL)
 		.recordingStatusCallback(combinePaths(
 			appProperties.getExternalApiUrl(),
 			CallbackController.CALLBACK,
 			CallbackService.generatePath(CallbackType.RECORDING, Platform.TWILIO)))
+		.callerId(callRequest.getEmployeeNumber().getNumber())
 		.number(number)
 		.build();
 	
-	try {	    
-	    VoiceResponse response = new VoiceResponse.Builder().dial(dial).build();
-	    return true;
-	} catch (TwiMLException e) {
-	    return false;
-	}
+	VoiceResponse response = new VoiceResponse.Builder().dial(dial).build();
+	return response.toXml();
     }
 
     @Override

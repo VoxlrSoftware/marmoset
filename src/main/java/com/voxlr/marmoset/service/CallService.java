@@ -9,6 +9,7 @@ import com.voxlr.marmoset.model.AuthUser;
 import com.voxlr.marmoset.model.persistence.Call;
 import com.voxlr.marmoset.model.persistence.CallRequest;
 import com.voxlr.marmoset.model.persistence.CallStrategy;
+import com.voxlr.marmoset.model.persistence.User;
 import com.voxlr.marmoset.model.persistence.dto.CallCreateDTO;
 import com.voxlr.marmoset.model.persistence.dto.CallRequestCreateDTO;
 import com.voxlr.marmoset.model.persistence.dto.CallUpdateDTO;
@@ -48,6 +49,16 @@ public class CallService {
 	return call;
     }
     
+    public CallRequest getRequest(String requestId) throws EntityNotFoundException {
+	CallRequest callRequest = callRequestRepository.findOne(requestId);
+	
+	if (callRequestRepository == null) {
+	    throw new EntityNotFoundException(CallRequest.class, "id", requestId);
+	}
+	
+	return callRequest;
+    }
+    
     public CallRequest createRequest(CallRequestCreateDTO callRequestCreateDTO, AuthUser authUser) throws EntityNotFoundException {
 	if (!authorizationService.canCreate(authUser, Call.class)) {
 	    throw new UnauthorizedUserException("Account unauthorized to create call");
@@ -59,12 +70,30 @@ public class CallService {
 		.employeeNumber(callRequestCreateDTO.getCallerId())
 		.customerNumber(callRequestCreateDTO.getCustomerNumber())
 		.userId(authUser.getId())
+		.companyId(authUser.getCompanyId())
 		.callStrategy(callStrategy)
 		.build();
 	
 	request = callRequestRepository.save(request);
 	
 	return request;
+    }
+    
+    public Call create(CallRequest callRequest, String callSid) throws Exception {
+	if (callRequest == null) {
+	    throw new Exception("CallRequest must be valid.");
+	}
+	
+	Call call = Call.builder()
+		.callSid(callSid)
+		.userId(callRequest.getUserId())
+		.companyId(callRequest.getCompanyId())
+		.customerNumber(callRequest.getCustomerNumber())
+		.employeeNumber(callRequest.getEmployeeNumber())
+		.build();
+	
+	call = callRepository.save(call);
+	return call;
     }
     
     public Call create(CallCreateDTO callCreateDTO, AuthUser authUser) {

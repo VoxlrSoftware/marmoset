@@ -15,18 +15,18 @@ import com.voxlr.marmoset.service.ValidationRequestService;
 	type = CallbackType.VALIDATION,
 	methods = { RequestMethod.POST },
 	platform = Platform.TWILIO)
-public class TwilioValidation extends CallbackHandler {
+public class TwilioValidation extends CallbackHandler<String> {
     
     @Autowired
     private ValidationRequestService validationRequestService;
 
-    public CallbackResult handleRequest(String requestPath, CallbackBody callbackBody) {
+    public CallbackResult<String> handleRequest(String requestPath, CallbackBody callbackBody) {
 	String callSid = callbackBody.getValue("CallSid").asText();
 	boolean isValid = callbackBody.getValue("VerificationStatus").asText().equals("success");
 	
 	validationRequestService.handleValidationResponse(callSid, isValid);
 	
-	return new CallbackResult();
+	return CallbackResult.createDefaultResult();
     }
 
 }
