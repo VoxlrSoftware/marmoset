@@ -45,6 +45,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.voxlr.marmoset.model.AuthUser;
 import com.voxlr.marmoset.model.PhoneNumberHolder;
 import com.voxlr.marmoset.model.persistence.Call;
+import com.voxlr.marmoset.model.persistence.CallStrategy;
 import com.voxlr.marmoset.model.persistence.dto.CallCreateDTO;
 import com.voxlr.marmoset.model.persistence.dto.CallDTO;
 import com.voxlr.marmoset.model.persistence.dto.CallUpdateDTO;
@@ -78,7 +79,7 @@ public class CallControllerTest extends ControllerTest {
 	       .employeeNumber(new PhoneNumberHolder("+19099446352"))
 	       .customerNumber(new PhoneNumberHolder("+19099446352"))
 	       .companyId("123")
-	       .strategy("How are you?")
+	       .callStrategy(CallStrategy.createNew())
 	       .userId("123")
 	       .build());
        expected = mapper.writeValueAsString(modelMapper.map(mockCall, CallDTO.class));

@@ -59,9 +59,7 @@ public class Call extends AuditModel implements UserScopedEntity {
     @Field("extRef")
     private BasicDBObject externalReferences = new BasicDBObject();
     
-    @Field("strategies")
-    @Singular("strategy")
-    private List<String> strategyList = new ArrayList<>();
+    private CallStrategy callStrategy;
     
     @Field("stats")
     private CallStatistic statistics = new CallStatistic();

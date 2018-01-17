@@ -67,7 +67,7 @@ public class TwilioService implements InitializingBean {
     public String initializeCall(Call callRequest) {
 	Number number = new Number.Builder(callRequest.getCustomerNumber().getNumber()).build();
 	Dial dial = new Dial.Builder().record(Dial.Record
-		.RECORD_FROM_RINGING_DUAL)
+		.RECORD_FROM_ANSWER_DUAL)
 		.recordingStatusCallback(combinePaths(
 			appProperties.getExternalApiUrl(),
 			CallbackController.CALLBACK,

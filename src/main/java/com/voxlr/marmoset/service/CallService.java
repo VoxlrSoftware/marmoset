@@ -35,6 +35,16 @@ public class CallService {
     @Autowired
     private ModelMapper modelMapper;
     
+    public Call getByCallSid(String callSid) throws EntityNotFoundException {
+	Call call = callRepository.findOneByCallSid(callSid);
+	
+	if (call == null) {
+	    throw new EntityNotFoundException(Call.class, "callSid", callSid);
+	}
+	
+	return call;
+    }
+    
     public Call get(String id, AuthUser authUser) throws Exception {
 	Call call = callRepository.findOne(id);
 	
@@ -90,6 +100,7 @@ public class CallService {
 		.companyId(callRequest.getCompanyId())
 		.customerNumber(callRequest.getCustomerNumber())
 		.employeeNumber(callRequest.getEmployeeNumber())
+		.callStrategy(callRequest.getCallStrategy())
 		.build();
 	
 	call = callRepository.save(call);
