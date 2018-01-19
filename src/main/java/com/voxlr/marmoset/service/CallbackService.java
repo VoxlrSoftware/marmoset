@@ -26,7 +26,8 @@ public class CallbackService implements ApplicationContextAware, InitializingBea
     public static enum CallbackType {
 	CALL("call"),
 	RECORDING("recording"),
-	VALIDATION("validation");
+	VALIDATION("validation"),
+	TRANSCRIPTION("transcription");
 	
 	@Getter
 	private String name;
@@ -37,7 +38,8 @@ public class CallbackService implements ApplicationContextAware, InitializingBea
     };
     
     public static enum Platform {
-	TWILIO("twilio");
+	TWILIO("twilio"),
+	VOICEBASE("voicebase");
 	
 	@Getter
 	private String name;

@@ -72,6 +72,18 @@ public class CallController extends ApiController {
     
     @RequestMapping(
 	    method = RequestMethod.PUT,
+	    value = CALL)
+    public ResponseEntity<?> update(
+	    @Valid @RequestBody CallUpdateDTO callUpdateDTO,
+	    @AuthenticationPrincipal AuthUser authUser) throws Exception {
+	Call call = callService.update(callUpdateDTO, authUser);
+	
+	CallDTO callDTO = modelMapper.map(call, CallDTO.class);
+	return new ResponseEntity<CallDTO>(callDTO, HttpStatus.OK);
+    }
+    
+    @RequestMapping(
+	    method = RequestMethod.PUT,
 	    value = CALL + "/{id}")
     public ResponseEntity<?> update(
 	    @PathVariable String id,

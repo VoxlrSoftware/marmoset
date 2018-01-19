@@ -1,5 +1,7 @@
 package com.voxlr.marmoset.jms.model;
 
+import com.voxlr.marmoset.model.CallScoped;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,11 +13,12 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CallRecordingRequest {
+public class CallRecordingResult implements CallScoped {
     private String recordingUrl;
     private String callSid;
     private String callId;
     
-    @Builder.Default
-    private String extension = "";
+    public String getId() {
+	return callId;
+    }
 }

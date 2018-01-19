@@ -1,29 +1,50 @@
 package com.voxlr.marmoset.callback;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import lombok.Getter;
 
 public class CallbackBody {
     @Getter
-    private ObjectNode body;
+    private ObjectNode parameters;
     
-    public CallbackBody(ObjectNode body) {
+    @Getter
+    private String body;
+    
+    private ObjectNode jsonBody;
+    
+    private ObjectMapper objectMapper = new ObjectMapper();
+    
+    public CallbackBody(ObjectNode parameters, String body) {
+	this.parameters = parameters;
 	this.body = body;
     }
     
-    public String getString(String key) {
-	return getValue(key).asText();
+    public String getParamString(String key) {
+	return getParamValue(key).asText();
     }
     
-    public JsonNode getValue(String key) {
-	JsonNode node = body.get(key);
+    public JsonNode getParamValue(String key) {
+	JsonNode node = parameters.get(key);
 	
 	if (node.isArray()) {
 	    node = node.get(0);
 	}
 	
 	return node;
+    }
+    
+    public ObjectNode getJsonBody() throws Exception {
+	if (jsonBody == null && body != null) {
+	    jsonBody = (ObjectNode) objectMapper.readTree(body);
+	}
+	
+	return jsonBody;
+    }
+    
+    public String getBodyString(String key) throws Exception {
+	return getJsonBody().get(key).asText();
     }
 }

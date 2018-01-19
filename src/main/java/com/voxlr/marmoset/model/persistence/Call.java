@@ -2,8 +2,8 @@ package com.voxlr.marmoset.model.persistence;
 
 import static com.voxlr.marmoset.model.CallOutcome.NONE;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.validation.constraints.NotNull;
 
@@ -15,7 +15,6 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.mongodb.BasicDBObject;
 import com.voxlr.marmoset.model.PhoneNumberHolder;
 import com.voxlr.marmoset.model.UserScopedEntity;
 
@@ -24,7 +23,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.Singular;
 
 @Document(collection = "calls")
 @EnableMongoAuditing
@@ -56,13 +54,32 @@ public class Call extends AuditModel implements UserScopedEntity {
     @Field("outcome")
     private String callOutcome = NONE;
     
-    @Field("extRef")
-    private BasicDBObject externalReferences = new BasicDBObject();
-    
     private CallStrategy callStrategy;
+    
+    private String transcriptionId;
     
     @Field("stats")
     private CallStatistic statistics = new CallStatistic();
     @DBRef(lazy = true)
     private CallAnalysis analysis;
+    
+    public static enum DBField {
+	RECORDING_URL("recordingUrl"),
+	TRANSCRIPTION_ID("transcriptionId"),
+	CALL_OUTCOME("callOutcome"),
+	CALL_STRATEGY("callStrategy"),
+	STATISTICS("statistics"),
+	ANALYSIS("analysis")
+	;
+	
+	private String fieldName;
+	
+	private DBField(String fieldName) {
+	    this.fieldName = fieldName;
+	}
+	
+	public String get() {
+	    return fieldName;
+	}
+    }
 }

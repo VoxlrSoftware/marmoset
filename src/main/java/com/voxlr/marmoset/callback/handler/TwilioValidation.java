@@ -21,8 +21,8 @@ public class TwilioValidation extends CallbackHandler<String> {
     private ValidationRequestService validationRequestService;
 
     public CallbackResult<String> handleRequest(String requestPath, CallbackBody callbackBody) {
-	String callSid = callbackBody.getValue("CallSid").asText();
-	boolean isValid = callbackBody.getValue("VerificationStatus").asText().equals("success");
+	String callSid = callbackBody.getParamValue("CallSid").asText();
+	boolean isValid = callbackBody.getParamValue("VerificationStatus").asText().equals("success");
 	
 	validationRequestService.handleValidationResponse(callSid, isValid);
 	

@@ -1,9 +1,7 @@
 package com.voxlr.marmoset.controller;
 
-import java.io.IOException;
-import java.util.Map;
+import java.io.BufferedReader;
 
-import javax.naming.spi.DirStateFactory.Result;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +14,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.HandlerMapping;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.voxlr.marmoset.callback.CallbackBody;
@@ -53,10 +49,18 @@ public class CallbackController extends ApiController {
 	    HttpServletRequest request) throws HandlerNotFoundException, CallbackException {
 	String requestPath = (String)request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
 
-	ObjectNode body = objectMapper.valueToTree(request.getParameterMap());
+	ObjectNode parameters = objectMapper.valueToTree(request.getParameterMap());
+	
+	StringBuffer body = new StringBuffer();
+	  String line = null;
+	  try {
+	    BufferedReader reader = request.getReader();
+	    while ((line = reader.readLine()) != null)
+		body.append(line);
+	  } catch (Exception e) { /*report an error*/ }
 	
 	CallbackResult<?> result = callbackService.getHandler(type, platform, request.getMethod())
-		.handleRequest(requestPath, new CallbackBody(body));
+		.handleRequest(requestPath, new CallbackBody(parameters, body.toString()));
 	
 	HttpHeaders headers = new HttpHeaders();
         headers.setContentType(result.getContentType());

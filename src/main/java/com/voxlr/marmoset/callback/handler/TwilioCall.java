@@ -9,12 +9,11 @@ import com.voxlr.marmoset.callback.CallbackBody;
 import com.voxlr.marmoset.callback.CallbackHandler;
 import com.voxlr.marmoset.model.dto.CallbackResult;
 import com.voxlr.marmoset.model.persistence.Call;
-import com.voxlr.marmoset.model.persistence.CallRequest;
 import com.voxlr.marmoset.service.CallService;
 import com.voxlr.marmoset.service.CallbackService.CallbackType;
 import com.voxlr.marmoset.service.CallbackService.Platform;
-import com.voxlr.marmoset.util.exception.CallbackException;
 import com.voxlr.marmoset.service.TwilioService;
+import com.voxlr.marmoset.util.exception.CallbackException;
 
 @Callback(
 	type = CallbackType.CALL,
@@ -29,12 +28,11 @@ public class TwilioCall extends CallbackHandler<String> {
     private CallService callService;
     
     public CallbackResult<String> handleRequest(String requestPath, CallbackBody callbackBody) throws CallbackException {
-	String requestId = callbackBody.getString("requestId");
-	String callSid = callbackBody.getString("CallSid");
+	String requestId = callbackBody.getParamString("requestId");
+	String callSid = callbackBody.getParamString("CallSid");
 	
 	try {
-	    CallRequest callRequest = callService.getRequest(requestId);
-	    Call call = callService.create(callRequest, callSid);
+	    Call call = callService.createFromRequest(requestId, callSid);
 	    String response = twilioService.initializeCall(call);
 	    return new CallbackResult<String>(response, MediaType.APPLICATION_XML);
 	    

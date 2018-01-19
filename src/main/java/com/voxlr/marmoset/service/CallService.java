@@ -5,17 +5,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.stereotype.Service;
 
+import com.voxlr.marmoset.jms.model.CallRecordingResult;
 import com.voxlr.marmoset.model.AuthUser;
+import com.voxlr.marmoset.model.CallOutcome;
+import com.voxlr.marmoset.model.CallScoped;
+import com.voxlr.marmoset.model.EntityUpdate;
+import com.voxlr.marmoset.model.MongoService;
 import com.voxlr.marmoset.model.persistence.Call;
 import com.voxlr.marmoset.model.persistence.CallRequest;
 import com.voxlr.marmoset.model.persistence.CallStrategy;
-import com.voxlr.marmoset.model.persistence.User;
 import com.voxlr.marmoset.model.persistence.dto.CallCreateDTO;
 import com.voxlr.marmoset.model.persistence.dto.CallRequestCreateDTO;
 import com.voxlr.marmoset.model.persistence.dto.CallUpdateDTO;
 import com.voxlr.marmoset.repositories.CallRepository;
 import com.voxlr.marmoset.repositories.CallRequestRepository;
 import com.voxlr.marmoset.util.exception.EntityNotFoundException;
+import com.voxlr.marmoset.util.exception.InvalidArgumentsException;
 
 @Service
 public class CallService {
@@ -30,6 +35,9 @@ public class CallService {
     private CallRepository callRepository;
     
     @Autowired
+    private MongoService mongoService;
+    
+    @Autowired
     private CallRequestRepository callRequestRepository;
     
     @Autowired
@@ -40,6 +48,32 @@ public class CallService {
 	
 	if (call == null) {
 	    throw new EntityNotFoundException(Call.class, "callSid", callSid);
+	}
+	
+	return call;
+    }
+    
+    public Call getInternal(String id) throws EntityNotFoundException {
+	Call call = callRepository.findOne(id);
+	
+	if (call == null) {
+	    throw new EntityNotFoundException(Call.class, "id", id);
+	}
+	
+	return call;
+    }
+    
+    public Call getInternal(CallScoped callScoped) throws EntityNotFoundException, InvalidArgumentsException {
+	Call call = null;
+	
+	if (callScoped.getId() != null) {
+	    call = getInternal(callScoped.getId());
+	} else if (callScoped.getCallSid() != null) {
+	    call = getByCallSid(callScoped.getCallSid());
+	}
+	
+	if (call == null) {
+	    throw new InvalidArgumentsException("Update requires an [id] or [callSid]");
 	}
 	
 	return call;
@@ -59,7 +93,7 @@ public class CallService {
 	return call;
     }
     
-    public CallRequest getRequest(String requestId) throws EntityNotFoundException {
+    private CallRequest getRequest(String requestId) throws EntityNotFoundException {
 	CallRequest callRequest = callRequestRepository.findOne(requestId);
 	
 	if (callRequestRepository == null) {
@@ -89,10 +123,8 @@ public class CallService {
 	return request;
     }
     
-    public Call create(CallRequest callRequest, String callSid) throws Exception {
-	if (callRequest == null) {
-	    throw new Exception("CallRequest must be valid.");
-	}
+    public Call createFromRequest(String requestId, String callSid) throws Exception {
+	CallRequest callRequest = getRequest(requestId);
 	
 	Call call = Call.builder()
 		.callSid(callSid)
@@ -103,6 +135,7 @@ public class CallService {
 		.callStrategy(callRequest.getCallStrategy())
 		.build();
 	
+	callRequestRepository.delete(callRequest);
 	call = callRepository.save(call);
 	return call;
     }
@@ -121,20 +154,36 @@ public class CallService {
     }
     
     public Call update(CallUpdateDTO callUpdateDTO, AuthUser authUser) throws Exception {
-	Call call = callRepository.findOne(callUpdateDTO.getId());
-	
-	if (call == null) {
-	    throw new EntityNotFoundException(Call.class, "id", callUpdateDTO.getId());
-	}
-	
+	EntityUpdate update = new EntityUpdate();
+	Call call = getInternal(callUpdateDTO);
+		
 	if (!authorizationService.canWrite(authUser, call)) {
 	    throw new UnauthorizedUserException("Account unauthorized to view call.");
 	}
 	
-	if (callUpdateDTO.getCallOutcome() != null) {
-	    call.setCallOutcome(callUpdateDTO.getCallOutcome());
+	if (callUpdateDTO.getCallOutcome() != null && CallOutcome.validateOutcome(callUpdateDTO.getCallOutcome())) {
+	    update.getUpdate().set(Call.DBField.CALL_OUTCOME.get(), callUpdateDTO.getCallOutcome());
 	}
 	
+	if (update.isUpdateRequired()) {
+	    call = mongoService.update(call, update.getUpdate());
+	}
+	
+	return call;
+    }
+    
+    public Call updateCallRecording(CallRecordingResult result) throws Exception {
+	EntityUpdate update = new EntityUpdate();
+	Call call = getInternal(result);
+	update.getUpdate().set(Call.DBField.RECORDING_URL.get(), result.getRecordingUrl());
+	call = mongoService.update(call, update.getUpdate());
+	return call;
+    }
+    
+    public Call updateCallTranscription(Call call, String transcriptionId) {
+	EntityUpdate update = new EntityUpdate();
+	update.getUpdate().set(Call.DBField.TRANSCRIPTION_ID.get(), transcriptionId);
+	call = mongoService.update(call, update.getUpdate());
 	return call;
     }
     

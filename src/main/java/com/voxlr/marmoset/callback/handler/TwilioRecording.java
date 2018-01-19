@@ -34,8 +34,8 @@ public class TwilioRecording extends CallbackHandler<String> {
 
     @Override
     public CallbackResult<String> handleRequest(String requestPath, CallbackBody callbackBody) {
-	String callSid = callbackBody.getString("CallSid");
-	String recordingUrl = callbackBody.getString("RecordingUrl");
+	String callSid = callbackBody.getParamString("CallSid");
+	String recordingUrl = callbackBody.getParamString("RecordingUrl");
 	
 	String extension = FilenameUtils.getExtension(recordingUrl);
 	
@@ -49,9 +49,10 @@ public class TwilioRecording extends CallbackHandler<String> {
 	    CallRecordingRequest callRecordingRequest = CallRecordingRequest.builder()
 		    .recordingUrl(recordingUrl)
 		    .callSid(callSid)
+		    .callId(call.getId())
 		    .extension(extension).build();
 	    log.debug("Creating callRecordingRequest [" + callSid + "]");
-	    recordingService.postRecording(call, callRecordingRequest);
+	    recordingService.postRecordingRequest(call, callRecordingRequest);
 	} catch (Exception e) { }
 	
 	

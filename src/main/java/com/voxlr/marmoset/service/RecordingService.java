@@ -11,10 +11,13 @@ import com.voxlr.marmoset.config.S3Config;
 import com.voxlr.marmoset.jms.ProducerService;
 import com.voxlr.marmoset.jms.SQSConfig;
 import com.voxlr.marmoset.jms.model.CallRecordingRequest;
+import com.voxlr.marmoset.jms.model.CallRecordingResult;
 import com.voxlr.marmoset.model.persistence.Call;
 
 @Service
 public class RecordingService {
+    
+    private static final String DEFAULT_PRIORITY = "default";
 
     @Autowired
     private ProducerService producerService;
@@ -22,11 +25,15 @@ public class RecordingService {
     @Autowired
     private FileStoreService fileStoreService;
     
-    @Autowired
-    private CallService callService;
-    
-    public void postRecording(Call call, CallRecordingRequest callRecordingRequest) throws Exception {
+    public void postRecordingRequest(Call call, CallRecordingRequest callRecordingRequest) throws Exception {
 	producerService.sendMessage(SQSConfig.QUEUE_CALL_RECORDING, callRecordingRequest, call.getUserId());
+    }
+    
+    public void postRecordingResult(CallRecordingResult callRecordingResult) throws Exception {
+	producerService.sendMessage(
+		SQSConfig.QUEUE_CALL_RECORDING_RESULT,
+		callRecordingResult,
+		DEFAULT_PRIORITY);
     }
     
     public void handleRecording(CallRecordingRequest callRecordingRequest) throws IOException {
@@ -41,7 +48,12 @@ public class RecordingService {
 		    callRecordingRequest.getRecordingUrl(),
 		    newRecordingName,
 		    S3Config.VOXLR_STORE_RECORDINGS);
-	    callService.updateRecordingUrl(callRecordingRequest.getCallSid(), recordingPath);
+	    CallRecordingResult recordingResult = CallRecordingResult.builder()
+		    .callSid(callRecordingRequest.getCallSid())
+		    .callId(callRecordingRequest.getCallId())
+		    .recordingUrl(recordingPath)
+		    .build();
+	    postRecordingResult(recordingResult);
 	} catch (Exception e) {
 	    // TODO: Figure out what we want to do with recordings that fail to upload
 	}

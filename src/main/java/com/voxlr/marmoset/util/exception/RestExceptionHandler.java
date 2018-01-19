@@ -148,7 +148,17 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handlerCallbackException(
 	    CallbackException ex) {
 	ApiError apiError = new ApiError(ex.getStatus());
-        apiError.setMessage(ex.getMessage());
+	apiError.setMessage("An error occurred while processing a callback.");
+        apiError.setDebugMessage(ex.getMessage());
+        return buildResponseEntity(apiError);
+    }
+    
+    @ExceptionHandler(InvalidArgumentsException.class)
+    protected ResponseEntity<Object> handlerInvalidArgumentsException(
+	    InvalidArgumentsException ex) {
+	ApiError apiError = new ApiError(BAD_REQUEST);
+	apiError.setMessage("Could not complete request.");
+        apiError.setDebugMessage(ex.getMessage());
         return buildResponseEntity(apiError);
     }
 
