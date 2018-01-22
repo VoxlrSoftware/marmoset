@@ -13,6 +13,7 @@ public class S3Config {
     
     public static final String VOXLR_STORE = "voxlr-store";
     public static final String VOXLR_STORE_RECORDINGS = VOXLR_STORE + "/recordings";
+    public static final String VOXLR_STORE_TRANSCRIPTS = VOXLR_STORE + "/transcripts";
 
     @Bean
     public AmazonS3 amazonS3() {

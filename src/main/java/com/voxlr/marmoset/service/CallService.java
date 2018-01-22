@@ -43,6 +43,16 @@ public class CallService {
     @Autowired
     private ModelMapper modelMapper;
     
+    public Call getByTranscriptionId(String transcriptionId) throws EntityNotFoundException {
+	Call call = callRepository.findOneByTranscriptionId(transcriptionId);
+	
+	if (call == null) {
+	    throw new EntityNotFoundException(Call.class, "transcriptionId", transcriptionId);
+	}
+	
+	return call;
+    }
+    
     public Call getByCallSid(String callSid) throws EntityNotFoundException {
 	Call call = callRepository.findOneByCallSid(callSid);
 	

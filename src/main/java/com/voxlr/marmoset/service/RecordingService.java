@@ -44,7 +44,7 @@ public class RecordingService {
 	}
 	
 	try {
-	    String recordingPath = fileStoreService.uploadFileStream(
+	    String recordingPath = fileStoreService.uploadRemoteFile(
 		    callRecordingRequest.getRecordingUrl(),
 		    newRecordingName,
 		    S3Config.VOXLR_STORE_RECORDINGS);

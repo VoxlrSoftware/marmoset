@@ -19,7 +19,7 @@ public class FileStoreService {
     @Autowired
     private AmazonS3 amazonS3;
     
-    public String uploadFileStream(String fileUri, String key, String bucketName) throws Exception {
+    public String uploadRemoteFile(String fileUri, String key, String bucketName) throws Exception {
 	InputStream inputStream = null;
 	
 	try {
@@ -41,6 +41,21 @@ public class FileStoreService {
 	    if (inputStream != null) {
 		inputStream.close();
 	    }
+	}
+    }
+    
+    public String uploadString(String content, String key, String bucketName) throws Exception {
+	return uploadString(content, key, bucketName, new ObjectMetadata());
+    }
+    
+    public String uploadString(String content, String key, String bucketName, ObjectMetadata metadata) throws Exception {
+	try {
+	    amazonS3.putObject(bucketName, key, content);
+	    URL uploadedUrl = amazonS3.getUrl(bucketName, key);
+	    return uploadedUrl.toString();
+	} catch (Exception e) {
+	    log.error("Error uploading string to s3", e);
+	    throw e;
 	}
     }
 }

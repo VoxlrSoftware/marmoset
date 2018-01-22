@@ -1,5 +1,6 @@
 package com.voxlr.marmoset.callback.handler;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -10,6 +11,7 @@ import com.voxlr.marmoset.callback.CallbackHandler;
 import com.voxlr.marmoset.model.dto.CallbackResult;
 import com.voxlr.marmoset.service.CallbackService.CallbackType;
 import com.voxlr.marmoset.service.CallbackService.Platform;
+import com.voxlr.marmoset.service.TranscriptionService;
 import com.voxlr.marmoset.util.exception.CallbackException;
 
 @Callback(
@@ -17,18 +19,19 @@ import com.voxlr.marmoset.util.exception.CallbackException;
 	methods = { RequestMethod.POST },
 	platform = Platform.VOICEBASE)
 public class VoicebaseTranscription extends CallbackHandler<String> {
+    
+    @Autowired
+    private TranscriptionService transcriptionService;
 
     @Override
     public CallbackResult<String> handleRequest(String requestPath, CallbackBody callbackBody)
 	    throws CallbackException {
 	try {
 	    ObjectNode response = callbackBody.getJsonBody();
-	    String mediaId = callbackBody.getBodyString("mediaId");
-	    // save off transcription and post queue to process
-	    int i = 1;
-	} catch (Exception e) {}
-	// TODO Auto-generated method stub
-	
+	    transcriptionService.processTranscription(response, Platform.TWILIO);
+	} catch (Exception e) {
+	    throw new CallbackException("Unable to handle transcription result", e);
+	}
 	return new CallbackResult<String>("success", MediaType.TEXT_PLAIN);
     }
 

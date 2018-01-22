@@ -2,9 +2,6 @@ package com.voxlr.marmoset.model.persistence;
 
 import static com.voxlr.marmoset.model.CallOutcome.NONE;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.validation.constraints.NotNull;
 
 import org.springframework.data.mongodb.config.EnableMongoAuditing;
@@ -42,6 +39,8 @@ public class Call extends AuditModel implements UserScopedEntity {
     private String userId;
     @Indexed
     private String callSid;
+    @Indexed
+    private String transcriptionId;
     
     @Field("empNum")
     private PhoneNumberHolder employeeNumber;
@@ -55,8 +54,6 @@ public class Call extends AuditModel implements UserScopedEntity {
     private String callOutcome = NONE;
     
     private CallStrategy callStrategy;
-    
-    private String transcriptionId;
     
     @Field("stats")
     private CallStatistic statistics = new CallStatistic();
