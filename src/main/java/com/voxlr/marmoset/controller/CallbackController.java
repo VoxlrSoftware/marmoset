@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -61,6 +62,10 @@ public class CallbackController extends ApiController {
 	
 	CallbackResult<?> result = callbackService.getHandler(type, platform, request.getMethod())
 		.handleRequest(requestPath, new CallbackBody(parameters, body.toString()));
+	
+	if (result == null) {
+	    return new ResponseEntity<>("Unable to complete callback at [" + requestPath + "]", HttpStatus.BAD_REQUEST);
+	}
 	
 	HttpHeaders headers = new HttpHeaders();
         headers.setContentType(result.getContentType());

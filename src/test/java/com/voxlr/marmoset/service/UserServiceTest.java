@@ -26,6 +26,7 @@ import com.voxlr.marmoset.model.persistence.Team;
 import com.voxlr.marmoset.model.persistence.User;
 import com.voxlr.marmoset.model.persistence.dto.UserCreateDTO;
 import com.voxlr.marmoset.model.persistence.dto.UserUpdateDTO;
+import com.voxlr.marmoset.service.domain.UserService;
 import com.voxlr.marmoset.test.DataTest;
 import com.voxlr.marmoset.util.exception.EntityNotFoundException;
 

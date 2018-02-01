@@ -8,15 +8,11 @@ import lombok.Setter;
 
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class CallRecordingRequest {
-    private String recordingUrl;
-    private int recordingDuration;
-    private String callSid;
+public class CallAnalysisRequest {
     private String callId;
-    
-    @Builder.Default
-    private String extension = "";
+    private String transcriptionId;
+    private String transcriptionUrl;
 }

@@ -1,15 +1,15 @@
-package com.voxlr.marmoset.service;
+package com.voxlr.marmoset.service.domain;
+
+import static com.voxlr.marmoset.model.persistence.factory.CallUpdate.anUpdate;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.stereotype.Service;
 
-import com.voxlr.marmoset.jms.model.CallRecordingResult;
 import com.voxlr.marmoset.model.AuthUser;
 import com.voxlr.marmoset.model.CallOutcome;
 import com.voxlr.marmoset.model.CallScoped;
-import com.voxlr.marmoset.model.EntityUpdate;
 import com.voxlr.marmoset.model.MongoService;
 import com.voxlr.marmoset.model.persistence.Call;
 import com.voxlr.marmoset.model.persistence.CallRequest;
@@ -17,8 +17,10 @@ import com.voxlr.marmoset.model.persistence.CallStrategy;
 import com.voxlr.marmoset.model.persistence.dto.CallCreateDTO;
 import com.voxlr.marmoset.model.persistence.dto.CallRequestCreateDTO;
 import com.voxlr.marmoset.model.persistence.dto.CallUpdateDTO;
+import com.voxlr.marmoset.model.persistence.factory.CallUpdate;
 import com.voxlr.marmoset.repositories.CallRepository;
 import com.voxlr.marmoset.repositories.CallRequestRepository;
+import com.voxlr.marmoset.service.AuthorizationService;
 import com.voxlr.marmoset.util.exception.EntityNotFoundException;
 import com.voxlr.marmoset.util.exception.InvalidArgumentsException;
 
@@ -164,37 +166,25 @@ public class CallService {
     }
     
     public Call update(CallUpdateDTO callUpdateDTO, AuthUser authUser) throws Exception {
-	EntityUpdate update = new EntityUpdate();
 	Call call = getInternal(callUpdateDTO);
 		
 	if (!authorizationService.canWrite(authUser, call)) {
 	    throw new UnauthorizedUserException("Account unauthorized to view call.");
 	}
 	
+	CallUpdate update = anUpdate(call);
+	
 	if (callUpdateDTO.getCallOutcome() != null && CallOutcome.validateOutcome(callUpdateDTO.getCallOutcome())) {
-	    update.getUpdate().set(Call.DBField.CALL_OUTCOME.get(), callUpdateDTO.getCallOutcome());
+	    update.withCallOutcome(callUpdateDTO.getCallOutcome());
 	}
 	
-	if (update.isUpdateRequired()) {
-	    call = mongoService.update(call, update.getUpdate());
-	}
+	call = mongoService.update(update);
 	
 	return call;
     }
     
-    public Call updateCallRecording(CallRecordingResult result) throws Exception {
-	EntityUpdate update = new EntityUpdate();
-	Call call = getInternal(result);
-	update.getUpdate().set(Call.DBField.RECORDING_URL.get(), result.getRecordingUrl());
-	call = mongoService.update(call, update.getUpdate());
-	return call;
-    }
-    
-    public Call updateCallTranscription(Call call, String transcriptionId) {
-	EntityUpdate update = new EntityUpdate();
-	update.getUpdate().set(Call.DBField.TRANSCRIPTION_ID.get(), transcriptionId);
-	call = mongoService.update(call, update.getUpdate());
-	return call;
+    public Call updateInternal(CallUpdate update) {
+	return mongoService.update(update);
     }
     
     public void delete(String id, AuthUser authUser) throws Exception {

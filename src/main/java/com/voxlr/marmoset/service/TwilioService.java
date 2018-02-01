@@ -35,6 +35,9 @@ public class TwilioService implements InitializingBean {
     private TwilioProperties twilioProperties;
     
     @Autowired
+    private CallbackService callbackService;
+    
+    @Autowired
     private AppProperties appProperties;
     
     public String getClientToken() {
@@ -51,10 +54,7 @@ public class TwilioService implements InitializingBean {
 	ValidationRequestCreator creator = ValidationRequest.creator(
 		new PhoneNumber(phoneNumberHolder.getNumber()))
 		.setStatusCallbackMethod(HttpMethod.POST)
-		.setStatusCallback(combinePaths(
-			appProperties.getExternalApiUrl(),
-			CallbackController.CALLBACK,
-			CallbackService.generatePath(CallbackType.VALIDATION, Platform.TWILIO)));
+		.setStatusCallback(callbackService.getCallbackPath(CallbackType.VALIDATION, Platform.TWILIO));
 	
 	if (phoneNumberHolder.hasExtension()) {
 	    creator.setExtension(phoneNumberHolder.getExtension());
@@ -68,10 +68,7 @@ public class TwilioService implements InitializingBean {
 	Number number = new Number.Builder(callRequest.getCustomerNumber().getNumber()).build();
 	Dial dial = new Dial.Builder().record(Dial.Record
 		.RECORD_FROM_ANSWER_DUAL)
-		.recordingStatusCallback(combinePaths(
-			appProperties.getExternalApiUrl(),
-			CallbackController.CALLBACK,
-			CallbackService.generatePath(CallbackType.RECORDING, Platform.TWILIO)))
+		.recordingStatusCallback(callbackService.getCallbackPath(CallbackType.RECORDING, Platform.TWILIO))
 		.callerId(callRequest.getEmployeeNumber().getNumber())
 		.number(number)
 		.build();

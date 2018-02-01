@@ -21,7 +21,7 @@ import com.voxlr.marmoset.model.persistence.dto.CallDTO;
 import com.voxlr.marmoset.model.persistence.dto.CallRequestCreateDTO;
 import com.voxlr.marmoset.model.persistence.dto.CallRequestDTO;
 import com.voxlr.marmoset.model.persistence.dto.CallUpdateDTO;
-import com.voxlr.marmoset.service.CallService;
+import com.voxlr.marmoset.service.domain.CallService;
 import com.voxlr.marmoset.util.exception.EntityNotFoundException;
 
 @RestController

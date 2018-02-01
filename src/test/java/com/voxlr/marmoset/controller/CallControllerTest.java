@@ -50,7 +50,7 @@ import com.voxlr.marmoset.model.persistence.dto.CallCreateDTO;
 import com.voxlr.marmoset.model.persistence.dto.CallDTO;
 import com.voxlr.marmoset.model.persistence.dto.CallUpdateDTO;
 import com.voxlr.marmoset.repositories.CallRepository;
-import com.voxlr.marmoset.service.CallService;
+import com.voxlr.marmoset.service.domain.CallService;
 import com.voxlr.marmoset.test.ControllerTest;
 import com.voxlr.marmoset.util.exception.EntityNotFoundException;
 

@@ -9,12 +9,21 @@ import org.springframework.stereotype.Service;
 
 import com.mongodb.WriteResult;
 import com.voxlr.marmoset.model.persistence.Entity;
+import com.voxlr.marmoset.model.persistence.factory.EntityUpdate;
 
 @Service
 public class MongoService {
     
     @Autowired
     private MongoOperations mongoOperations;
+    
+    public <T extends Entity> T update(EntityUpdate<T> entityUpdate) {
+	if (!entityUpdate.isUpdateRequired()) {
+	    return entityUpdate.getEntity();
+	}
+	
+	return update(entityUpdate.getEntity(), entityUpdate.getUpdate());
+    }
 
     @SuppressWarnings("unchecked")
     public <T extends Entity> T update(T entity, Update update) {

@@ -1,5 +1,7 @@
 package com.voxlr.marmoset.jms.consumer;
 
+import static com.voxlr.marmoset.model.persistence.factory.CallUpdate.anUpdate;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Service;
@@ -8,9 +10,9 @@ import com.voxlr.marmoset.jms.SQSConfig;
 import com.voxlr.marmoset.jms.model.CallRecordingRequest;
 import com.voxlr.marmoset.jms.model.CallRecordingResult;
 import com.voxlr.marmoset.model.persistence.Call;
-import com.voxlr.marmoset.service.CallService;
 import com.voxlr.marmoset.service.RecordingService;
 import com.voxlr.marmoset.service.TranscriptionService;
+import com.voxlr.marmoset.service.domain.CallService;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -43,10 +45,13 @@ public class CallRecordingConsumer extends JMSConsumer {
 	
 	if (result != null) {
 	    log.debug("Received call recording result");
-	    Call call = callService.updateCallRecording(result);
+	    Call call = callService.getInternal(result);
+	    call = callService.updateInternal(anUpdate(call)
+		    .withRecordingUrl(result.getRecordingUrl())
+		    .withDuration(result.getRecordingDuration()));
 	    String transcriptionId = transcriptionService.transcribeCall(call);
 	    if (transcriptionId != null) {
-		callService.updateCallTranscription(call, transcriptionId);
+		callService.updateInternal(anUpdate(call).withTranscriptionId(transcriptionId));
 	    }
 	}
     }

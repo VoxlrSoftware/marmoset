@@ -1,4 +1,4 @@
-package com.voxlr.marmoset.service;
+package com.voxlr.marmoset.service.domain;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;

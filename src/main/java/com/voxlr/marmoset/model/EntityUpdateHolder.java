@@ -2,7 +2,7 @@ package com.voxlr.marmoset.model;
 
 import org.springframework.data.mongodb.core.query.Update;
 
-public class EntityUpdate {
+public class EntityUpdateHolder {
     private Update update;
     
     public Update getUpdate() {

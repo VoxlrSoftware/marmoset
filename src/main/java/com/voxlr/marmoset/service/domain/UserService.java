@@ -1,4 +1,4 @@
-package com.voxlr.marmoset.service;
+package com.voxlr.marmoset.service.domain;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +14,7 @@ import com.voxlr.marmoset.model.persistence.User;
 import com.voxlr.marmoset.model.persistence.dto.UserCreateDTO;
 import com.voxlr.marmoset.model.persistence.dto.UserUpdateDTO;
 import com.voxlr.marmoset.repositories.UserRepository;
+import com.voxlr.marmoset.service.AuthorizationService;
 import com.voxlr.marmoset.util.exception.EntityNotFoundException;
 
 @Service

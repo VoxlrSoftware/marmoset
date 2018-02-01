@@ -1,9 +1,8 @@
 package com.voxlr.marmoset.model.persistence;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import javax.validation.constraints.NotNull;
 
 import org.bson.types.ObjectId;
 
@@ -21,8 +20,7 @@ import lombok.Setter;
 public class CallStrategy extends AuditModel {
     private String name;
     
-    @NotNull
-    private List<String> phrases;
+    private List<String> phrases = new ArrayList<String>();
     
     public CallStrategy update(String name, List<String> phrases) {
 	if (name != null) {

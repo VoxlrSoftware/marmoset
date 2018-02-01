@@ -3,6 +3,7 @@ package com.voxlr.marmoset.service;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.voxlr.marmoset.util.AnnotationUtils.getAnnotatedClasses;
 import static com.voxlr.marmoset.util.AnnotationUtils.getAnnotationMembers;
+import static com.voxlr.marmoset.util.PathUtils.combinePaths;
 
 import java.util.HashMap;
 import java.util.Set;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.voxlr.marmoset.callback.Callback;
 import com.voxlr.marmoset.callback.CallbackHandler;
+import com.voxlr.marmoset.config.properties.AppProperties;
 import com.voxlr.marmoset.util.exception.HandlerNotFoundException;
 
 import lombok.Getter;
@@ -24,6 +26,7 @@ import lombok.Getter;
 @Service
 public class CallbackService implements ApplicationContextAware, InitializingBean {
     public static enum CallbackType {
+	ANALYSIS("analysis"),
 	CALL("call"),
 	RECORDING("recording"),
 	VALIDATION("validation"),
@@ -38,6 +41,7 @@ public class CallbackService implements ApplicationContextAware, InitializingBea
     };
     
     public static enum Platform {
+	VOXLR("voxlr"),
 	TWILIO("twilio"),
 	VOICEBASE("voicebase");
 	
@@ -52,8 +56,10 @@ public class CallbackService implements ApplicationContextAware, InitializingBea
     @Autowired
     private ApplicationContext applicationContext;
     
-    public static String generatePath(CallbackType type, Platform platform) {
-	return "/" + type.getName() + "/" + platform.getName();
+    @Autowired AppProperties appProperties;
+    
+    public String getCallbackPath(CallbackType type, Platform platform) {
+	return combinePaths(appProperties.getExternalApiUrl(), "callback", type.getName(), platform.getName());
     }
     
     private final HashMap<String, CallbackHandler> callbackHandlers = 

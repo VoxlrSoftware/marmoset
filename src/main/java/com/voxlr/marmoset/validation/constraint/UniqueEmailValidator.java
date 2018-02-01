@@ -5,7 +5,7 @@ import javax.validation.ConstraintValidatorContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.voxlr.marmoset.service.UserService;
+import com.voxlr.marmoset.service.domain.UserService;
 
 public class UniqueEmailValidator implements ConstraintValidator<UniqueEmailConstraint, String> {
     @Autowired

@@ -52,6 +52,7 @@ public class RecordingService {
 		    .callSid(callRecordingRequest.getCallSid())
 		    .callId(callRecordingRequest.getCallId())
 		    .recordingUrl(recordingPath)
+		    .recordingDuration(callRecordingRequest.getRecordingDuration())
 		    .build();
 	    postRecordingResult(recordingResult);
 	} catch (Exception e) {

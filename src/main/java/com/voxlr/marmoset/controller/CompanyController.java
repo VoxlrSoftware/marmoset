@@ -20,7 +20,7 @@ import com.voxlr.marmoset.model.persistence.dto.CompanyCreateDTO;
 import com.voxlr.marmoset.model.persistence.dto.CompanyDTO;
 import com.voxlr.marmoset.model.persistence.dto.CompanyUpdateDTO;
 import com.voxlr.marmoset.repositories.CompanyRepository;
-import com.voxlr.marmoset.service.CompanyService;
+import com.voxlr.marmoset.service.domain.CompanyService;
 import com.voxlr.marmoset.util.exception.EntityNotFoundException;
 
 @RestController

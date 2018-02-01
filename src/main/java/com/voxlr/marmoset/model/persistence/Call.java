@@ -1,6 +1,9 @@
 package com.voxlr.marmoset.model.persistence;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static com.voxlr.marmoset.model.CallOutcome.NONE;
+
+import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
@@ -8,7 +11,6 @@ import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -50,33 +52,28 @@ public class Call extends AuditModel implements UserScopedEntity {
     @Field("recUrl")
     private String recordingUrl;
 
+    @Field("transUrl")
+    private String transcriptionUrl;
+
     @Field("outcome")
     private String callOutcome = NONE;
     
     private CallStrategy callStrategy;
     
     @Field("stats")
-    private CallStatistic statistics = new CallStatistic();
-    @DBRef(lazy = true)
-    private CallAnalysis analysis;
+    private Statistic statistics = new Statistic();
     
-    public static enum DBField {
-	RECORDING_URL("recordingUrl"),
-	TRANSCRIPTION_ID("transcriptionId"),
-	CALL_OUTCOME("callOutcome"),
-	CALL_STRATEGY("callStrategy"),
-	STATISTICS("statistics"),
-	ANALYSIS("analysis")
-	;
-	
-	private String fieldName;
-	
-	private DBField(String fieldName) {
-	    this.fieldName = fieldName;
-	}
-	
-	public String get() {
-	    return fieldName;
-	}
+    public List<String> getCallStrategyPhrases() {
+	return callStrategy != null ? callStrategy.getPhrases() : newArrayList();
+    }
+    
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    public static class Statistic {
+        private int duration = 0;
+        private int totalTalkTime = 0;
+        private int customerTalkTime = 0;
+        private int employeeTalkTime = 0;
     }
 }

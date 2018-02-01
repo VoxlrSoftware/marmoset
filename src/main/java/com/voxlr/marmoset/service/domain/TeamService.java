@@ -1,4 +1,4 @@
-package com.voxlr.marmoset.service;
+package com.voxlr.marmoset.service.domain;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;

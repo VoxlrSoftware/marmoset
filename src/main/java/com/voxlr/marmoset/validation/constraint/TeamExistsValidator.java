@@ -5,7 +5,7 @@ import javax.validation.ConstraintValidatorContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.voxlr.marmoset.service.TeamService;
+import com.voxlr.marmoset.service.domain.TeamService;
 
 public class TeamExistsValidator implements ConstraintValidator<TeamExistsConstraint, String> {
     @Autowired

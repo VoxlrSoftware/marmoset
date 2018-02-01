@@ -15,6 +15,7 @@ import lombok.Setter;
 @Builder
 public class CallRecordingResult implements CallScoped {
     private String recordingUrl;
+    private int recordingDuration;
     private String callSid;
     private String callId;
     

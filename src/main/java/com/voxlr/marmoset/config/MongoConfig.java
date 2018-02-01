@@ -3,13 +3,13 @@ package com.voxlr.marmoset.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.voxlr.marmoset.model.persistence.lifecycle.CallLifecycle;
+import com.voxlr.marmoset.model.persistence.lifecycle.EntityLifeCycle;
 
 @Configuration
 public class MongoConfig {
 
     @Bean
-    public CallLifecycle callLifecycle() {
-	return new CallLifecycle();
+    public EntityLifeCycle entityLifeCycle() {
+	return new EntityLifeCycle();
     }
 }

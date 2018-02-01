@@ -32,7 +32,7 @@ import com.voxlr.marmoset.model.persistence.dto.UserCreateDTO;
 import com.voxlr.marmoset.model.persistence.dto.UserDTO;
 import com.voxlr.marmoset.model.persistence.dto.UserUpdateDTO;
 import com.voxlr.marmoset.rest.PageableHandler;
-import com.voxlr.marmoset.service.UserService;
+import com.voxlr.marmoset.service.domain.UserService;
 import com.voxlr.marmoset.util.MapperUtils;
 import com.voxlr.marmoset.util.exception.EntityNotFoundException;
 

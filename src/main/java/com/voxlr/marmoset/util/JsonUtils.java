@@ -1,5 +1,6 @@
 package com.voxlr.marmoset.util;
 
+import static com.google.common.base.Strings.isNullOrEmpty;
 import static com.voxlr.marmoset.util.StreamUtils.asStream;
 
 import java.io.StringReader;
@@ -40,7 +41,7 @@ public class JsonUtils {
     }
     
     public static JsonNode safeGet(JsonNode node, String path) {
-	return safeGet(node, Arrays.asList(path.split(".\\[\\]")));
+	return safeGet(node, Arrays.asList(path.split("[\\[.\\]]")));
     }
     
     public static JsonNode safeGet(JsonNode node, List<String> path) {
@@ -49,13 +50,16 @@ public class JsonUtils {
 	}
 	
 	String pathToProcess = path.get(0);
-	JsonNode nextNode = getNextNode(node, pathToProcess);
 	
-	if (path.size() > 1) {
-	    return safeGet(node.get(path.get(0)), path.subList(1, path.size() - 1));
+	if (!isNullOrEmpty(pathToProcess)) {
+	    node = getNextNode(node, pathToProcess);
 	}
 	
-	return nextNode;
+	if (path.size() > 1) {
+	    return safeGet(node, path.subList(1, path.size()));
+	}
+	
+	return node;
     }
     
     private static JsonNode getNextNode(JsonNode node, String pathToProcess) {

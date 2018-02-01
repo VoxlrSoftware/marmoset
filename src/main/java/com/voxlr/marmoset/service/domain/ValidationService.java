@@ -1,4 +1,4 @@
-package com.voxlr.marmoset.service;
+package com.voxlr.marmoset.service.domain;
 
 import static com.voxlr.marmoset.util.AnnotationUtils.getAnnotatedClasses;
 import static com.voxlr.marmoset.util.AnnotationUtils.getAnnotationMembers;

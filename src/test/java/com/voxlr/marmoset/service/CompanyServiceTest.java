@@ -23,6 +23,7 @@ import com.voxlr.marmoset.model.persistence.Company;
 import com.voxlr.marmoset.model.persistence.dto.CallStrategyDTO;
 import com.voxlr.marmoset.model.persistence.dto.CompanyCreateDTO;
 import com.voxlr.marmoset.model.persistence.dto.CompanyUpdateDTO;
+import com.voxlr.marmoset.service.domain.CompanyService;
 import com.voxlr.marmoset.test.DataTest;
 import com.voxlr.marmoset.util.exception.EntityNotFoundException;
 

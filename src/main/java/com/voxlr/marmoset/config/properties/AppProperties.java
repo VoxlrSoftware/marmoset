@@ -10,6 +10,7 @@ import lombok.Setter;
 @Setter
 public class AppProperties {
     private String externalUrl;
+    private String analysisUrl;
     
     public String getExternalApiUrl() {
 	return externalUrl + "/api";
