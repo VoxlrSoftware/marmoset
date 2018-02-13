@@ -5,6 +5,8 @@ import java.util.Arrays;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
@@ -19,6 +21,7 @@ import com.voxlr.marmoset.config.properties.JWTProperties;
 @Configuration
 @EnableAuthorizationServer
 @EnableConfigurationProperties(JWTProperties.class)
+@Order(Ordered.HIGHEST_PRECEDENCE)
 public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
 
     private final String SCOPE_READ = "read";

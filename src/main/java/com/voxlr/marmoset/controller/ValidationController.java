@@ -25,8 +25,8 @@ import com.voxlr.marmoset.model.persistence.ValidationRequest;
 import com.voxlr.marmoset.model.persistence.dto.ValidatePhoneRequestDTO;
 import com.voxlr.marmoset.model.persistence.dto.ValidatePhoneResponseDTO;
 import com.voxlr.marmoset.service.AuthorizationService;
-import com.voxlr.marmoset.service.ValidationRequestService;
-import com.voxlr.marmoset.service.ValidationRequestService.ValidationType;
+import com.voxlr.marmoset.service.domain.ValidationRequestService;
+import com.voxlr.marmoset.service.domain.ValidationRequestService.ValidationType;
 import com.voxlr.marmoset.util.exception.EntityNotFoundException;
 
 @RestController
@@ -46,7 +46,7 @@ public class ValidationController extends ApiController {
     private ModelMapper modelMapper;
     
     @SuppressWarnings("serial")
-    private HashMap<ValidationType, Class<? extends Phoneable>> typeMap = new HashMap<ValidationType, Class<? extends Phoneable>>() {{
+    private HashMap<ValidationType, Class<? extends Phoneable<?>>> typeMap = new HashMap<ValidationType, Class<? extends Phoneable<?>>>() {{
 	put(ValidationType.COMPANY, Company.class);
 	put(ValidationType.USER, User.class);
     }};
@@ -62,9 +62,9 @@ public class ValidationController extends ApiController {
 	    throw new Exception("Bad data");
 	}
 	
-	Class<? extends Phoneable> typeClass = typeMap.get(validatePhoneRequestDTO.getType());
+	Class<? extends Phoneable<?>> typeClass = typeMap.get(validatePhoneRequestDTO.getType());
 	
-	Phoneable entity = mongoTemplate.findById(validatePhoneRequestDTO.getEntityId(), typeClass);
+	Phoneable<?> entity = mongoTemplate.findById(validatePhoneRequestDTO.getEntityId(), typeClass);
 	if (entity == null) {
 	    throw new EntityNotFoundException(typeClass, "id", validatePhoneRequestDTO.getEntityId());
 	}
@@ -86,7 +86,7 @@ public class ValidationController extends ApiController {
 	    method = RequestMethod.GET)
     public ResponseEntity<?> checkValidation(
 	    @PathVariable String id,
-	    @AuthenticationPrincipal AuthUser authUser) {
+	    @AuthenticationPrincipal AuthUser authUser) throws EntityNotFoundException {
 	ValidationRequest request = validationRequestService.getRequest(id, authUser);
 	ValidatePhoneResponseDTO responseDTO = modelMapper.map(request, ValidatePhoneResponseDTO.class);
 	return new ResponseEntity<ValidatePhoneResponseDTO>(responseDTO, HttpStatus.OK);

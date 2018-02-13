@@ -10,9 +10,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.github.mongobee.changeset.ChangeLog;
 import com.github.mongobee.changeset.ChangeSet;
-import com.mongodb.BasicDBObjectBuilder;
-import com.mongodb.DBObject;
-import com.mongodb.WriteResult;
+import com.mongodb.client.result.UpdateResult;
 import com.voxlr.marmoset.auth.UserRole;
 import com.voxlr.marmoset.model.persistence.Company;
 import com.voxlr.marmoset.model.persistence.Team;
@@ -30,11 +28,11 @@ public class DBM_001_InitializeVoxlr {
     public void createAdminCompany(MongoTemplate mongoTemplate) throws Exception {
 	Query query = Query.query(Criteria.where("name").is("VoxlrAdmin"));
 
-	WriteResult result = mongoTemplate.updateFirst(
+	UpdateResult result = mongoTemplate.upsert(
 		query,
 		new Update()
 		.set("name", "VoxlrAdmin"), Company.class);
-	if (result.getN() != 1) {
+	if (!(result.getUpsertedId() != null || result.getMatchedCount() == 1)) {
 	    throw new Exception("Unable to create admin company");
 	}
 	
@@ -46,12 +44,12 @@ public class DBM_001_InitializeVoxlr {
     public void createAdminTeam(MongoTemplate mongoTemplate) throws Exception {
 	Query query = Query.query(Criteria.where("name").is("VoxlrAdmin"));
 
-	WriteResult result = mongoTemplate.updateFirst(query, 
+	UpdateResult result = mongoTemplate.upsert(query, 
 		new Update()
 		.set("companyId", "companyId")
 		.set("name", "VoxlrAdmin")
 		, Team.class);
-	if (result.getN() != 1) {
+	if (!(result.getUpsertedId() != null || result.getMatchedCount() == 1)) {
 	    throw new Exception("Unable to create admin team");
 	}
 	teamId = mongoTemplate.findOne(query, Team.class)
@@ -62,7 +60,7 @@ public class DBM_001_InitializeVoxlr {
     public void createSuperAdmin(MongoTemplate mongoTemplate) throws Exception {
 	Query query = Query.query(Criteria.where("email").is("admin@getvoxlr.com"));
 	
-	WriteResult result = mongoTemplate.updateFirst(query, 
+	UpdateResult result = mongoTemplate.upsert(query, 
 		new Update()
 		.set("email", "admin@getvoxlr.com")
 		.set("firstName", "Michael")
@@ -74,7 +72,7 @@ public class DBM_001_InitializeVoxlr {
 		.set("isInactive", false)
 		.set("role", UserRole.SUPER_ADMIN.toString())
 		, User.class);
-	if (result.getN() != 1) {
+	if (!(result.getUpsertedId() != null || result.getMatchedCount() == 1)) {
 	    throw new Exception("Unable to create super admin");
 	}
     }

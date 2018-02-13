@@ -1,7 +1,7 @@
 package com.voxlr.marmoset.model.persistence.dto;
 
 import com.voxlr.marmoset.model.PhoneNumberHolder;
-import com.voxlr.marmoset.service.ValidationRequestService.ValidationType;
+import com.voxlr.marmoset.service.domain.ValidationRequestService.ValidationType;
 import com.voxlr.marmoset.validation.constraint.PhoneNumberValidConstraint;
 
 import lombok.AllArgsConstructor;

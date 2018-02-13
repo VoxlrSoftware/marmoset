@@ -1,6 +1,8 @@
-package com.voxlr.marmoset.service;
+package com.voxlr.marmoset.service.domain;
 
 import static com.voxlr.marmoset.model.PhoneNumberHolder.comparePhoneNumbers;
+
+import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,9 +15,13 @@ import com.twilio.exception.ApiException;
 import com.voxlr.marmoset.model.AuthUser;
 import com.voxlr.marmoset.model.PhoneNumberHolder;
 import com.voxlr.marmoset.model.Phoneable;
+import com.voxlr.marmoset.model.persistence.Call;
 import com.voxlr.marmoset.model.persistence.ValidationRequest;
 import com.voxlr.marmoset.model.persistence.dto.ValidatePhoneResponseDTO;
 import com.voxlr.marmoset.repositories.ValidationRequestRepository;
+import com.voxlr.marmoset.service.AuthorizationService;
+import com.voxlr.marmoset.service.TwilioService;
+import com.voxlr.marmoset.util.exception.EntityNotFoundException;
 
 import lombok.Getter;
 
@@ -53,7 +59,7 @@ public class ValidationRequestService {
     
     public ValidatePhoneResponseDTO validatePhoneNumber(
 	    AuthUser authUser,
-	    Phoneable entity,
+	    Phoneable<?> entity,
 	    PhoneNumberHolder phoneNumber) {
 	ValidatePhoneResponseDTO responseDTO;
 	
@@ -82,19 +88,23 @@ public class ValidationRequestService {
 	return responseDTO;
     }
     
-    public ValidationRequest getRequest(String id, AuthUser authUser) {
-	ValidationRequest request = validationRequestRepository.findOne(id);
+    public ValidationRequest getRequest(String id, AuthUser authUser) throws EntityNotFoundException {
+	Optional<ValidationRequest> request = validationRequestRepository.findById(id);
 	
-	if (!authorizationService.canRead(authUser, request)) {
+	if (!request.isPresent()) {
+	    throw new EntityNotFoundException(Call.class, "id", id);
+	}
+	
+	if (!authorizationService.canRead(authUser, request.get())) {
 	    throw new UnauthorizedUserException("Unauthorized to view validation request.");
 	}
 	
-	return request;
+	return request.get();
     }
     
     public ValidationRequest createRequest(
 	    AuthUser authUser,
-	    Phoneable entity,
+	    Phoneable<?> entity,
 	    PhoneNumberHolder phoneNumber,
 	    String requestId) {
 	ValidationRequest request = ValidationRequest.builder()
@@ -114,7 +124,7 @@ public class ValidationRequestService {
 	return request;
     }
     
-    public void updatePhoneNumberForEntity(Phoneable entity, PhoneNumberHolder phoneNumber) {
+    public void updatePhoneNumberForEntity(Phoneable<?> entity, PhoneNumberHolder phoneNumber) {
 	entity.setPhoneNumber(phoneNumber);
 	mongoTemplate.save(entity);
     }
@@ -126,8 +136,8 @@ public class ValidationRequestService {
 	    request.setHasValidated(true);
 	    if (response) {		
 		try {
-		    Class entityType = Class.forName(request.getEntityType());
-		    Phoneable entity = (Phoneable) mongoTemplate.findById(request.getEntityId(), entityType);
+		    Class<?> entityType = Class.forName(request.getEntityType());
+		    Phoneable<?> entity = (Phoneable<?>) mongoTemplate.findById(request.getEntityId(), entityType);
 		    
 		    if (entity != null) {
 			updatePhoneNumberForEntity(entity, request.getPhoneNumber());

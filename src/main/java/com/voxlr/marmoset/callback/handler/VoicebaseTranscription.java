@@ -28,7 +28,7 @@ public class VoicebaseTranscription extends CallbackHandler<String> {
 	    throws CallbackException {
 	try {
 	    ObjectNode response = callbackBody.getJsonBody();
-	    transcriptionService.processTranscription(response, Platform.TWILIO);
+	    transcriptionService.processTranscription(response, Platform.VOICEBASE);
 	} catch (Exception e) {
 	    throw new CallbackException("Unable to handle transcription result", e);
 	}

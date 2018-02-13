@@ -28,6 +28,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class CallRequest extends Entity implements UserScopedEntity {
     private String userId;
+    private String teamId;
     private String companyId;
 
     @Field("empNum")

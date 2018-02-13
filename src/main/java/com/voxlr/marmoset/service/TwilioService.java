@@ -1,7 +1,6 @@
 package com.voxlr.marmoset.service;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static com.voxlr.marmoset.util.PathUtils.combinePaths;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +18,7 @@ import com.twilio.twiml.VoiceResponse;
 import com.twilio.twiml.voice.Dial;
 import com.twilio.twiml.voice.Number;
 import com.twilio.type.PhoneNumber;
-import com.voxlr.marmoset.config.properties.AppProperties;
 import com.voxlr.marmoset.config.properties.TwilioProperties;
-import com.voxlr.marmoset.controller.CallbackController;
 import com.voxlr.marmoset.model.PhoneNumberHolder;
 import com.voxlr.marmoset.model.persistence.Call;
 import com.voxlr.marmoset.service.CallbackService.CallbackType;
@@ -36,9 +33,6 @@ public class TwilioService implements InitializingBean {
     
     @Autowired
     private CallbackService callbackService;
-    
-    @Autowired
-    private AppProperties appProperties;
     
     public String getClientToken() {
 	OutgoingClientScope outgoingClientScope = 

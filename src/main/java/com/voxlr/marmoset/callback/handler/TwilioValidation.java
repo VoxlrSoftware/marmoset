@@ -9,7 +9,7 @@ import com.voxlr.marmoset.callback.CallbackHandler;
 import com.voxlr.marmoset.model.dto.CallbackResult;
 import com.voxlr.marmoset.service.CallbackService.CallbackType;
 import com.voxlr.marmoset.service.CallbackService.Platform;
-import com.voxlr.marmoset.service.ValidationRequestService;
+import com.voxlr.marmoset.service.domain.ValidationRequestService;
 
 @Callback(
 	type = CallbackType.VALIDATION,

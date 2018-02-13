@@ -2,6 +2,8 @@ package com.voxlr.marmoset.service.domain;
 
 import static com.voxlr.marmoset.model.persistence.factory.CallUpdate.anUpdate;
 
+import java.util.Optional;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
@@ -10,7 +12,6 @@ import org.springframework.stereotype.Service;
 import com.voxlr.marmoset.model.AuthUser;
 import com.voxlr.marmoset.model.CallOutcome;
 import com.voxlr.marmoset.model.CallScoped;
-import com.voxlr.marmoset.model.MongoService;
 import com.voxlr.marmoset.model.persistence.Call;
 import com.voxlr.marmoset.model.persistence.CallRequest;
 import com.voxlr.marmoset.model.persistence.CallStrategy;
@@ -37,42 +38,39 @@ public class CallService {
     private CallRepository callRepository;
     
     @Autowired
-    private MongoService mongoService;
-    
-    @Autowired
     private CallRequestRepository callRequestRepository;
     
     @Autowired
     private ModelMapper modelMapper;
     
     public Call getByTranscriptionId(String transcriptionId) throws EntityNotFoundException {
-	Call call = callRepository.findOneByTranscriptionId(transcriptionId);
+	Optional<Call> call = callRepository.findOneByTranscriptionId(transcriptionId);
 	
-	if (call == null) {
+	if (!call.isPresent()) {
 	    throw new EntityNotFoundException(Call.class, "transcriptionId", transcriptionId);
 	}
 	
-	return call;
+	return call.get();
     }
     
     public Call getByCallSid(String callSid) throws EntityNotFoundException {
-	Call call = callRepository.findOneByCallSid(callSid);
+	Optional<Call> call = callRepository.findOneByCallSid(callSid);
 	
-	if (call == null) {
+	if (!call.isPresent()) {
 	    throw new EntityNotFoundException(Call.class, "callSid", callSid);
 	}
 	
-	return call;
+	return call.get();
     }
     
     public Call getInternal(String id) throws EntityNotFoundException {
-	Call call = callRepository.findOne(id);
+	Optional<Call> call = callRepository.findById(id);
 	
-	if (call == null) {
+	if (!call.isPresent()) {
 	    throw new EntityNotFoundException(Call.class, "id", id);
 	}
 	
-	return call;
+	return call.get();
     }
     
     public Call getInternal(CallScoped callScoped) throws EntityNotFoundException, InvalidArgumentsException {
@@ -92,11 +90,7 @@ public class CallService {
     }
     
     public Call get(String id, AuthUser authUser) throws Exception {
-	Call call = callRepository.findOne(id);
-	
-	if (call == null) {
-	    throw new EntityNotFoundException(Call.class, "id", id);
-	}
+	Call call = getInternal(id);
 	
 	if (!authorizationService.canRead(authUser, call)) {
 	    throw new UnauthorizedUserException("Account unauthorized to view call");
@@ -106,13 +100,13 @@ public class CallService {
     }
     
     private CallRequest getRequest(String requestId) throws EntityNotFoundException {
-	CallRequest callRequest = callRequestRepository.findOne(requestId);
+	Optional<CallRequest> callRequest = callRequestRepository.findById(requestId);
 	
-	if (callRequestRepository == null) {
+	if (!callRequest.isPresent()) {
 	    throw new EntityNotFoundException(CallRequest.class, "id", requestId);
 	}
 	
-	return callRequest;
+	return callRequest.get();
     }
     
     public CallRequest createRequest(CallRequestCreateDTO callRequestCreateDTO, AuthUser authUser) throws EntityNotFoundException {
@@ -126,6 +120,7 @@ public class CallService {
 		.employeeNumber(callRequestCreateDTO.getCallerId())
 		.customerNumber(callRequestCreateDTO.getCustomerNumber())
 		.userId(authUser.getId())
+		.teamId(authUser.getTeamId())
 		.companyId(authUser.getCompanyId())
 		.callStrategy(callStrategy)
 		.build();
@@ -141,6 +136,7 @@ public class CallService {
 	Call call = Call.builder()
 		.callSid(callSid)
 		.userId(callRequest.getUserId())
+		.teamId(callRequest.getTeamId())
 		.companyId(callRequest.getCompanyId())
 		.customerNumber(callRequest.getCustomerNumber())
 		.employeeNumber(callRequest.getEmployeeNumber())
@@ -178,21 +174,17 @@ public class CallService {
 	    update.withCallOutcome(callUpdateDTO.getCallOutcome());
 	}
 	
-	call = mongoService.update(update);
+	call = callRepository.update(update);
 	
 	return call;
     }
     
     public Call updateInternal(CallUpdate update) {
-	return mongoService.update(update);
+	return callRepository.update(update);
     }
     
     public void delete(String id, AuthUser authUser) throws Exception {
-	Call call = callRepository.findOne(id);
-	
-	if (call == null) {
-	    throw new EntityNotFoundException(Call.class, "id", id);
-	}
+	Call call = getInternal(id);
 	
 	if (!authorizationService.canWrite(authUser, call)) {
 	    throw new UnauthorizedUserException("Account unauthorized to delete call");

@@ -2,6 +2,7 @@ package com.voxlr.marmoset.model.persistence.factory;
 
 import com.voxlr.marmoset.model.persistence.Call;
 import com.voxlr.marmoset.model.persistence.CallStrategy;
+import com.voxlr.marmoset.model.persistence.Call.Analysis;
 
 public class CallUpdate extends EntityUpdate<Call> {
     
@@ -15,6 +16,8 @@ public class CallUpdate extends EntityUpdate<Call> {
 	TRANSCRIPTION_URL("transcriptionUrl"),
 	CALL_OUTCOME("callOutcome"),
 	CALL_STRATEGY("callStrategy"),
+	ANALYSIS("analysis"),
+	HAS_BEEN_ANALYZED("hasBeenAnalyzed"),
 	STAT_DURATION("statistics.duration"),
 	STAT_TOTALTALKTIME("statistics.totalTalkTime"),
 	STAT_CUSTOMERTALKTIME("statistics.customerTalkTime"),
@@ -79,6 +82,12 @@ public class CallUpdate extends EntityUpdate<Call> {
     
     public CallUpdate withEmployeeTalkTime(int employeeTalkTime) {
 	getUpdate().addToSet(DBField.STAT_EMPLOYEETALKTIME.get(), employeeTalkTime);
+	return this;
+    }
+    
+    public CallUpdate withAnalysis(Analysis analysis) {
+	getUpdate().addToSet(DBField.ANALYSIS.get(), analysis)
+		.addToSet(DBField.HAS_BEEN_ANALYZED.get(), true);
 	return this;
     }
 }

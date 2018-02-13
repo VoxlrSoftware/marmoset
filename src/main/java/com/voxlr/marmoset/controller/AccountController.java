@@ -13,8 +13,8 @@ import com.voxlr.marmoset.model.AuthUser;
 import com.voxlr.marmoset.model.persistence.User;
 import com.voxlr.marmoset.model.persistence.dto.UserDTO;
 import com.voxlr.marmoset.service.TwilioService;
-import com.voxlr.marmoset.service.ValidationRequestService;
 import com.voxlr.marmoset.service.domain.UserService;
+import com.voxlr.marmoset.service.domain.ValidationRequestService;
 import com.voxlr.marmoset.util.exception.EntityNotFoundException;
 
 @RestController

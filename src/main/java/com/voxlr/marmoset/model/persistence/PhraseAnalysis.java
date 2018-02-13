@@ -64,5 +64,9 @@ public class PhraseAnalysis {
 	private DetectionType type;
 	private String matchedText;
 	private double score;
+	
+	public boolean wasDetected(double threshold) {
+	    return type.equals(DetectionType.MATCH) || score >= threshold;
+	}
     }
 }

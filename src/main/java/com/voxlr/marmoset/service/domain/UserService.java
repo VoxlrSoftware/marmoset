@@ -1,10 +1,12 @@
 package com.voxlr.marmoset.service.domain;
 
+import java.util.Optional;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +25,7 @@ public class UserService {
     UserRepository userRepository;
 
     @Autowired
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
+    private PasswordEncoder bCryptPasswordEncoder;
     
     @Autowired
     private ModelMapper modelMapper;
@@ -41,16 +43,22 @@ public class UserService {
 	return userRepository.findEmailByEmail(email) == null;
     }
     
+    public User getInternal(String id) throws EntityNotFoundException {
+	Optional<User> user = userRepository.findById(id);
+	
+	if (!user.isPresent()) {
+	    throw new EntityNotFoundException(User.class, "id", id);
+	}
+	
+	return user.get();
+    }
+    
     public User get(AuthUser authUser) throws EntityNotFoundException {
 	return get(authUser.getId(), authUser);
     }
     
     public User get(String id, AuthUser authUser) throws EntityNotFoundException {
-	User user = userRepository.findOne(id);
-	
-	if (user == null) {
-	    throw new EntityNotFoundException(User.class, "id", id);
-	}
+	User user = getInternal(id);
 	
 	if (!authorizationService.canRead(authUser, user)) {
 	    throw new UnauthorizedUserException("Account unauthorized to view user");
@@ -81,11 +89,7 @@ public class UserService {
     }
     
     public User update(UserUpdateDTO userUpdateDTO, AuthUser authUser) throws EntityNotFoundException {
-	User user = userRepository.findOne(userUpdateDTO.getId());
-	
-	if (user == null) {
-	    throw new EntityNotFoundException(User.class, "id", userUpdateDTO.getId());
-	}
+	User user = getInternal(userUpdateDTO.getId());
 	
 	if (!authorizationService.canWrite(authUser, user)) {
 	    throw new UnauthorizedUserException("Account unauthorized to view user");
@@ -117,11 +121,7 @@ public class UserService {
     }
     
     public User delete(String id, AuthUser authUser) throws EntityNotFoundException {
-	User user = userRepository.findOne(id);
-	
-	if (user == null) {
-	    throw new EntityNotFoundException(User.class, "id", id);
-	}
+	User user = getInternal(id);
 	
 	if (!authorizationService.canWrite(authUser, user)) {
 	    throw new UnauthorizedUserException("Account unauthorized to delete user");

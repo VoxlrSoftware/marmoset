@@ -62,7 +62,7 @@ public class CallbackService implements ApplicationContextAware, InitializingBea
 	return combinePaths(appProperties.getExternalApiUrl(), "callback", type.getName(), platform.getName());
     }
     
-    private final HashMap<String, CallbackHandler> callbackHandlers = 
+    private final HashMap<String, CallbackHandler<?>> callbackHandlers = 
 	    new HashMap<>();
     
     public CallbackService() {}
@@ -80,7 +80,7 @@ public class CallbackService implements ApplicationContextAware, InitializingBea
 	handlers.stream().forEach(handlerClass -> {
 	    try {
 		if (CallbackHandler.class.isAssignableFrom(handlerClass)) {
-		    CallbackHandler handler = (CallbackHandler) handlerClass.newInstance();
+		    CallbackHandler<?> handler = (CallbackHandler<?>) handlerClass.newInstance();
 		    handler.initialize(applicationContext);
 		    HashMap<String, Object> methodMap = getAnnotationMembers(
 			    handlerClass,
@@ -94,7 +94,7 @@ public class CallbackService implements ApplicationContextAware, InitializingBea
 	});
     }
     
-    private void addHandler(CallbackHandler handler, HashMap<String, Object> methodMap) {
+    private void addHandler(CallbackHandler<?> handler, HashMap<String, Object> methodMap) {
 	RequestMethod[] methods = (RequestMethod[]) methodMap.get("methods");
 	CallbackType type = (CallbackType) methodMap.get("type");
 	Platform platform = (Platform) methodMap.get("platform");
@@ -109,7 +109,7 @@ public class CallbackService implements ApplicationContextAware, InitializingBea
 	return String.join("|", new String[] { typeName, platformName, methodName });
     }
     
-    public CallbackHandler getHandler(
+    public CallbackHandler<?> getHandler(
 	    String type,
 	    String platform,
 	    String method) throws HandlerNotFoundException {

@@ -39,12 +39,18 @@ public class CompanyService {
 	return companyRepository.findIdById(id) != null;
     }
     
-    public CallStrategy findCallStrategy(String companyId, String strategyId) throws EntityNotFoundException {
-	Company company = companyRepository.findOne(companyId);
+    public Company getInternalAndThrow(String companyId) throws EntityNotFoundException {
+	Optional<Company> result = companyRepository.findById(companyId);
 	
-	if (company == null) {
+	if (!result.isPresent()) {
 	    throw new EntityNotFoundException(Company.class, "id", companyId);
 	}
+	
+	return result.get();
+    }
+    
+    public CallStrategy findCallStrategy(String companyId, String strategyId) throws EntityNotFoundException {
+	Company company = getInternalAndThrow(companyId);
 	
 	Optional<CallStrategy> strategy = company.getCallStrategies().stream()
 		.filter(x -> x.getId().equals(strategyId)).findFirst();
@@ -57,11 +63,7 @@ public class CompanyService {
     }
     
     public Company get(String id, AuthUser authUser) throws EntityNotFoundException {
-	Company company = companyRepository.findOne(id);
-	
-	if (company == null) {
-	    throw new EntityNotFoundException(Company.class, "id", id);
-	}
+	Company company = getInternalAndThrow(id);
 	
 	if (!authorizationService.canRead(authUser, company)) {
 	    throw new UnauthorizedUserException("Account unauthorized to view company");
@@ -88,11 +90,7 @@ public class CompanyService {
     }
     
     public Company update(CompanyUpdateDTO companyUpdateDTO, AuthUser authUser) throws EntityNotFoundException {	
-	Company company = companyRepository.findOne(companyUpdateDTO.getId());
-	
-	if (company == null) {
-	    throw new EntityNotFoundException(Company.class, "id", companyUpdateDTO.getId());
-	}
+	Company company = getInternalAndThrow(companyUpdateDTO.getId());
 	
 	if (!authorizationService.canWrite(authUser, company)) {
 	    throw new UnauthorizedUserException("Account unauthorized to update company");
@@ -137,11 +135,7 @@ public class CompanyService {
     }
     
     public void delete(String id, AuthUser authUser) throws EntityNotFoundException {
-	Company company = companyRepository.findOne(id);
-	
-	if (company == null) {
-	    throw new EntityNotFoundException(Company.class, "id", id);
-	}
+	Company company = getInternalAndThrow(id);
 	
 	if (!authorizationService.canWrite(authUser, company)) {
 	    throw new UnauthorizedUserException("Account unauthorized to delete company");

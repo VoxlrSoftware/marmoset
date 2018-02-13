@@ -1,7 +1,9 @@
 package com.voxlr.marmoset.analysis.service;
 
+import static com.voxlr.marmoset.model.persistence.factory.CallUpdate.anUpdate;
+import static com.voxlr.marmoset.util.StreamUtils.asStream;
+
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +13,7 @@ import org.springframework.stereotype.Service;
 import com.voxlr.marmoset.analysis.model.CallAnalysisResult;
 import com.voxlr.marmoset.analysis.model.CallAnalysisResult.PhraseResult;
 import com.voxlr.marmoset.model.persistence.Call;
-import com.voxlr.marmoset.model.persistence.CallAnalysis;
+import com.voxlr.marmoset.model.persistence.Call.Analysis;
 import com.voxlr.marmoset.model.persistence.PhraseAnalysis;
 import com.voxlr.marmoset.model.persistence.PhraseAnalysis.Detection;
 import com.voxlr.marmoset.model.persistence.PhraseAnalysis.DetectionType;
@@ -20,6 +22,8 @@ import com.voxlr.marmoset.util.exception.EntityNotFoundException;
 
 @Service
 public class CallAnalysisService {
+    
+    public static double DEFAULT_DETECTION_THRESHOLD = 0.45;
     
     @Autowired
     private CallService callService;
@@ -31,7 +35,7 @@ public class CallAnalysisService {
     
     @Async("analysisExecutor")
     private void handleAnalysisResult(Call call, CallAnalysisResult result) {
-	CallAnalysis analysis = new CallAnalysis(call);
+	Analysis analysis = call.getAnalysis().reset();
 	List<String> expectedPhrases = call.getCallStrategyPhrases();
 	Stream<PhraseResult> phrases = result.getPhrases().stream();
 	
@@ -50,9 +54,18 @@ public class CallAnalysisService {
 	    } catch (Exception e) {}
 	    
 	    analysis.addPhraseAnalysis(phraseAnalysis);
+	    postProcessAnalysis(analysis);
 	});
 	
-	
+	callService.updateInternal(anUpdate(call).withAnalysis(analysis));
+    }
+    
+    private void postProcessAnalysis(Analysis analysis) {
+	int phraseCount = analysis.getPhraseAnalysis().size();
+	int detectionCount = (int) asStream(analysis.getPhraseAnalysis())
+		.map(PhraseAnalysis::getDetections)
+		.filter(detections -> asStream(detections).anyMatch(detection -> detection.wasDetected(DEFAULT_DETECTION_THRESHOLD))).count();
+	analysis.setDetectionRatio(phraseCount > 0 ? detectionCount / phraseCount : 0);
     }
 
 }

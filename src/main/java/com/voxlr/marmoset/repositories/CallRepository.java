@@ -1,10 +1,10 @@
 package com.voxlr.marmoset.repositories;
 
-import org.springframework.data.repository.CrudRepository;
+import java.util.Optional;
 
 import com.voxlr.marmoset.model.persistence.Call;
 
-public interface CallRepository extends CrudRepository<Call, String> {
-    Call findOneByCallSid(String callSid);
-    Call findOneByTranscriptionId(String transcriptionId);
+public interface CallRepository extends EntityRepository<Call>, AtomicUpdate<Call> {
+    Optional<Call> findOneByCallSid(String callSid);
+    Optional<Call> findOneByTranscriptionId(String transcriptionId);
 }

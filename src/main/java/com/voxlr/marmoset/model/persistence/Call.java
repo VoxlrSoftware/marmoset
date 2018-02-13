@@ -29,15 +29,15 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @CompoundIndexes({
-    @CompoundIndex(name = "companyId_createDate_outcome", def = "{'companyId' : 1, 'createDate': 1, 'outcome': 1}"),
-    @CompoundIndex(name = "userId_createDate_outcome", def = "{'userId': 1, 'createDate': 1, 'outcome': 1}")
+    @CompoundIndex(name = "companyId_createDate_hasBeenAnalyzed", def = "{'companyId' : 1, 'createDate': 1, 'hasBeenAnalyzed': 1}"),
+    @CompoundIndex(name = "teamId_createDate_hasBeenAnalyzed", def = "{'teamId' : 1, 'createDate': 1, 'hasBeenAnalyzed': 1}"),
+    @CompoundIndex(name = "userId_createDate_hasBeenAnalyzed", def = "{'userId': 1, 'createDate': 1, 'hasBeenAnalyzed': 1}")
 })
 @Builder
 @AllArgsConstructor
 public class Call extends AuditModel implements UserScopedEntity {
-    @NotNull
     private String companyId;
-    @NotNull
+    private String teamId;
     private String userId;
     @Indexed
     private String callSid;
@@ -58,22 +58,59 @@ public class Call extends AuditModel implements UserScopedEntity {
     @Field("outcome")
     private String callOutcome = NONE;
     
+    @Field("analyzed")
+    private boolean hasBeenAnalyzed = false;
+    
+    @NotNull
     private CallStrategy callStrategy;
     
     @Field("stats")
     private Statistic statistics = new Statistic();
     
+    private Analysis analysis = new Analysis();
+    
     public List<String> getCallStrategyPhrases() {
-	return callStrategy != null ? callStrategy.getPhrases() : newArrayList();
+	return callStrategy.getPhrases();
     }
     
     @Getter
     @Setter
-    @NoArgsConstructor
     public static class Statistic {
-        private int duration = 0;
-        private int totalTalkTime = 0;
-        private int customerTalkTime = 0;
-        private int employeeTalkTime = 0;
+        private int duration;
+        private int totalTalkTime;
+        private int customerTalkTime;
+        private int employeeTalkTime;
+        
+        public Statistic() {
+            this.reset();
+        }
+        
+        public void reset() {
+            this.duration = 0;
+            this.totalTalkTime = 0;
+            this.customerTalkTime = 0;
+            this.employeeTalkTime = 0;
+        }
     }
+    
+    @Getter
+    @Setter
+    public static class Analysis {
+	    private List<PhraseAnalysis> phraseAnalysis;
+	    private double detectionRatio;
+	    
+	    public Analysis() {
+		reset();
+	    }
+	    
+	    public void addPhraseAnalysis(PhraseAnalysis phrase) {
+		this.phraseAnalysis.add(phrase);
+	    }
+	    
+	    public Analysis reset() {
+		this.phraseAnalysis = newArrayList();
+		this.detectionRatio = 0.0;
+		return this;
+	    }
+	}
 }

@@ -1,6 +1,7 @@
 package com.voxlr.marmoset.util;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -12,5 +13,9 @@ public class StreamUtils {
     public static <T> Stream<T> asStream(Iterator<T> sourceIterator, boolean parallel) {
         Iterable<T> iterable = () -> sourceIterator;
         return StreamSupport.stream(iterable.spliterator(), parallel);
+    }
+    
+    public static <T> Stream<T> asStream(List<T> sourceList) {
+	return sourceList.stream();
     }
 }

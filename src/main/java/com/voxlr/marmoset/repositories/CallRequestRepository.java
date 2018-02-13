@@ -1,9 +1,7 @@
 package com.voxlr.marmoset.repositories;
 
-import org.springframework.data.repository.CrudRepository;
-
 import com.voxlr.marmoset.model.persistence.CallRequest;
 
-public interface CallRequestRepository extends CrudRepository<CallRequest, String> {
+public interface CallRequestRepository extends EntityRepository<CallRequest> {
 
 }
