@@ -6,7 +6,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +25,7 @@ public class UserService {
     UserRepository userRepository;
 
     @Autowired
-    private PasswordEncoder bCryptPasswordEncoder;
+    private BCryptPasswordEncoder passwordEncoder;
     
     @Autowired
     private ModelMapper modelMapper;
@@ -82,7 +82,7 @@ public class UserService {
 	validationService.validate(authUser, userCreateDTO);
 	
 	User user = modelMapper.map(userCreateDTO, User.class);
-	user.setPassword(bCryptPasswordEncoder.encode("Password"));
+	user.setPassword(passwordEncoder.encode("Password"));
 	user = userRepository.save(user);
 	
 	return user;
@@ -106,7 +106,7 @@ public class UserService {
 	}
 	
 	if (userUpdateDTO.getPassword() != null) {
-	    user.setPassword(bCryptPasswordEncoder.encode(userUpdateDTO.getPassword()));
+	    user.setPassword(passwordEncoder.encode(userUpdateDTO.getPassword()));
 	}
 	
 	if (userUpdateDTO.getRole() != null) {

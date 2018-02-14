@@ -18,8 +18,8 @@ import com.voxlr.marmoset.util.MapperUtils;
 public class MarmosetApplication {
     
     @Bean
-    public BCryptPasswordEncoder bCryptPasswordEncoder() {
-        return new BCryptPasswordEncoder();
+    public BCryptPasswordEncoder passwordEncoder(){
+	return new BCryptPasswordEncoder();
     }
     
     @Bean 
