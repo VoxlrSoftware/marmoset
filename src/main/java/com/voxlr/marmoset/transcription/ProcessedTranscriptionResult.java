@@ -8,8 +8,8 @@ import lombok.Setter;
 public class ProcessedTranscriptionResult {
     private String result;
     private String entityId;
-    private int employeeTalkTime;
-    private int customerTalkTime;
+    private int employeeTalkTime = 0;
+    private int customerTalkTime = 0;
     private Exception error;
     
     public ProcessedTranscriptionResult(String entityId) {
@@ -23,5 +23,13 @@ public class ProcessedTranscriptionResult {
     
     public boolean hasError() {
 	return error != null;
+    }
+    
+    public int getTotalTalkTime() {
+	try {
+	    return employeeTalkTime + customerTalkTime;
+	} catch (Exception e) {}
+	
+	return 0;
     }
 }

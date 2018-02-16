@@ -3,8 +3,6 @@ package com.voxlr.marmoset.model.persistence;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hibernate.validator.constraints.NotBlank;
-import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.voxlr.marmoset.model.PhoneNumberHolder;
@@ -20,7 +18,6 @@ import lombok.Singular;
 import lombok.experimental.Accessors;
 
 @Document(collection = "companies")
-@EnableMongoAuditing
 @Getter
 @Setter
 @Builder
@@ -29,7 +26,6 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class Company extends AuditModel implements Phoneable<Company> {
     
-    @NotBlank
     private String name;
     
     @PhoneNumberValidConstraint

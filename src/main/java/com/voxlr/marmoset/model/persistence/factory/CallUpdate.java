@@ -41,53 +41,53 @@ public class CallUpdate extends EntityUpdate<Call> {
     }
     
     public CallUpdate withRecordingUrl(String recordingUrl) {
-	getUpdate().addToSet(DBField.RECORDING_URL.get(), recordingUrl);
+	getUpdate().set(DBField.RECORDING_URL.get(), recordingUrl);
 	return this;
     }
     
     public CallUpdate withTranscriptionId(String transcriptionId) {
-	getUpdate().addToSet(DBField.TRANSCRIPTION_ID.get(), transcriptionId);
+	getUpdate().set(DBField.TRANSCRIPTION_ID.get(), transcriptionId);
 	return this;
     }
     
     public CallUpdate withTranscriptionUrl(String transcriptionUrl) {
-	getUpdate().addToSet(DBField.TRANSCRIPTION_URL.get(), transcriptionUrl);
+	getUpdate().set(DBField.TRANSCRIPTION_URL.get(), transcriptionUrl);
 	return this;
     }
     
     public CallUpdate withCallOutcome(String callOutcome) {
-	getUpdate().addToSet(DBField.CALL_OUTCOME.get(), callOutcome);
+	getUpdate().set(DBField.CALL_OUTCOME.get(), callOutcome);
 	return this;
     }
     
     public CallUpdate withCallStrategy(CallStrategy callStrategy) {
-	getUpdate().addToSet(DBField.CALL_STRATEGY.get(), callStrategy);
+	getUpdate().set(DBField.CALL_STRATEGY.get(), callStrategy);
 	return this;
     }
     
     public CallUpdate withDuration(int duration) {
-	getUpdate().addToSet(DBField.STAT_DURATION.get(), duration);
+	getUpdate().set(DBField.STAT_DURATION.get(), duration);
 	return this;
     }
     
     public CallUpdate withTotalTalkTime(int totalTalkTime) {
-	getUpdate().addToSet(DBField.STAT_TOTALTALKTIME.get(), totalTalkTime);
+	getUpdate().set(DBField.STAT_TOTALTALKTIME.get(), totalTalkTime);
 	return this;
     }
     
     public CallUpdate withCustomerTalkTime(int customerTalkTime) {
-	getUpdate().addToSet(DBField.STAT_CUSTOMERTALKTIME.get(), customerTalkTime);
+	getUpdate().set(DBField.STAT_CUSTOMERTALKTIME.get(), customerTalkTime);
 	return this;
     }
     
     public CallUpdate withEmployeeTalkTime(int employeeTalkTime) {
-	getUpdate().addToSet(DBField.STAT_EMPLOYEETALKTIME.get(), employeeTalkTime);
+	getUpdate().set(DBField.STAT_EMPLOYEETALKTIME.get(), employeeTalkTime);
 	return this;
     }
     
     public CallUpdate withAnalysis(Analysis analysis) {
-	getUpdate().addToSet(DBField.ANALYSIS.get(), analysis)
-		.addToSet(DBField.HAS_BEEN_ANALYZED.get(), true);
+	getUpdate().set(DBField.ANALYSIS.get(), analysis)
+		.set(DBField.HAS_BEEN_ANALYZED.get(), true);
 	return this;
     }
 }

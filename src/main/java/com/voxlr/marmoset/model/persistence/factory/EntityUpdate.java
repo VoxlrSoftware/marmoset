@@ -16,7 +16,7 @@ public abstract class EntityUpdate<T extends Entity> {
     }
     
     public Update getUpdate() {
-	if (update != null) {
+	if (update == null) {
 	    update = new Update();
 	}
 	

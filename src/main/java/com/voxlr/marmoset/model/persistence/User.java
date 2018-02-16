@@ -1,8 +1,5 @@
 package com.voxlr.marmoset.model.persistence;
 
-import org.hibernate.validator.constraints.Email;
-import org.hibernate.validator.constraints.NotBlank;
-import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -21,7 +18,6 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Document(collection = "users")
-@EnableMongoAuditing
 @Getter
 @Setter
 @Builder
@@ -33,19 +29,10 @@ import lombok.experimental.Accessors;
 })
 @Accessors(chain = true)
 public class User extends AuditModel implements TeamScopedEntity, Phoneable<User> {
-    @NotBlank
     private String companyId;
-    
-    @NotBlank
     private String teamId;
-    
-    @NotBlank
     private String firstName;
-    
-    @NotBlank
     private String lastName;
-    
-    @NotBlank
     private String password;
     
     private PhoneNumberHolder phoneNumber;
@@ -53,9 +40,7 @@ public class User extends AuditModel implements TeamScopedEntity, Phoneable<User
     @Field("inactive")
     @Builder.Default
     private boolean isInactive = false;
-    
-    @NotBlank
-    @Email
+
     @Indexed(unique = true)
     private String email;
     

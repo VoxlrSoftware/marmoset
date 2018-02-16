@@ -4,7 +4,6 @@ import static com.google.common.collect.Lists.newArrayList;
 
 import java.util.List;
 
-import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.voxlr.marmoset.model.CallScopedEntity;
@@ -14,7 +13,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Document(collection = "callAnalysis")
-@EnableMongoAuditing
 @Getter
 @Setter
 @NoArgsConstructor

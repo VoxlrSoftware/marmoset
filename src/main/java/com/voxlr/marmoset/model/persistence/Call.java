@@ -7,7 +7,6 @@ import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
-import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -24,7 +23,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Document(collection = "calls")
-@EnableMongoAuditing
 @Getter
 @Setter
 @NoArgsConstructor
@@ -76,10 +74,10 @@ public class Call extends AuditModel implements UserScopedEntity {
     @Getter
     @Setter
     public static class Statistic {
-        private int duration;
-        private int totalTalkTime;
-        private int customerTalkTime;
-        private int employeeTalkTime;
+        private int duration = 0;
+        private int totalTalkTime = 0;
+        private int customerTalkTime = 0;
+        private int employeeTalkTime = 0;
         
         public Statistic() {
             this.reset();

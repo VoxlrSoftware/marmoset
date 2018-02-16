@@ -1,12 +1,10 @@
 package com.voxlr.marmoset;
 
-import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
-import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.voxlr.marmoset.config.properties.AppProperties;
@@ -14,7 +12,6 @@ import com.voxlr.marmoset.util.MapperUtils;
 
 @SpringBootApplication
 @Configuration
-@EnableMongoRepositories(basePackages = "com.voxlr.marmoset.repositories")
 public class MarmosetApplication {
     
     @Bean
@@ -37,10 +34,12 @@ public class MarmosetApplication {
 	return new AppProperties();
     }
     
-    @Bean
-    public ObjectMapper objectMapper() {
-	return new ObjectMapper();
-    }
+//    @Bean
+//    public ObjectMapper objectMapper() {
+//	ObjectMapper objectMapper = new ObjectMapper();
+//	objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+//	return new ObjectMapper();
+//    }
     
     public static void main(String[] args) {
 	SpringApplication.run(MarmosetApplication.class, args);

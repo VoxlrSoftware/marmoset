@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.mongodb.MongoDbFactory;
+import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
 
@@ -14,6 +15,7 @@ import com.voxlr.marmoset.config.properties.MongoProperties;
 
 @Profile("!dev")
 @Configuration
+@EnableMongoAuditing
 @EnableConfigurationProperties(MongoProperties.class)
 public class MongoProdConfig {
     

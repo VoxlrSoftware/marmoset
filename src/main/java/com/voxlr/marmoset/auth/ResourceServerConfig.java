@@ -44,14 +44,16 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 	http
 	.cors()
 	.and()
-	.requestMatcher(new OAuthRequestedMatcher())
-	.anonymous().disable()
-        .authorizeRequests()
-        .antMatchers(HttpMethod.OPTIONS).permitAll()
+	.authorizeRequests()
         .antMatchers(
         	"/actuator/**",
         	"/api-docs/**",
         	"/api/callback/**").permitAll()
+        .and()
+	.requestMatcher(new OAuthRequestedMatcher())
+	.anonymous().disable()
+        .authorizeRequests()
+        .antMatchers(HttpMethod.OPTIONS).permitAll()
         .antMatchers("/api/**").authenticated();
     }
     

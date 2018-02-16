@@ -23,13 +23,14 @@ public class CallbackBody {
     }
     
     public String getParamString(String key) {
-	return getParamValue(key).asText();
+	JsonNode node = getParamValue(key);
+	return node != null ? node.asText() : "";
     }
     
     public JsonNode getParamValue(String key) {
 	JsonNode node = parameters.get(key);
 	
-	if (node.isArray()) {
+	if (node != null && node.isArray()) {
 	    node = node.get(0);
 	}
 	

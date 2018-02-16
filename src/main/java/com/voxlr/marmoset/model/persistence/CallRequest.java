@@ -3,7 +3,6 @@ package com.voxlr.marmoset.model.persistence;
 import java.util.Date;
 
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -20,7 +19,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Document(collection = "callRequests")
-@EnableMongoAuditing
 @Getter
 @Setter
 @Builder

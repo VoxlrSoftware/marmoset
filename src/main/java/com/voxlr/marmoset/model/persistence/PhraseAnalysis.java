@@ -9,6 +9,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -60,6 +61,7 @@ public class PhraseAnalysis {
     @Getter
     @Setter
     @NoArgsConstructor
+    @AllArgsConstructor
     public static class Detection {
 	private DetectionType type;
 	private String matchedText;

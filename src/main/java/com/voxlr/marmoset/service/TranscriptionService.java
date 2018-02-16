@@ -108,7 +108,8 @@ public class TranscriptionService {
 		call = callService.updateInternal(anUpdate(call)
 			.withTranscriptionUrl(transcriptionUrl)
 			.withEmployeeTalkTime(result.getEmployeeTalkTime())
-			.withCustomerTalkTime(result.getCustomerTalkTime()));
+			.withCustomerTalkTime(result.getCustomerTalkTime())
+			.withTotalTalkTime(result.getTotalTalkTime()));
 		 callAnalysisService.createAnalysisRequest(call);
 	    } catch (Exception e) {
 		log.error("Unable to process transcription callback", e);

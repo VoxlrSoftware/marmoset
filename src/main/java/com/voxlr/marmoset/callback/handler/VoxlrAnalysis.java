@@ -40,7 +40,7 @@ public class VoxlrAnalysis extends CallbackHandler<String> {
 	    throw new CallbackException("Unable to process request from VoxlrAnalysis", e);
 	}
 	
-	return null;
+	return new CallbackResult<>("OK");
     }
 
 }

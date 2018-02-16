@@ -73,9 +73,9 @@ public class CallAnalysisRequestService {
 		return;
 	    }
 	    
-	    String transcript = obtainTranscript(call);
-	    String processedTranscript = processPunctuation(transcript);
-	    analyzeCall(call, processedTranscript);
+//	    String transcript = obtainTranscript(call);
+//	    String processedTranscript = processPunctuation(transcript);
+//	    analyzeCall(call, processedTranscript);
 	} catch (Exception e) {
 	    log.error("Unable to process call analysis request for call [" + request.getCallId() + "]", e);
 	}

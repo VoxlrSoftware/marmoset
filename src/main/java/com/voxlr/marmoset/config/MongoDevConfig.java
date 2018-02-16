@@ -3,12 +3,10 @@ package com.voxlr.marmoset.config;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.mongodb.config.EnableMongoAuditing;
-import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 @Profile("dev")
 @Configuration
 @EnableMongoAuditing
-@EnableMongoRepositories(basePackages = "com.voxlr.marmoset.repositories")
 public class MongoDevConfig {
     
     private static final String MONGO_DB_URL = "localhost";

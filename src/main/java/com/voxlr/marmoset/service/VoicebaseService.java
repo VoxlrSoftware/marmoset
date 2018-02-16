@@ -2,7 +2,9 @@ package com.voxlr.marmoset.service;
 
 import static com.voxlr.marmoset.util.JsonUtils.safeGet;
 import static com.voxlr.marmoset.util.JsonUtils.safeGetAsString;
+import static com.voxlr.marmoset.util.MapUtils.getSafe;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,13 +14,14 @@ import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 
-import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.amazonaws.util.Base64;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.voxlr.marmoset.service.CallbackService.CallbackType;
 import com.voxlr.marmoset.service.CallbackService.Platform;
 import com.voxlr.marmoset.transcription.ProcessedTranscriptionResult;
@@ -100,7 +103,7 @@ public class VoicebaseService {
 	return result;
     }
     
-    private void calculateStats(JsonNode words, ProcessedTranscriptionResult result) {
+    private void calculateStats(JsonNode words, ProcessedTranscriptionResult result) throws Exception {
 	if (!words.isArray()) {
 	    return;
 	}
@@ -109,9 +112,9 @@ public class VoicebaseService {
 	
 	int startMs = 0;
 	String speaker = null;
-	VBWords vbWords = objectMapper.convertValue(words, VBWords.class);
-	List<VBWord> turnWords = vbWords.words.stream().filter(x -> x.isTurn()).collect(Collectors.toList());
-	turnWords.add(vbWords.words.get(vbWords.words.size() - 1)); // Last word should trigger a turn calc
+	List<VBWord> vbWords = Arrays.asList(objectMapper.readValue(words.toString(), VBWord[].class));
+	List<VBWord> turnWords = vbWords.stream().filter(x -> x.isTurn()).collect(Collectors.toList());
+	turnWords.add(vbWords.get(vbWords.size() - 1)); // Last word should trigger a turn calc
 	
 	for (VBWord word : turnWords) {
 	    if (speaker != null) {
@@ -123,16 +126,12 @@ public class VoicebaseService {
 	    startMs = Integer.parseInt(word.start);
 	}
 	
-	result.setEmployeeTalkTime(talkTime.get("Employee"));
-	result.setCustomerTalkTime(talkTime.get("Customer"));
+	result.setEmployeeTalkTime(getSafe(talkTime, "Employee", 0));
+	result.setCustomerTalkTime(getSafe(talkTime, "Customer", 0));
     }
     
     @NoArgsConstructor
-    public static class VBWords {
-	public List<VBWord> words;
-    }
-    
-    @NoArgsConstructor
+    @JsonIgnoreProperties(ignoreUnknown=true)
     public static class VBWord {
 	@JsonProperty("p")
 	public String position;
@@ -153,7 +152,7 @@ public class VoicebaseService {
 	public String word;
 	
 	public boolean isTurn() {
-	    return metadata.equals("turn");
+	    return metadata != null && metadata.equals("turn");
 	}
     }
 }
