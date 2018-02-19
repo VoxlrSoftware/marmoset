@@ -6,15 +6,20 @@ import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.stereotype.Service;
 
 import com.voxlr.marmoset.model.AuthUser;
 import com.voxlr.marmoset.model.CallOutcome;
 import com.voxlr.marmoset.model.CallScoped;
+import com.voxlr.marmoset.model.dto.DateConstrained;
+import com.voxlr.marmoset.model.dto.aggregation.CallAggregateDTO;
 import com.voxlr.marmoset.model.persistence.Call;
 import com.voxlr.marmoset.model.persistence.CallRequest;
 import com.voxlr.marmoset.model.persistence.CallStrategy;
+import com.voxlr.marmoset.model.persistence.Company;
 import com.voxlr.marmoset.model.persistence.dto.CallCreateDTO;
 import com.voxlr.marmoset.model.persistence.dto.CallRequestCreateDTO;
 import com.voxlr.marmoset.model.persistence.dto.CallUpdateDTO;
@@ -22,11 +27,12 @@ import com.voxlr.marmoset.model.persistence.factory.CallUpdate;
 import com.voxlr.marmoset.repositories.CallRepository;
 import com.voxlr.marmoset.repositories.CallRequestRepository;
 import com.voxlr.marmoset.service.AuthorizationService;
+import com.voxlr.marmoset.service.ValidateableService;
 import com.voxlr.marmoset.util.exception.EntityNotFoundException;
 import com.voxlr.marmoset.util.exception.InvalidArgumentsException;
 
 @Service
-public class CallService {
+public class CallService extends ValidateableService {
     
     @Autowired
     private CompanyService companyService;
@@ -191,6 +197,16 @@ public class CallService {
 	}
 	
 	callRepository.delete(call);
+    }
+    
+    public Page<CallAggregateDTO> getCallsByCompanyId(
+	    String companyId,
+	    AuthUser authUser,
+	    DateConstrained dateConstrained,
+	    Pageable pageable) throws Exception {
+	validate(authUser, dateConstrained);
+	Company company = companyService.get(companyId, authUser);
+	return callRepository.aggregateCallsByCompany(company.getId(), dateConstrained.getStartDate(), dateConstrained.getEndDate(), pageable);
     }
 
 }

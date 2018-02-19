@@ -14,16 +14,19 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 
 import com.voxlr.marmoset.auth.UserRole;
 import com.voxlr.marmoset.model.AuthUser;
 import com.voxlr.marmoset.model.PhoneNumberHolder;
+import com.voxlr.marmoset.model.dto.DateConstrained;
 import com.voxlr.marmoset.model.persistence.Call;
 import com.voxlr.marmoset.model.persistence.Company;
 import com.voxlr.marmoset.model.persistence.Team;
@@ -38,9 +41,6 @@ public class CallServiceTest extends DataTest {
     
     @Autowired
     private CallService callService;
-    
-    @Autowired
-    private AuthorizationService authorizationService;
     
     Company mockCompany;
     Team mockTeam;
@@ -145,7 +145,6 @@ public class CallServiceTest extends DataTest {
 	Call call = callService.create(callCreateDTO, authUser);
 	assertThat(call.getStatistics(), is(notNullValue()));
 	assertThat(call.getCallOutcome(), is(NONE));
-	assertThat(call.getExternalReferences(), is(notNullValue()));
     }
     
     @Test
@@ -249,6 +248,43 @@ public class CallServiceTest extends DataTest {
 	authUsers.stream().forEach(authUser -> {
 	    wrapAssertException(() -> {
 		callService.delete(mockCall.getId(), authUser);
+	    }, UnauthorizedUserException.class);
+	});
+    }
+    
+    @Test
+    public void getCallsByCompanyShouldAuthCompany() throws Exception {
+	listOf(
+		createAuthUser(UserRole.SUPER_ADMIN),
+		createAuthUser(UserRole.COMPANY_ADMIN).setCompanyId(mockCompany.getId()),
+		createAuthUser(UserRole.COMPANY_READONLY).setCompanyId(mockCompany.getId())
+	).stream().forEach(authUser -> {
+	    wrapNoException(() -> {
+    		callService.getCallsByCompanyId(
+    			mockCompany.getId(),
+    			authUser,
+    			DateConstrained.builder()
+    				.startDate(new Date())
+    				.endDate(new Date())
+    				.build(),
+    			PageRequest.of(0, 20));
+	    });
+	});
+	
+	listOf(
+		createAuthUser(UserRole.TEAM_ADMIN).setTeamId(mockCompany.getId()),
+		createAuthUser(UserRole.TEAM_READONLY).setTeamId(mockCompany.getId()),
+		createAuthUser(UserRole.MEMBER).setId(mockUser.getId())
+	).stream().forEach(authUser -> {
+	    wrapAssertException(() -> {
+    		callService.getCallsByCompanyId(
+    			mockCompany.getId(),
+    			authUser,
+    			DateConstrained.builder()
+    				.startDate(new Date())
+    				.endDate(new Date())
+    				.build(),
+    			PageRequest.of(0, 20));
 	    }, UnauthorizedUserException.class);
 	});
     }

@@ -7,12 +7,12 @@ import com.voxlr.marmoset.model.AuthUser;
 
 public abstract class ValidationHandler<T> {
     
-    public void validate(AuthUser authUser, Supplier<T> getter) {
+    public void validate(AuthUser authUser, Supplier<T> getter) throws Exception {
 	ValidationResult<T> result = new ValidationResult<>();
 	validate(authUser, getter.get(), result);
     }
     
-    public void validate(AuthUser authUser, Supplier<T> getter, Consumer<T> setter) {
+    public void validate(AuthUser authUser, Supplier<T> getter, Consumer<T> setter) throws Exception {
 	ValidationResult<T> result = new ValidationResult<>();
 	validate(authUser, getter.get(), result);
 	
@@ -21,5 +21,5 @@ public abstract class ValidationHandler<T> {
 	}
     }
     
-    abstract void validate(AuthUser authUser, T input, ValidationResult<T> result);
+    abstract void validate(AuthUser authUser, T input, ValidationResult<T> result) throws Exception;
 }

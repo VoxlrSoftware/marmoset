@@ -1,5 +1,11 @@
 package com.voxlr.marmoset.util;
 
+import static com.google.common.collect.Lists.newArrayList;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
@@ -11,12 +17,21 @@ public class PersistenceUtils {
     @Autowired
     private MongoTemplate mongoTemplate;
     
+    private Set<Class<?>> touchedClasses = new HashSet<>();
+    
     public void save(Entity... entities) {
 	for (int i = 0; i < entities.length; i++) {
 	    Entity entity = entities[i];
 	    mongoTemplate.save(entity);
 	    updateEntity(entity);
+	    touchedClasses.add(entity.getClass());
 	}
+    }
+    
+    public void cleanup() {
+	touchedClasses.stream().forEach(entityClass -> {
+	    removeAll(entityClass);
+	});
     }
     
     public void removeAll(String collectionName) {

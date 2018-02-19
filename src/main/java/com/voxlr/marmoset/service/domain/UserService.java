@@ -17,10 +17,11 @@ import com.voxlr.marmoset.model.persistence.dto.UserCreateDTO;
 import com.voxlr.marmoset.model.persistence.dto.UserUpdateDTO;
 import com.voxlr.marmoset.repositories.UserRepository;
 import com.voxlr.marmoset.service.AuthorizationService;
+import com.voxlr.marmoset.service.ValidateableService;
 import com.voxlr.marmoset.util.exception.EntityNotFoundException;
 
 @Service
-public class UserService {
+public class UserService extends ValidateableService {
     @Autowired
     UserRepository userRepository;
 
@@ -32,9 +33,6 @@ public class UserService {
     
     @Autowired
     AuthorizationService authorizationService;
-    
-    @Autowired
-    ValidationService validationService;
     
     @Autowired
     CompanyService companyService;
@@ -74,12 +72,12 @@ public class UserService {
 	return users;
     }
     
-    public User create(UserCreateDTO userCreateDTO, AuthUser authUser) {
+    public User create(UserCreateDTO userCreateDTO, AuthUser authUser) throws Exception {
 	if (!authorizationService.canCreate(authUser, User.class)) {
 	    throw new UnauthorizedUserException("Account unauthorized to create user");
 	}
 	
-	validationService.validate(authUser, userCreateDTO);
+	validate(authUser, userCreateDTO);
 	
 	User user = modelMapper.map(userCreateDTO, User.class);
 	user.setPassword(passwordEncoder.encode("Password"));
@@ -88,14 +86,14 @@ public class UserService {
 	return user;
     }
     
-    public User update(UserUpdateDTO userUpdateDTO, AuthUser authUser) throws EntityNotFoundException {
+    public User update(UserUpdateDTO userUpdateDTO, AuthUser authUser) throws Exception {
 	User user = getInternal(userUpdateDTO.getId());
 	
 	if (!authorizationService.canWrite(authUser, user)) {
 	    throw new UnauthorizedUserException("Account unauthorized to view user");
 	}
 	
-	validationService.validate(authUser, userUpdateDTO);
+	validate(authUser, userUpdateDTO);
 	
 	if (userUpdateDTO.getFirstName() != null) {
 	    user.setFirstName(userUpdateDTO.getFirstName());

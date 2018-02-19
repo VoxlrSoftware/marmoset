@@ -12,7 +12,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MvcResult;
 
 @RunWith(SpringRunner.class)
-public class ControllerTest extends IntegrationTest {
+public abstract class ControllerTest extends IntegrationTest {
 
     protected void validateStatus(MvcResult result, HttpStatus status) {
 	assertEquals(result.getResponse().getStatus(), status.value());

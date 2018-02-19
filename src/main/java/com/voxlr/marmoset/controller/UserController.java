@@ -10,7 +10,6 @@ import java.util.Map;
 import javax.validation.Valid;
 
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,13 +30,12 @@ import com.voxlr.marmoset.model.persistence.dto.PageDTO;
 import com.voxlr.marmoset.model.persistence.dto.UserCreateDTO;
 import com.voxlr.marmoset.model.persistence.dto.UserDTO;
 import com.voxlr.marmoset.model.persistence.dto.UserUpdateDTO;
-import com.voxlr.marmoset.rest.PageableHandler;
 import com.voxlr.marmoset.service.domain.UserService;
 import com.voxlr.marmoset.util.MapperUtils;
 import com.voxlr.marmoset.util.exception.EntityNotFoundException;
 
 @RestController
-public class UserController extends ApiController implements InitializingBean {
+public class UserController extends ApiController {
     public static final String USER = "/user";
     public static final String COMPANY_USER = COMPANY + "/{companyId}" + USER;
     
@@ -45,8 +43,6 @@ public class UserController extends ApiController implements InitializingBean {
     @Autowired private MapperUtils mapperUtils;
     @Autowired private ModelMapper modelMapper;
 //    @Autowired private JavaMailSender emailSender;
-    
-    private PageableHandler pageableHandler;
     
     @RequestMapping(
 	    method=RequestMethod.GET,
@@ -63,7 +59,7 @@ public class UserController extends ApiController implements InitializingBean {
     public ResponseEntity<?> getUsersByCompany(@PathVariable String companyId,
 	    Pageable pageable,
 	    @AuthenticationPrincipal AuthUser authUser) throws EntityNotFoundException {
-	Pageable pageContext = pageableHandler.handleSort(pageable);
+	Pageable pageContext = page(pageable);
 	Page<User> users = userService.getUsersByCompany(companyId, pageContext, authUser);
 	PageDTO<UserDTO> userDTOs = mapperUtils.mapPage(users, UserDTO.class);
 	return new ResponseEntity<PageDTO<UserDTO>>(userDTOs, HttpStatus.OK);
@@ -72,7 +68,7 @@ public class UserController extends ApiController implements InitializingBean {
     @RequestMapping(
 	    method=RequestMethod.POST,
 	    value=USER)
-    public ResponseEntity<?> create(@Valid @RequestBody UserCreateDTO userCreateDTO, @AuthenticationPrincipal AuthUser authUser) throws MethodArgumentNotValidException {
+    public ResponseEntity<?> create(@Valid @RequestBody UserCreateDTO userCreateDTO, @AuthenticationPrincipal AuthUser authUser) throws Exception {
 	User user = userService.create(userCreateDTO, authUser);
 
 	UserDTO userDTO = modelMapper.map(user, UserDTO.class);
@@ -85,7 +81,7 @@ public class UserController extends ApiController implements InitializingBean {
 	    value=USER + "/{id}")
     public ResponseEntity<?> update(@PathVariable String id,
 	    @Valid @RequestBody UserUpdateDTO userUpdateDTO,
-	    @AuthenticationPrincipal AuthUser authUser) throws EntityNotFoundException {
+	    @AuthenticationPrincipal AuthUser authUser) throws Exception {
 	userUpdateDTO.setId(id);
 	User user = userService.update(userUpdateDTO, authUser);
 	
@@ -104,12 +100,13 @@ public class UserController extends ApiController implements InitializingBean {
 	
 	return new ResponseEntity<RemovedEntityDTO>(removedEntityDTO, HttpStatus.OK);
     }
-
+    
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public Map<String, List<String>> getSortOptions() {
 	Map<String, List<String>> sortMap = new HashMap<>();
 	sortMap.put("fullName", listOf("firstName", "lastName"));
-	pageableHandler = new PageableHandler(sortMap);
+	
+	return sortMap;
     }
     
     private void sendNewUserEmail(User user) {

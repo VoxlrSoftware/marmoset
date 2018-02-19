@@ -1,9 +1,15 @@
 package com.voxlr.marmoset.controller;
 
+import static com.voxlr.marmoset.controller.CompanyController.COMPANY;
+
+import java.util.Date;
+
 import javax.validation.Valid;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -11,9 +17,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.voxlr.marmoset.model.AuthUser;
+import com.voxlr.marmoset.model.dto.DateConstrained;
+import com.voxlr.marmoset.model.dto.aggregation.CallAggregateDTO;
 import com.voxlr.marmoset.model.persistence.Call;
 import com.voxlr.marmoset.model.persistence.CallRequest;
 import com.voxlr.marmoset.model.persistence.dto.CallCreateDTO;
@@ -28,6 +37,7 @@ import com.voxlr.marmoset.util.exception.EntityNotFoundException;
 public class CallController extends ApiController {
     public static final String CALL = "/call";
     public static final String CALL_REQUEST = CALL + "/request";
+    public static final String COMPANY_CALL = COMPANY + "/{companyId}" + CALL;
     
     @Autowired
     private CallService callService;
@@ -94,5 +104,21 @@ public class CallController extends ApiController {
 	
 	CallDTO callDTO = modelMapper.map(call, CallDTO.class);
 	return new ResponseEntity<CallDTO>(callDTO, HttpStatus.OK);
+    }
+    
+    @RequestMapping(
+	method = RequestMethod.GET,
+	value = COMPANY_CALL)
+    public ResponseEntity<?> getCallsByCompany(
+	    @PathVariable String companyId,
+	    @RequestParam Date startDate,
+	    @RequestParam Date endDate,
+	    Pageable pageable,
+	    @AuthenticationPrincipal AuthUser authUser) throws Exception {
+	DateConstrained dateConstrained = DateConstrained.builder()
+		.startDate(startDate)
+		.endDate(endDate).build();
+	Page<CallAggregateDTO> results = callService.getCallsByCompanyId(companyId, authUser, dateConstrained, page(pageable));
+	return new ResponseEntity<Page<CallAggregateDTO>>(results, HttpStatus.OK);
     }
 }

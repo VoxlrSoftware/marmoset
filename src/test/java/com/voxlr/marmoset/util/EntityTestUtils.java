@@ -14,6 +14,7 @@ import com.voxlr.marmoset.model.persistence.Call;
 import com.voxlr.marmoset.model.persistence.CallStrategy;
 import com.voxlr.marmoset.model.persistence.Company;
 import com.voxlr.marmoset.model.persistence.Company.CompanyBuilder;
+import com.voxlr.marmoset.model.persistence.Entity;
 import com.voxlr.marmoset.model.persistence.Team;
 import com.voxlr.marmoset.model.persistence.Team.TeamBuilder;
 import com.voxlr.marmoset.model.persistence.User;
@@ -22,6 +23,11 @@ import com.voxlr.marmoset.model.persistence.User.UserBuilder;
 public class EntityTestUtils {
     public static String generateId() {
 	return UUID.randomUUID().toString();
+    }
+    
+    public static <T extends Entity> T createEntity(T entity) {
+	entity.setId(generateId());
+	return entity;
     }
     
     public static <T extends AuditModel> T createAuditableEntity(T entity) {
@@ -71,6 +77,10 @@ public class EntityTestUtils {
     
     public static Call createCall(String userId) {
 	return createAuditableEntity(Call.builder().userId(userId).build());
+    }
+    
+    public static Call createCall(Call.CallBuilder callBuilder) {
+	return createAuditableEntity(callBuilder.build());
     }
     
     public static AuthUser createAuthUser() {

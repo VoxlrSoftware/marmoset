@@ -17,7 +17,7 @@ public class UserCreateValidator implements Validator<UserCreateDTO> {
     	= new UserRoleValidationHandler();
 
     @Override
-    public void validate(AuthUser authUser, UserCreateDTO entity) {
+    public void validate(AuthUser authUser, UserCreateDTO entity) throws Exception {
 	userCompanyValidationHandler.validate(
 		authUser, entity::getCompanyId, entity::setCompanyId);
 	userTeamValidationHandler.validate(

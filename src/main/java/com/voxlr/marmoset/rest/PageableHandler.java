@@ -42,6 +42,6 @@ public class PageableHandler {
 	    }
 	});
 	
-	return new PageRequest(pageable.getPageNumber(), pageable.getPageSize(), new Sort(finalOrders));
+	return PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(finalOrders));
     }
 }

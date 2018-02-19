@@ -2,6 +2,8 @@ package com.voxlr.marmoset.model.persistence.dto;
 
 import java.util.Date;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import com.voxlr.marmoset.model.PhoneNumberHolder;
 
 import lombok.Getter;
@@ -25,7 +27,8 @@ public class UserDTO {
     private String id;
     
     private String role;
-    
+
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Date createDate;
     
     private PhoneNumberHolder phoneNumber;

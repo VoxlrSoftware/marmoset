@@ -64,11 +64,12 @@ public class CallAnalysisService {
     }
     
     private void postProcessAnalysis(Analysis analysis) {
-	double phraseCount = (double) analysis.getPhraseAnalysis().size();
-	double detectionCount = (double) asStream(analysis.getPhraseAnalysis())
+	int phraseCount = analysis.getPhraseAnalysis().size();
+	int detectionCount = (int) asStream(analysis.getPhraseAnalysis())
 		.map(PhraseAnalysis::getDetections)
 		.filter(detections -> asStream(detections).anyMatch(detection -> detection.wasDetected(DEFAULT_DETECTION_THRESHOLD))).count();
-	analysis.setDetectionRatio(phraseCount > 0 ? detectionCount / phraseCount : 0);
+	analysis.setDetectedPhraseCount(detectionCount);
+	analysis.setDetectionRatio(phraseCount > 0 ? ((double)detectionCount) / ((double)phraseCount) : 0.0);
     }
 
 }

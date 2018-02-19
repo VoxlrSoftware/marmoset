@@ -11,7 +11,7 @@ public class UserUpdateValidator implements Validator<UserUpdateDTO> {
     	= new UserRoleValidationHandler();
 
     @Override
-    public void validate(AuthUser authUser, UserUpdateDTO entity) {
+    public void validate(AuthUser authUser, UserUpdateDTO entity) throws Exception {
 	userRoleValidationHandler.validate(
 		authUser, entity::getRole);
     }

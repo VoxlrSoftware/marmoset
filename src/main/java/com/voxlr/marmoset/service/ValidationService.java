@@ -1,4 +1,4 @@
-package com.voxlr.marmoset.service.domain;
+package com.voxlr.marmoset.service;
 
 import static com.voxlr.marmoset.util.AnnotationUtils.getAnnotatedClasses;
 import static com.voxlr.marmoset.util.AnnotationUtils.getAnnotationMembers;
@@ -42,7 +42,7 @@ public class ValidationService {
     }
     
     @SuppressWarnings("unchecked")
-    public  void validate(AuthUser authUser, Object entity) {
+    public  void validate(AuthUser authUser, Object entity) throws Exception {
 	Class<?> clazz = entity.getClass();
 	if (validators.containsKey(clazz)) {
 	    validators.get(clazz).validate(authUser, entity);

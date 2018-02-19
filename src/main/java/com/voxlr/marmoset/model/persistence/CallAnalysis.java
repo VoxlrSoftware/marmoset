@@ -1,12 +1,11 @@
 package com.voxlr.marmoset.model.persistence;
 
-import static com.google.common.collect.Lists.newArrayList;
-
-import java.util.List;
+import java.sql.Date;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.voxlr.marmoset.model.CallScopedEntity;
+import com.voxlr.marmoset.model.PhoneNumberHolder;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,19 +15,19 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class CallAnalysis extends AuditModel implements CallScopedEntity {
+public class CallAnalysis extends Entity implements CallScopedEntity {
     private String callId;
-    private String callStrategyId;
+    private String companyId;
+    private String userId;
+    private PhoneNumberHolder employeeNumber;
+    private PhoneNumberHolder customerNumber;
+    private String callOutcome;
     private String callStrategyName;
-    private List<PhraseAnalysis> phraseAnalysis = newArrayList();
-    
-    public void addPhraseAnalysis(PhraseAnalysis phrase) {
-	this.phraseAnalysis.add(phrase);
-    }
-    
-    public CallAnalysis(Call call) {
-	this.callId = call.getId();
-	this.callStrategyId = call.getCallStrategy().getId();
-	this.callStrategyName = call.getCallStrategy().getName();
-    }
+    private int duration = 0;
+    private int totalTalkTime = 0;
+    private int customerTalkTime = 0;
+    private int employeeTalkTime = 0;
+    private double detectionRatio = 0;
+    private int detectedPhraseCount = 0;
+    private Date createDate;
 }

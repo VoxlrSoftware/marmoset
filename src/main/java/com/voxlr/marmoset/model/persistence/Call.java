@@ -73,6 +73,8 @@ public class Call extends AuditModel implements UserScopedEntity {
     
     @Getter
     @Setter
+    @Builder
+    @AllArgsConstructor
     public static class Statistic {
         private int duration = 0;
         private int totalTalkTime = 0;
@@ -93,22 +95,25 @@ public class Call extends AuditModel implements UserScopedEntity {
     
     @Getter
     @Setter
+    @Builder
+    @AllArgsConstructor
     public static class Analysis {
-	    private List<PhraseAnalysis> phraseAnalysis;
-	    private double detectionRatio;
-	    
-	    public Analysis() {
-		reset();
-	    }
-	    
-	    public void addPhraseAnalysis(PhraseAnalysis phrase) {
-		this.phraseAnalysis.add(phrase);
-	    }
-	    
-	    public Analysis reset() {
-		this.phraseAnalysis = newArrayList();
-		this.detectionRatio = 0.0;
-		return this;
-	    }
+	private List<PhraseAnalysis> phraseAnalysis = newArrayList();
+	private double detectionRatio = 0;
+	private int detectedPhraseCount = 0;
+
+	public Analysis() {
+	    reset();
 	}
+	
+	public void addPhraseAnalysis(PhraseAnalysis phrase) {
+	    this.phraseAnalysis.add(phrase);
+	}
+	
+	public Analysis reset() {
+	    this.phraseAnalysis = newArrayList();
+	    this.detectionRatio = 0.0;
+	    return this;
+	}
+    }
 }
