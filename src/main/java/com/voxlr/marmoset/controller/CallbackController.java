@@ -70,7 +70,7 @@ public class CallbackController extends ApiController {
 	HttpHeaders headers = new HttpHeaders();
         headers.setContentType(result.getContentType());
         
-	return new ResponseEntity<>(result.getResult(), headers, result.getStatus());
+	return new ResponseEntity<>(result.getRenderedResult(), headers, result.getStatus());
     }
     
     @RequestMapping(

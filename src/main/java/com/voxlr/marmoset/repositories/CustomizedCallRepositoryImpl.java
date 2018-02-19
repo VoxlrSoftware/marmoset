@@ -17,9 +17,15 @@ public class CustomizedCallRepositoryImpl implements CustomizedCallRepository {
     private MongoTemplate mongoTemplate;
     
     @Override
-    public Page<CallAggregateDTO> aggregateCallsByCompany(String companyId, Date startDate, Date endDate, Pageable pageable) {
+    public Page<CallAggregateDTO> getCallsByCompany(String companyId, Date startDate, Date endDate, Pageable pageable) {
 	return aCallAggregation(mongoTemplate)
-		.aggregateCallsByCompany(companyId, startDate, endDate, pageable);
+		.getCallsByCompany(companyId, startDate, endDate, pageable);
+    }
+
+    @Override
+    public Page<CallAggregateDTO> getCallsByUser(String userId, Date startDate, Date endDate, Pageable pageable) {
+	return aCallAggregation(mongoTemplate)
+		.getCallsByUser(userId, startDate, endDate, pageable);
     }
 
 }

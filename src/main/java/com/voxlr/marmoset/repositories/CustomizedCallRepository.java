@@ -8,5 +8,6 @@ import org.springframework.data.domain.Pageable;
 import com.voxlr.marmoset.model.dto.aggregation.CallAggregateDTO;
 
 public interface CustomizedCallRepository {
-    Page<CallAggregateDTO> aggregateCallsByCompany(String companyId, Date startDate, Date endDate, Pageable pageable);
+    Page<CallAggregateDTO> getCallsByCompany(String companyId, Date startDate, Date endDate, Pageable pageable);
+    Page<CallAggregateDTO> getCallsByUser(String userId, Date startDate, Date endDate, Pageable pageable);
 }

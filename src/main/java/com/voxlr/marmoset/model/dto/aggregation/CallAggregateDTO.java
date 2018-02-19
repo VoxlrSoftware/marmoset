@@ -11,7 +11,7 @@ public class CallAggregateDTO {
     private String id;
     private String userId;
     private String companyId;
-    private String outcome;
+    private String callOutcome;
     private String callStrategyName;
     private int totalTalkTime;
     private int duration;

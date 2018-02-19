@@ -20,6 +20,7 @@ import com.voxlr.marmoset.model.persistence.Call;
 import com.voxlr.marmoset.model.persistence.CallRequest;
 import com.voxlr.marmoset.model.persistence.CallStrategy;
 import com.voxlr.marmoset.model.persistence.Company;
+import com.voxlr.marmoset.model.persistence.User;
 import com.voxlr.marmoset.model.persistence.dto.CallCreateDTO;
 import com.voxlr.marmoset.model.persistence.dto.CallRequestCreateDTO;
 import com.voxlr.marmoset.model.persistence.dto.CallUpdateDTO;
@@ -36,6 +37,9 @@ public class CallService extends ValidateableService {
     
     @Autowired
     private CompanyService companyService;
+    
+    @Autowired
+    private UserService userService;
     
     @Autowired
     private AuthorizationService authorizationService;
@@ -206,7 +210,17 @@ public class CallService extends ValidateableService {
 	    Pageable pageable) throws Exception {
 	validate(authUser, dateConstrained);
 	Company company = companyService.get(companyId, authUser);
-	return callRepository.aggregateCallsByCompany(company.getId(), dateConstrained.getStartDate(), dateConstrained.getEndDate(), pageable);
+	return callRepository.getCallsByCompany(company.getId(), dateConstrained.getStartDate(), dateConstrained.getEndDate(), pageable);
+    }
+    
+    public Page<CallAggregateDTO> getCallsByUserId(
+	    String userId,
+	    AuthUser authUser,
+	    DateConstrained dateConstrained,
+	    Pageable pageable) throws Exception {
+	validate(authUser, dateConstrained);
+	User user = userService.get(userId, authUser);
+	return callRepository.getCallsByUser(user.getId(), dateConstrained.getStartDate(), dateConstrained.getEndDate(), pageable);
     }
 
 }

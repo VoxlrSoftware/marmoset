@@ -288,4 +288,42 @@ public class CallServiceTest extends DataTest {
 	    }, UnauthorizedUserException.class);
 	});
     }
+    
+    @Test
+    public void getCallsByUserShouldAuthCompany() throws Exception {
+	listOf(
+		createAuthUser(UserRole.SUPER_ADMIN),
+		createAuthUser(UserRole.COMPANY_ADMIN).setCompanyId(mockCompany.getId()),
+		createAuthUser(UserRole.COMPANY_READONLY).setCompanyId(mockCompany.getId()),
+		createAuthUser(UserRole.MEMBER).setId(mockUser.getId())
+	).stream().forEach(authUser -> {
+	    wrapNoException(() -> {
+    		callService.getCallsByUserId(
+    			mockUser.getId(),
+    			authUser,
+    			DateConstrained.builder()
+    				.startDate(new Date())
+    				.endDate(new Date())
+    				.build(),
+    			PageRequest.of(0, 20));
+	    });
+	});
+	
+	listOf(
+		createAuthUser(UserRole.TEAM_ADMIN).setTeamId(mockCompany.getId()),
+		createAuthUser(UserRole.TEAM_READONLY).setTeamId(mockCompany.getId()),
+		createAuthUser(UserRole.MEMBER).setId("123")
+	).stream().forEach(authUser -> {
+	    wrapAssertException(() -> {
+    		callService.getCallsByUserId(
+    			mockUser.getId(),
+    			authUser,
+    			DateConstrained.builder()
+    				.startDate(new Date())
+    				.endDate(new Date())
+    				.build(),
+    			PageRequest.of(0, 20));
+	    }, UnauthorizedUserException.class);
+	});
+    }
 }

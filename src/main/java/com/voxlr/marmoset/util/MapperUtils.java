@@ -26,8 +26,7 @@ public class MapperUtils {
 	return list.stream().map(x -> modelMapper.map(x, clazz)).collect(Collectors.toList());
     }
     
-    public <T1, T2> PageDTO<T2> mapPage(Page<T1> page, Class<T2> clazz) {
-	List<T2> content = page.getContent().stream().map(x -> modelMapper.map(x, clazz)).collect(Collectors.toList());
+    public <T> PageDTO<T> mapPage(Page<?> page, List<T> content) {
 	Pagination pagination = Pagination.builder()
 		.page(page.getNumber())
 		.pageSize(page.getSize()).build();
@@ -41,9 +40,18 @@ public class MapperUtils {
 	    pagination.setSortFields(sortFields);
 	}
 	
-	return PageDTO.<T2>builder().results(content)
+	return PageDTO.<T>builder().results(content)
 		.totalCount(page.getTotalElements())
 		.totalPages(page.getTotalPages())
 		.pagination(pagination).build();
+    }
+    
+    public <T> PageDTO<T> mapPage(Page<T> page) {
+	return mapPage(page, page.getContent());
+    }
+    
+    public <T1, T2> PageDTO<T2> mapPage(Page<T1> page, Class<T2> clazz) {
+	List<T2> content = page.getContent().stream().map(x -> modelMapper.map(x, clazz)).collect(Collectors.toList());
+	return mapPage(page, content);
     }
 }

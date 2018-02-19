@@ -1,6 +1,7 @@
 package com.voxlr.marmoset.controller;
 
 import static com.voxlr.marmoset.controller.CompanyController.COMPANY;
+import static com.voxlr.marmoset.controller.UserController.USER;
 
 import java.util.Date;
 
@@ -10,6 +11,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -30,7 +32,9 @@ import com.voxlr.marmoset.model.persistence.dto.CallDTO;
 import com.voxlr.marmoset.model.persistence.dto.CallRequestCreateDTO;
 import com.voxlr.marmoset.model.persistence.dto.CallRequestDTO;
 import com.voxlr.marmoset.model.persistence.dto.CallUpdateDTO;
+import com.voxlr.marmoset.model.persistence.dto.PageDTO;
 import com.voxlr.marmoset.service.domain.CallService;
+import com.voxlr.marmoset.util.MapperUtils;
 import com.voxlr.marmoset.util.exception.EntityNotFoundException;
 
 @RestController
@@ -38,12 +42,16 @@ public class CallController extends ApiController {
     public static final String CALL = "/call";
     public static final String CALL_REQUEST = CALL + "/request";
     public static final String COMPANY_CALL = COMPANY + "/{companyId}" + CALL;
+    public static final String USER_CALL = USER + "/{userId}" + CALL;
     
     @Autowired
     private CallService callService;
     
     @Autowired
     private ModelMapper modelMapper;
+    
+    @Autowired
+    private MapperUtils mapperUtils;
     
     @RequestMapping(
 	    method = RequestMethod.GET,
@@ -119,6 +127,24 @@ public class CallController extends ApiController {
 		.startDate(startDate)
 		.endDate(endDate).build();
 	Page<CallAggregateDTO> results = callService.getCallsByCompanyId(companyId, authUser, dateConstrained, page(pageable));
-	return new ResponseEntity<Page<CallAggregateDTO>>(results, HttpStatus.OK);
+	PageDTO<CallAggregateDTO> mappedResults = mapperUtils.mapPage(results);
+	return new ResponseEntity<PageDTO<CallAggregateDTO>>(mappedResults, HttpStatus.OK);
+    }
+    
+    @RequestMapping(
+	method = RequestMethod.GET,
+	value = USER_CALL)
+    public ResponseEntity<?> getCallsByUser(
+	    @PathVariable String userId,
+	    @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
+	    @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
+	    Pageable pageable,
+	    @AuthenticationPrincipal AuthUser authUser) throws Exception {
+	DateConstrained dateConstrained = DateConstrained.builder()
+		.startDate(startDate)
+		.endDate(endDate).build();
+	Page<CallAggregateDTO> results = callService.getCallsByUserId(userId, authUser, dateConstrained, page(pageable));
+	PageDTO<CallAggregateDTO> mappedResults = mapperUtils.mapPage(results);
+	return new ResponseEntity<PageDTO<CallAggregateDTO>>(mappedResults, HttpStatus.OK);
     }
 }

@@ -10,13 +10,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
 @Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class CallbackResult<T> {
     @JsonIgnore
     private HttpStatus status = HttpStatus.OK;
+    @JsonIgnore
     private MediaType contentType = MediaType.APPLICATION_JSON;
     private T result;
     
@@ -36,5 +37,14 @@ public class CallbackResult<T> {
     
     public static CallbackResult<String> createDefaultResult() {
 	return new CallbackResult<String>("Callback accepted.");
+    }
+
+    @JsonIgnore
+    public Object getRenderedResult() {
+	if (contentType == MediaType.APPLICATION_JSON) {
+	    return this;
+	}
+	
+	return result;
     }
 }
