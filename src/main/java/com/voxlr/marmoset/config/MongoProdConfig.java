@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.MongoDbFactory;
 import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
+import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
 
 import com.mongodb.MongoClient;
 import com.voxlr.marmoset.config.properties.MongoProperties;
@@ -32,6 +33,10 @@ public class MongoProdConfig {
     
     @Bean
     public MongoTemplate mongoTemplate() {
-	return new MongoTemplate(mongoDbFactory());
+	MongoTemplate mongoTemplate = new MongoTemplate(mongoDbFactory());
+	MappingMongoConverter mongoMapping = (MappingMongoConverter) mongoTemplate.getConverter();
+	mongoMapping.setCustomConversions(MongoConfig.customConversions());
+	mongoMapping.afterPropertiesSet();
+	return mongoTemplate;
     }
 }

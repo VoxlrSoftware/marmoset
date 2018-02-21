@@ -1,6 +1,6 @@
 package com.voxlr.marmoset.validation.validator;
 
-import java.util.Date;
+import org.joda.time.DateTime;
 
 import com.voxlr.marmoset.model.AuthUser;
 import com.voxlr.marmoset.model.dto.DateConstrained;
@@ -11,20 +11,20 @@ public class DateConstrainedValidator implements Validator<DateConstrained> {
 
     @Override
     public void validate(AuthUser authUser, DateConstrained entity) throws Exception {
-	Date today = new Date();
+	DateTime today = new DateTime();
 	
 	if (entity.getStartDate() != null) {
-	    if (entity.getEndDate() != null && entity.getStartDate().after(entity.getEndDate())) {
+	    if (entity.getEndDate() != null && entity.getStartDate().isAfter(entity.getEndDate())) {
 		throw new InvalidArgumentsException("startDate must be before endDate");
 	    }
 	    
-	    if (entity.getStartDate().after(today)) {
+	    if (entity.getStartDate().isAfter(today)) {
 		entity.setStartDate(today);
 	    }
 	}
 	
 	if (entity.getEndDate() != null) {
-	    if (entity.getEndDate().after(today)) {
+	    if (entity.getEndDate().isAfter(today)) {
 		entity.setEndDate(today);
 	    }
 	}

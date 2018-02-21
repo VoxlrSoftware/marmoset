@@ -4,9 +4,7 @@ import static com.voxlr.marmoset.util.AssertUtils.containsMatch;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-import java.util.Date;
-
-import org.apache.commons.lang3.time.DateUtils;
+import org.joda.time.DateTime;
 import org.junit.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,8 +18,8 @@ public class GetCallsTest extends CallAggregationBaseTest {
     public void getCallsByCompanyReturnsEmptyIfNoCallsExist() throws Exception {
 	Page<CallAggregateDTO> results = callAggregation.getCallsByCompany(
 		mockCompany.getId(),
-		new Date(),
-		new Date(),
+		new DateTime(),
+		new DateTime(),
 		PageRequest.of(0, 20)
 	);
 	
@@ -31,14 +29,14 @@ public class GetCallsTest extends CallAggregationBaseTest {
     
     @Test
     public void getCallsByCompanyShouldReturnValidListWithCorrectData() throws Exception {
-	Date createDate = DateUtils.addDays(new Date(), -1);
+	DateTime createDate = new DateTime().minusDays(1);
 	Call expected = createCall(createDate);
 	persistenceUtils.save(expected);
 	
 	Page<CallAggregateDTO> results = callAggregation.getCallsByCompany(
 		mockCompany.getId(),
 		createDate,
-		new Date(),
+		new DateTime(),
 		PageRequest.of(0, 20)
 	);
 
@@ -60,10 +58,10 @@ public class GetCallsTest extends CallAggregationBaseTest {
     
     @Test
     public void getCallsByCompanyShouldOnlyReturnCallsWithinDateRange() {
-	Date startDate = DateUtils.addDays(new Date(), -7);
-	Date endDate = DateUtils.addDays(new Date(), -1);
-	Call withinRange = createCall(DateUtils.addDays(startDate, 1));
-	Call outsideRange = createCall(new Date());
+	DateTime startDate = new DateTime().minusDays(7);
+	DateTime endDate = new DateTime().minusDays(1);
+	Call withinRange = createCall(startDate.plusDays(1));
+	Call outsideRange = createCall(new DateTime());
 	
 	persistenceUtils.save(withinRange, outsideRange);
 	
@@ -82,10 +80,10 @@ public class GetCallsTest extends CallAggregationBaseTest {
     
     @Test
     public void getCallsByCompanyShouldReturnMultipleCallsWithinDateRange() {
-	Date startDate = DateUtils.addDays(new Date(), -7);
-	Date endDate = DateUtils.addDays(new Date(), -1);
-	Call withinRange = createCall(DateUtils.addDays(startDate, 1));
-	Call withinRange2 = createCall(DateUtils.addDays(startDate, 2));
+	DateTime startDate = new DateTime().minusDays(7);
+	DateTime endDate = new DateTime().minusDays(1);
+	Call withinRange = createCall(startDate.plusDays(1));
+	Call withinRange2 = createCall(startDate.plusDays(2));
 	
 	persistenceUtils.save(withinRange, withinRange2);
 	
@@ -105,10 +103,10 @@ public class GetCallsTest extends CallAggregationBaseTest {
     
     @Test
     public void getCallsByCompanyShouldIgnoreCallsThatAreNotAnalyzed() {
-	Date startDate = DateUtils.addDays(new Date(), -7);
-	Date endDate = DateUtils.addDays(new Date(), -1);
-	Call withinRange = createCall(DateUtils.addDays(startDate, 1));
-	Call withinRange2 = createCall(DateUtils.addDays(startDate, 2));
+	DateTime startDate = new DateTime().minusDays(7);
+	DateTime endDate = new DateTime().minusDays(1);
+	Call withinRange = createCall(startDate.plusDays(1));
+	Call withinRange2 = createCall(startDate.plusDays(2));
 	withinRange2.setHasBeenAnalyzed(false);
 	
 	persistenceUtils.save(withinRange, withinRange2);
@@ -126,10 +124,10 @@ public class GetCallsTest extends CallAggregationBaseTest {
     
     @Test
     public void getCallsByCompanyShouldIgnoreCallsThatAreNotInTheQueriedCompany() {
-	Date startDate = DateUtils.addDays(new Date(), -7);
-	Date endDate = DateUtils.addDays(new Date(), -1);
-	Call withinRange = createCall(DateUtils.addDays(startDate, 1));
-	Call withinRange2 = createCall(DateUtils.addDays(startDate, 2));
+	DateTime startDate = new DateTime().minusDays(7);
+	DateTime endDate = new DateTime().minusDays(1);
+	Call withinRange = createCall(startDate.plusDays(1));
+	Call withinRange2 = createCall(startDate.plusDays(2));
 	withinRange2.setCompanyId("123");
 	
 	persistenceUtils.save(withinRange, withinRange2);
@@ -149,8 +147,8 @@ public class GetCallsTest extends CallAggregationBaseTest {
     public void getCallsByUserReturnsEmptyIfNoCallsExist() throws Exception {
 	Page<CallAggregateDTO> results = callAggregation.getCallsByUser(
 		mockUser.getId(),
-		new Date(),
-		new Date(),
+		new DateTime(),
+		new DateTime(),
 		PageRequest.of(0, 20)
 	);
 	
@@ -160,14 +158,14 @@ public class GetCallsTest extends CallAggregationBaseTest {
     
     @Test
     public void getCallsByUserShouldReturnValidListWithCorrectData() throws Exception {
-	Date createDate = DateUtils.addDays(new Date(), -1);
+	DateTime createDate = new DateTime().minusDays(1);
 	Call expected = createCall(createDate);
 	persistenceUtils.save(expected);
 	
 	Page<CallAggregateDTO> results = callAggregation.getCallsByUser(
 		mockUser.getId(),
 		createDate,
-		new Date(),
+		new DateTime(),
 		PageRequest.of(0, 20)
 	);
 
@@ -189,10 +187,10 @@ public class GetCallsTest extends CallAggregationBaseTest {
     
     @Test
     public void getCallsByUserShouldOnlyReturnCallsWithinDateRange() {
-	Date startDate = DateUtils.addDays(new Date(), -7);
-	Date endDate = DateUtils.addDays(new Date(), -1);
-	Call withinRange = createCall(DateUtils.addDays(startDate, 1));
-	Call outsideRange = createCall(new Date());
+	DateTime startDate = new DateTime().minusDays(7);
+	DateTime endDate = new DateTime().minusDays(1);
+	Call withinRange = createCall(startDate.plusDays(1));
+	Call outsideRange = createCall(new DateTime());
 	
 	persistenceUtils.save(withinRange, outsideRange);
 	
@@ -211,10 +209,10 @@ public class GetCallsTest extends CallAggregationBaseTest {
     
     @Test
     public void getCallsByUserShouldReturnMultipleCallsWithinDateRange() {
-	Date startDate = DateUtils.addDays(new Date(), -7);
-	Date endDate = DateUtils.addDays(new Date(), -1);
-	Call withinRange = createCall(DateUtils.addDays(startDate, 1));
-	Call withinRange2 = createCall(DateUtils.addDays(startDate, 2));
+	DateTime startDate = new DateTime().minusDays(7);
+	DateTime endDate = new DateTime().minusDays(1);
+	Call withinRange = createCall(startDate.plusDays(1));
+	Call withinRange2 = createCall(startDate.plusDays(2));
 	
 	persistenceUtils.save(withinRange, withinRange2);
 	
@@ -234,10 +232,10 @@ public class GetCallsTest extends CallAggregationBaseTest {
     
     @Test
     public void getCallsByUserShouldIgnoreCallsThatAreNotAnalyzed() {
-	Date startDate = DateUtils.addDays(new Date(), -7);
-	Date endDate = DateUtils.addDays(new Date(), -1);
-	Call withinRange = createCall(DateUtils.addDays(startDate, 1));
-	Call withinRange2 = createCall(DateUtils.addDays(startDate, 2));
+	DateTime startDate = new DateTime().minusDays(7);
+	DateTime endDate = new DateTime().minusDays(1);
+	Call withinRange = createCall(startDate.plusDays(1));
+	Call withinRange2 = createCall(startDate.plusDays(2));
 	withinRange2.setHasBeenAnalyzed(false);
 	
 	persistenceUtils.save(withinRange, withinRange2);
@@ -255,10 +253,10 @@ public class GetCallsTest extends CallAggregationBaseTest {
     
     @Test
     public void getCallsByUserShouldIgnoreCallsThatAreNotInTheQueriedUser() {
-	Date startDate = DateUtils.addDays(new Date(), -7);
-	Date endDate = DateUtils.addDays(new Date(), -1);
-	Call withinRange = createCall(DateUtils.addDays(startDate, 1));
-	Call withinRange2 = createCall(DateUtils.addDays(startDate, 2));
+	DateTime startDate = new DateTime().minusDays(7);
+	DateTime endDate = new DateTime().minusDays(1);
+	Call withinRange = createCall(startDate.plusDays(1));
+	Call withinRange2 = createCall(startDate.plusDays(2));
 	withinRange2.setUserId("123");
 	
 	persistenceUtils.save(withinRange, withinRange2);

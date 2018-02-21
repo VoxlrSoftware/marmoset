@@ -8,11 +8,10 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.commons.lang3.time.DateUtils;
+import org.joda.time.DateTime;
 import org.junit.Test;
 import org.springframework.data.mongodb.core.query.Criteria;
 
@@ -27,8 +26,8 @@ public class AverageCallFieldTest extends CallAggregationBaseTest {
 	    wrapNoException(() -> {
 		RollupResultDTO resultDTO = callAggregation.averageCallField(
 			Criteria.where("id").exists(true),
-			new Date(),
-			new Date(),
+			new DateTime(),
+			new DateTime(),
 			field
 		);
 		
@@ -39,11 +38,11 @@ public class AverageCallFieldTest extends CallAggregationBaseTest {
     
     @Test
     public void averageCallFieldReturnsValidValue() {
-	Date startDate = DateUtils.addDays(new Date(), -7);
-	Date endDate = DateUtils.addDays(new Date(), -1);
+	DateTime startDate = new DateTime().minusDays(7);
+	DateTime endDate = new DateTime().minusDays(1);
 	
-	Call call1 = createCall(DateUtils.addDays(startDate, 1));
-	Call call2 = createCall(DateUtils.addDays(startDate, 1));
+	Call call1 = createCall(startDate.plusDays(1));
+	Call call2 = createCall(startDate.plusDays(1));
 	call2.getStatistics().setTotalTalkTime(2000);
 	persistenceUtils.save(call1, call2);
 	
@@ -59,11 +58,11 @@ public class AverageCallFieldTest extends CallAggregationBaseTest {
     
     @Test
     public void averageCallFieldIgnoresOutOfDateRange() {
-	Date startDate = DateUtils.addDays(new Date(), -7);
-	Date endDate = DateUtils.addDays(new Date(), -1);
-	
-	Call call1 = createCall(DateUtils.addDays(startDate, 1));
-	Call call2 = createCall(DateUtils.addDays(startDate, -1));
+	DateTime startDate = new DateTime().minusDays(7);
+	DateTime endDate = new DateTime().minusDays(1);
+
+	Call call1 = createCall(startDate.plusDays(1));
+	Call call2 = createCall(startDate.minusDays(1));
 	call2.getStatistics().setTotalTalkTime(2000);
 	persistenceUtils.save(call1, call2);
 	
@@ -79,10 +78,10 @@ public class AverageCallFieldTest extends CallAggregationBaseTest {
     
     @Test
     public void averageCallFieldAcceptsValidField() {
-	Date startDate = DateUtils.addDays(new Date(), -7);
-	Date endDate = DateUtils.addDays(new Date(), -1);
-	
-	Call call = createCall(DateUtils.addDays(startDate, 1));
+	DateTime startDate = new DateTime().minusDays(7);
+	DateTime endDate = new DateTime().minusDays(1);
+
+	Call call = createCall(startDate.plusDays(1));
 	persistenceUtils.save(call);
 	
 	AVG_FIELDS_WHITE_LIST.stream().forEach(field -> {
@@ -99,10 +98,10 @@ public class AverageCallFieldTest extends CallAggregationBaseTest {
     
     @Test
     public void averageCallFieldThrowsInvalidField() {
-	Date startDate = DateUtils.addDays(new Date(), -7);
-	Date endDate = DateUtils.addDays(new Date(), -1);
-	
-	Call call = createCall(DateUtils.addDays(startDate, 1));
+	DateTime startDate = new DateTime().minusDays(7);
+	DateTime endDate = new DateTime().minusDays(1);
+
+	Call call = createCall(startDate.plusDays(1));
 	persistenceUtils.save(call);
 	
 	Set<CallAggregationField> fields = new HashSet<CallAggregationField>(listOf(CallAggregationField.values()));
@@ -122,11 +121,11 @@ public class AverageCallFieldTest extends CallAggregationBaseTest {
     
     @Test
     public void averageCallFieldByCompanyOnlyAveragesSameCompany() {
-	Date startDate = DateUtils.addDays(new Date(), -7);
-	Date endDate = DateUtils.addDays(new Date(), -1);
-	
-	Call call1 = createCall(DateUtils.addDays(startDate, 1));
-	Call call2 = createCall(DateUtils.addDays(startDate, 1));
+	DateTime startDate = new DateTime().minusDays(7);
+	DateTime endDate = new DateTime().minusDays(1);
+
+	Call call1 = createCall(startDate.plusDays(1));
+	Call call2 = createCall(startDate.plusDays(1));
 	call2.setCompanyId("123");
 	persistenceUtils.save(call1, call2);
 	
@@ -142,11 +141,11 @@ public class AverageCallFieldTest extends CallAggregationBaseTest {
     
     @Test
     public void averageCallFieldByUserOnlyAveragesSameUser() {
-	Date startDate = DateUtils.addDays(new Date(), -7);
-	Date endDate = DateUtils.addDays(new Date(), -1);
-	
-	Call call1 = createCall(DateUtils.addDays(startDate, 1));
-	Call call2 = createCall(DateUtils.addDays(startDate, 1));
+	DateTime startDate = new DateTime().minusDays(7);
+	DateTime endDate = new DateTime().minusDays(1);
+
+	Call call1 = createCall(startDate.plusDays(1));
+	Call call2 = createCall(startDate.plusDays(1));
 	call2.setUserId("123");
 	persistenceUtils.save(call1, call2);
 	

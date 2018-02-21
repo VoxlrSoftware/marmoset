@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
 
 import com.mongodb.MongoClient;
 
@@ -27,6 +28,10 @@ public class MongoDevConfig {
         MongoClient mongoClient = mongo.getObject();
         mongoClient.dropDatabase(MONGO_DB_NAME);
         MongoTemplate mongoTemplate = new MongoTemplate(mongoClient, MONGO_DB_NAME);
-        return mongoTemplate;
+        
+	MappingMongoConverter mongoMapping = (MappingMongoConverter) mongoTemplate.getConverter();
+	mongoMapping.setCustomConversions(MongoConfig.customConversions());
+	mongoMapping.afterPropertiesSet();
+	return mongoTemplate;
     }
 }

@@ -1,8 +1,8 @@
 package com.voxlr.marmoset.model.dto;
 
-import java.util.Date;
-
 import javax.validation.constraints.NotNull;
+
+import org.joda.time.DateTime;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,10 +17,10 @@ import lombok.Setter;
 @Builder
 public class DateConstrained {
     @NotNull(groups = {StartDateConstrained.class, DateConstrained.class})
-    private Date startDate;
+    private DateTime startDate;
     
     @NotNull(groups = {EndDateConstrained.class, DateConstrained.class})
-    private Date endDate;
+    private DateTime endDate;
     
     public interface StartDateConstrained {}
     

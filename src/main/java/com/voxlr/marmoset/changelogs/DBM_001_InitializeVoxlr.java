@@ -1,7 +1,6 @@
 package com.voxlr.marmoset.changelogs;
 
-import java.util.Date;
-
+import org.joda.time.DateTime;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -68,7 +67,7 @@ public class DBM_001_InitializeVoxlr {
 		.set("companyId", companyId)
 		.set("teamId", teamId)
 		.set("password", bCryptPasswordEncoder.encode("V0xlrAdmin"))
-		.set("createDate", new Date())
+		.set("createDate", new DateTime())
 		.set("isInactive", false)
 		.set("role", UserRole.SUPER_ADMIN.toString())
 		, User.class);

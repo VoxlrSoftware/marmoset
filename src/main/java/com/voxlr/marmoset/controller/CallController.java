@@ -3,10 +3,9 @@ package com.voxlr.marmoset.controller;
 import static com.voxlr.marmoset.controller.CompanyController.COMPANY;
 import static com.voxlr.marmoset.controller.UserController.USER;
 
-import java.util.Date;
-
 import javax.validation.Valid;
 
+import org.joda.time.DateTime;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -119,8 +118,8 @@ public class CallController extends ApiController {
 	value = COMPANY_CALL)
     public ResponseEntity<?> getCallsByCompany(
 	    @PathVariable String companyId,
-	    @RequestParam Date startDate,
-	    @RequestParam Date endDate,
+	    @RequestParam DateTime startDate,
+	    @RequestParam DateTime endDate,
 	    Pageable pageable,
 	    @AuthenticationPrincipal AuthUser authUser) throws Exception {
 	DateConstrained dateConstrained = DateConstrained.builder()
@@ -136,8 +135,8 @@ public class CallController extends ApiController {
 	value = USER_CALL)
     public ResponseEntity<?> getCallsByUser(
 	    @PathVariable String userId,
-	    @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date startDate,
-	    @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date endDate,
+	    @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime startDate,
+	    @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime endDate,
 	    Pageable pageable,
 	    @AuthenticationPrincipal AuthUser authUser) throws Exception {
 	DateConstrained dateConstrained = DateConstrained.builder()

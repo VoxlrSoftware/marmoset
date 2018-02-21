@@ -2,10 +2,11 @@ package com.voxlr.marmoset.util;
 
 import static com.voxlr.marmoset.util.ListUtils.listOf;
 
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.IntStream;
+
+import org.joda.time.DateTime;
 
 import com.voxlr.marmoset.auth.UserRole;
 import com.voxlr.marmoset.model.AuthUser;
@@ -32,8 +33,8 @@ public class EntityTestUtils {
     
     public static <T extends AuditModel> T createAuditableEntity(T entity) {
 	entity.setId(generateId());
-	entity.setCreateDate(new Date());
-	entity.setLastModified(new Date());
+	entity.setCreateDate(new DateTime());
+	entity.setLastModified(new DateTime());
 	return entity;
     }
     
@@ -41,8 +42,8 @@ public class EntityTestUtils {
 	CallStrategy callStrategy = CallStrategy.builder()
 		.phrases(phrases)
 		.build();
-	callStrategy.setCreateDate(new Date());
-	callStrategy.setLastModified(new Date());
+	callStrategy.setCreateDate(new DateTime());
+	callStrategy.setLastModified(new DateTime());
 	return callStrategy;
     }
     

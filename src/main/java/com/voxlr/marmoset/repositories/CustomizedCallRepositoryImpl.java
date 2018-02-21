@@ -2,8 +2,7 @@ package com.voxlr.marmoset.repositories;
 
 import static com.voxlr.marmoset.aggregation.CallAggregation.aCallAggregation;
 
-import java.util.Date;
-
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,26 +18,26 @@ public class CustomizedCallRepositoryImpl implements CustomizedCallRepository {
     private MongoTemplate mongoTemplate;
     
     @Override
-    public Page<CallAggregateDTO> getCallsByCompany(String companyId, Date startDate, Date endDate, Pageable pageable) {
+    public Page<CallAggregateDTO> getCallsByCompany(String companyId, DateTime startDate, DateTime endDate, Pageable pageable) {
 	return aCallAggregation(mongoTemplate)
 		.getCallsByCompany(companyId, startDate, endDate, pageable);
     }
 
     @Override
-    public Page<CallAggregateDTO> getCallsByUser(String userId, Date startDate, Date endDate, Pageable pageable) {
+    public Page<CallAggregateDTO> getCallsByUser(String userId, DateTime startDate, DateTime endDate, Pageable pageable) {
 	return aCallAggregation(mongoTemplate)
 		.getCallsByUser(userId, startDate, endDate, pageable);
     }
 
     @Override
-    public RollupResultDTO averageCallFieldByUser(String userId, Date startDate, Date endDate,
+    public RollupResultDTO averageCallFieldByUser(String userId, DateTime startDate, DateTime endDate,
 	    CallAggregationField field) {
 	return aCallAggregation(mongoTemplate)
 		.averageCallFieldByUser(userId, startDate, endDate, field);
     }
 
     @Override
-    public RollupResultDTO averageCallFieldByCompany(String companyId, Date startDate, Date endDate,
+    public RollupResultDTO averageCallFieldByCompany(String companyId, DateTime startDate, DateTime endDate,
 	    CallAggregationField field) {
 	return aCallAggregation(mongoTemplate)
 		.averageCallFieldByCompany(companyId, startDate, endDate, field);

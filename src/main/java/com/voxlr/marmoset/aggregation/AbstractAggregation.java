@@ -30,10 +30,10 @@ import lombok.RequiredArgsConstructor;
 public abstract class AbstractAggregation<T> {
     
     public enum RollupCadence {
-	HOURLY("%Y-%m-%dT%H:00:00.000"),
-	DAILY("%Y-%m-%dT00:00:00.000"),
-	MONTHLY("%Y-%m-01T00:00:00.000"),
-	YEARLY("%Y-01-01T00:00:00.000")
+	HOURLY("%Y-%m-%dT%H:00:00.000%z"),
+	DAILY("%Y-%m-%dT00:00:00.000%z"),
+	MONTHLY("%Y-%m-01T00:00:00.000%z"),
+	YEARLY("%Y-01-01T00:00:00.000%z")
 	;
 	
 	private String value;
@@ -47,7 +47,7 @@ public abstract class AbstractAggregation<T> {
 	}
     }
     public static final String RESULT = "result";
-    public static final String NAME = "name";
+    public static final String TIMESTAMPT = "timestamp";
     
     private final MongoTemplate mongoTemplate;
     private final Class<T> entityClass;

@@ -1,10 +1,10 @@
 package com.voxlr.marmoset.model.persistence;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.bson.types.ObjectId;
+import org.joda.time.DateTime;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,14 +31,14 @@ public class CallStrategy extends AuditModel {
 	    this.phrases = phrases;
 	}
 	
-	this.setLastModified(new Date());
+	this.setLastModified(new DateTime());
 	return this;
     }
 
     public static CallStrategy createNew() {
 	CallStrategy callStrategy = new CallStrategy();
 	callStrategy.setId(new ObjectId().toHexString());
-	callStrategy.setCreateDate(new Date());
+	callStrategy.setCreateDate(new DateTime());
 	return callStrategy;
     }
 }

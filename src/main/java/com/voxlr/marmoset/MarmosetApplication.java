@@ -1,7 +1,10 @@
 package com.voxlr.marmoset;
 
+import java.util.TimeZone;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
@@ -32,6 +35,12 @@ public class MarmosetApplication {
     @Bean
     public AppProperties appProperties() {
 	return new AppProperties();
+    }
+    
+    @Bean
+    public Jackson2ObjectMapperBuilderCustomizer jacksonObjectMapperCustomization() {
+        return jacksonObjectMapperBuilder -> 
+            jacksonObjectMapperBuilder.timeZone(TimeZone.getDefault());
     }
     
 //    @Bean

@@ -7,20 +7,19 @@ import static com.voxlr.marmoset.util.EntityTestUtils.createEntity;
 import static com.voxlr.marmoset.util.EntityTestUtils.createTeam;
 import static com.voxlr.marmoset.util.EntityTestUtils.createUser;
 
-import java.util.Date;
-
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
 import com.voxlr.marmoset.aggregation.CallAggregation;
 import com.voxlr.marmoset.model.CallOutcome;
 import com.voxlr.marmoset.model.persistence.Call;
+import com.voxlr.marmoset.model.persistence.Call.Analysis;
+import com.voxlr.marmoset.model.persistence.Call.Statistic;
 import com.voxlr.marmoset.model.persistence.CallStrategy;
 import com.voxlr.marmoset.model.persistence.Company;
 import com.voxlr.marmoset.model.persistence.Team;
 import com.voxlr.marmoset.model.persistence.User;
-import com.voxlr.marmoset.model.persistence.Call.Analysis;
-import com.voxlr.marmoset.model.persistence.Call.Statistic;
 import com.voxlr.marmoset.test.DataTest;
 
 public abstract class CallAggregationBaseTest extends DataTest {
@@ -43,7 +42,7 @@ public abstract class CallAggregationBaseTest extends DataTest {
 	callAggregation = aCallAggregation(mongoTemplate);
     }
     
-    public Call createCall(Date createDate) {
+    public Call createCall(DateTime createDate) {
 	Call call = createEntity(Call.builder()
 		.companyId(mockCompany.getId())
 		.userId(mockUser.getId())

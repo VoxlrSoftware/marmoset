@@ -1,7 +1,6 @@
 package com.voxlr.marmoset.model.persistence;
 
-import java.util.Date;
-
+import org.joda.time.DateTime;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -16,9 +15,9 @@ import lombok.Setter;
 public abstract class AuditModel extends Entity {
     @CreatedDate
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    private Date createDate;
+    private DateTime createDate;
     
     @LastModifiedDate
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    private Date lastModified;
+    private DateTime lastModified;
 }

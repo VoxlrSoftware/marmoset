@@ -6,16 +6,15 @@ import static org.springframework.data.mongodb.core.aggregation.Aggregation.proj
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.sort;
 
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.joda.time.DateTime;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.aggregation.Fields;
 import org.springframework.data.mongodb.core.aggregation.GroupOperation;
 import org.springframework.data.mongodb.core.aggregation.MatchOperation;
 import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
@@ -89,7 +88,7 @@ public class CallAggregation extends AbstractAggregation<Call> {
 	return new CallAggregation(mongoTemplate);
     }
     
-    private Criteria getDateConstrained(Date startDate, Date endDate) {
+    private Criteria getDateConstrained(DateTime startDate, DateTime endDate) {
 	return Criteria.where("createDate").gte(startDate).lte(endDate);
     }
     
@@ -101,7 +100,7 @@ public class CallAggregation extends AbstractAggregation<Call> {
 	return Criteria.where(CallAggregationField.COMPANY_ID.get()).is(companyId);
     }
     
-    private Page<CallAggregateDTO> getCalls(Criteria scopeCriteria, Date startDate, Date endDate, Pageable pageable) {
+    private Page<CallAggregateDTO> getCalls(Criteria scopeCriteria, DateTime startDate, DateTime endDate, Pageable pageable) {
 	MatchOperation matchOperation = match(
 		scopeCriteria
 		.andOperator(getDateConstrained(startDate, endDate), hasBeenAnalyzed)
@@ -115,15 +114,15 @@ public class CallAggregation extends AbstractAggregation<Call> {
 	return executePagedAggregation(matchOperation, pageable, aggregation, CallAggregateDTO.class);
     }
 
-    public Page<CallAggregateDTO> getCallsByCompany(String companyId, Date startDate, Date endDate, Pageable pageable) {
+    public Page<CallAggregateDTO> getCallsByCompany(String companyId, DateTime startDate, DateTime endDate, Pageable pageable) {
 	return getCalls(getCompanyConstrained(companyId), startDate, endDate, pageable);
     }
     
-    public Page<CallAggregateDTO> getCallsByUser(String userId, Date startDate, Date endDate, Pageable pageable) {
+    public Page<CallAggregateDTO> getCallsByUser(String userId, DateTime startDate, DateTime endDate, Pageable pageable) {
 	return getCalls(getUserConstrained(userId), startDate, endDate, pageable);
     }
     
-    public RollupResultDTO averageCallField(Criteria scopeCriteria, Date startDate, Date endDate, CallAggregationField field) {
+    public RollupResultDTO averageCallField(Criteria scopeCriteria, DateTime startDate, DateTime endDate, CallAggregationField field) {
 	if (!AVG_FIELDS_WHITE_LIST.contains(field)) {
 	    throw new IllegalArgumentException("Field [" + field.get() + "] cannot be averaged");
 	}
@@ -148,19 +147,19 @@ public class CallAggregation extends AbstractAggregation<Call> {
 	return resultDTO != null ? resultDTO : new RollupResultDTO(field.getDefaultValue());
     }
     
-    public RollupResultDTO averageCallFieldByCompany(String companyId, Date startDate, Date endDate, CallAggregationField field) {
+    public RollupResultDTO averageCallFieldByCompany(String companyId, DateTime startDate, DateTime endDate, CallAggregationField field) {
 	return averageCallField(getCompanyConstrained(companyId), startDate, endDate, field);
     }
     
-    public RollupResultDTO averageCallFieldByUser(String userId, Date startDate, Date endDate, CallAggregationField field) {
+    public RollupResultDTO averageCallFieldByUser(String userId, DateTime startDate, DateTime endDate, CallAggregationField field) {
 	return averageCallField(getUserConstrained(userId), startDate, endDate, field);
     }
     
-    public List<RollupResultDTO> rollupCallField(Criteria scopeCriteria, Date startDate, Date endDate, CallAggregationField field) {
+    public List<RollupResultDTO> rollupCallField(Criteria scopeCriteria, DateTime startDate, DateTime endDate, CallAggregationField field) {
 	return rollupCallField(scopeCriteria, startDate, endDate, field, RollupCadence.DAILY);
     }
     
-    public List<RollupResultDTO> rollupCallField(Criteria scopeCriteria, Date startDate, Date endDate, CallAggregationField field, RollupCadence cadence) {
+    public List<RollupResultDTO> rollupCallField(Criteria scopeCriteria, DateTime startDate, DateTime endDate, CallAggregationField field, RollupCadence cadence) {
 	if (!AVG_FIELDS_WHITE_LIST.contains(field)) {
 	    throw new IllegalArgumentException("Field [" + field.get() + "] cannot be averaged");
 	}
@@ -176,19 +175,19 @@ public class CallAggregation extends AbstractAggregation<Call> {
 			callAggregateProjection
 				.and("createDate").dateAsFormattedString(cadence.getValue()).as("rollup"),
 			group("rollup").avg(field.get()).as(RESULT),
-			project("result").and(NAME).previousOperation(),
-			sort(Direction.ASC, NAME)
+			project("result").and(TIMESTAMPT).previousOperation(),
+			sort(Direction.ASC, TIMESTAMPT)
 		)
 		.build();
 	
 	return executeAggregation(aggregation, RollupResultDTO.class);
     }
     
-    public List<RollupResultDTO> rollupCallFieldByCompany(String companyId, Date startDate, Date endDate, CallAggregationField field, RollupCadence cadence) {
+    public List<RollupResultDTO> rollupCallFieldByCompany(String companyId, DateTime startDate, DateTime endDate, CallAggregationField field, RollupCadence cadence) {
 	return rollupCallField(getCompanyConstrained(companyId), startDate, endDate, field, cadence);
     }
     
-    public List<RollupResultDTO> rollupCallFieldByUser(String userId, Date startDate, Date endDate, CallAggregationField field, RollupCadence cadence) {
+    public List<RollupResultDTO> rollupCallFieldByUser(String userId, DateTime startDate, DateTime endDate, CallAggregationField field, RollupCadence cadence) {
 	return rollupCallField(getUserConstrained(userId), startDate, endDate, field, cadence);
     }
 }

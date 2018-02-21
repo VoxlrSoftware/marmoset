@@ -14,10 +14,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import org.joda.time.DateTime;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -264,8 +264,8 @@ public class CallServiceTest extends DataTest {
     			mockCompany.getId(),
     			authUser,
     			DateConstrained.builder()
-    				.startDate(new Date())
-    				.endDate(new Date())
+    				.startDate(new DateTime())
+    				.endDate(new DateTime())
     				.build(),
     			PageRequest.of(0, 20));
 	    });
@@ -281,8 +281,8 @@ public class CallServiceTest extends DataTest {
     			mockCompany.getId(),
     			authUser,
     			DateConstrained.builder()
-    				.startDate(new Date())
-    				.endDate(new Date())
+    				.startDate(new DateTime())
+    				.endDate(new DateTime())
     				.build(),
     			PageRequest.of(0, 20));
 	    }, UnauthorizedUserException.class);
@@ -302,8 +302,8 @@ public class CallServiceTest extends DataTest {
     			mockUser.getId(),
     			authUser,
     			DateConstrained.builder()
-    				.startDate(new Date())
-    				.endDate(new Date())
+    				.startDate(new DateTime())
+    				.endDate(new DateTime())
     				.build(),
     			PageRequest.of(0, 20));
 	    });
@@ -319,8 +319,8 @@ public class CallServiceTest extends DataTest {
     			mockUser.getId(),
     			authUser,
     			DateConstrained.builder()
-    				.startDate(new Date())
-    				.endDate(new Date())
+    				.startDate(new DateTime())
+    				.endDate(new DateTime())
     				.build(),
     			PageRequest.of(0, 20));
 	    }, UnauthorizedUserException.class);

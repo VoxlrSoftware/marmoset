@@ -5,12 +5,12 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.lang3.time.DateUtils;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.junit.Test;
 import org.springframework.data.mongodb.core.query.Criteria;
 
@@ -20,14 +20,14 @@ import com.voxlr.marmoset.model.dto.aggregation.RollupResultDTO;
 import com.voxlr.marmoset.model.persistence.Call;
 
 public class RollupCallFieldTest extends CallAggregationBaseTest {
-    final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+    final DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
     
     @Test
     public void rollupCallFieldHandlesEmptyDataSet() {
 	List<RollupResultDTO> resultDTO = callAggregation.rollupCallField(
 		Criteria.where("id").exists(true),
-		new Date(),
-		new Date(),
+		new DateTime(),
+		new DateTime(),
 		CallAggregationField.TOTAL_TALK_TIME
 	);
 	
@@ -37,9 +37,9 @@ public class RollupCallFieldTest extends CallAggregationBaseTest {
     
     @Test
     public void rollupCallFieldReturnsValidValue() {
-	Date endDate = getInitialDate();
-	Date startDate = DateUtils.addDays(endDate, -7);
-	Date aggDate = DateUtils.addDays(endDate, -6);
+	DateTime endDate = getInitialDate();
+	DateTime startDate = endDate.minusDays(7);
+	DateTime aggDate = endDate.minusDays(6);
 	
 	Call call1 = createCall(aggDate);
 	Call call2 = createCall(aggDate);
@@ -57,15 +57,15 @@ public class RollupCallFieldTest extends CallAggregationBaseTest {
 	
 	RollupResultDTO result = resultDTO.get(0);
 	assertThat(result.getResult(), is(6000.0));
-	assertThat(result.getName(), equalTo(formatter.format(aggDate)));
+	assertThat(result.getTimestamp(), equalTo(aggDate));
     }
     
     @Test
     public void rollupCallFieldHandlesMultipleDates() {
-	Date endDate = getInitialDate();
-	Date startDate = DateUtils.addDays(endDate, -7);
-	Date aggDate1 = DateUtils.addDays(endDate, -6);
-	Date aggDate2 = DateUtils.addDays(aggDate1, 1);
+	DateTime endDate = getInitialDate();
+	DateTime startDate = endDate.minusDays(7);
+	DateTime aggDate1 = endDate.minusDays(6);
+	DateTime aggDate2 = aggDate1.plusDays(1);
 	
 	Call call1 = createCall(aggDate1);
 	Call call2 = createCall(aggDate2);
@@ -81,20 +81,20 @@ public class RollupCallFieldTest extends CallAggregationBaseTest {
 	assertThat(resultDTO.size(), is(2));
 	
 	RollupResultDTO result1 = resultDTO.get(0);
-	RollupResultDTO result2 = resultDTO.get(1);
-	assertThat(result1.getName(), equalTo(formatter.format(aggDate1)));
+	assertThat(result1.getTimestamp(), equalTo(aggDate1));
 	assertThat(result1.getResult(), is(10000.0));
 	
-	assertThat(result2.getName(), equalTo(formatter.format(aggDate2)));
+	RollupResultDTO result2 = resultDTO.get(1);
+	assertThat(result2.getTimestamp(), equalTo(aggDate2));
 	assertThat(result2.getResult(), is(2000.0));
     }
     
     @Test
     public void rollupCallFieldOnlyIncludesInDateRange() {
-	Date endDate = getInitialDate();
-	Date startDate = DateUtils.addDays(endDate, -7);
-	Date aggDate1 = DateUtils.addDays(endDate, -6);
-	Date aggDate2 = DateUtils.addDays(startDate, -1);
+	DateTime endDate = getInitialDate();
+	DateTime startDate = endDate.minusDays(7);
+	DateTime aggDate1 = endDate.minusDays(6);
+	DateTime aggDate2 = startDate.minusDays(1);
 	
 	Call call1 = createCall(aggDate1);
 	Call call2 = createCall(aggDate2);
@@ -112,15 +112,15 @@ public class RollupCallFieldTest extends CallAggregationBaseTest {
 	
 	RollupResultDTO result = resultDTO.get(0);
 	assertThat(result.getResult(), is(10000.0));
-	assertThat(result.getName(), equalTo(formatter.format(aggDate1)));
+	assertThat(result.getTimestamp(), equalTo(aggDate1));
     }
     
     @Test
-    public void rollupCallFieldHourly() {
-	Date endDate = getInitialDate();
-	Date startDate = DateUtils.addHours(endDate, -7);
-	Date aggDate1 = DateUtils.addHours(endDate, -6);
-	Date aggDate2 = DateUtils.addHours(aggDate1, 1);
+public void rollupCallFieldHourly() {
+	DateTime endDate = getInitialDate();
+	DateTime startDate = endDate.minusHours(7);
+	DateTime aggDate1 = endDate.minusHours(6);
+	DateTime aggDate2 = aggDate1.plusHours(1);
 	
 	Call call1 = createCall(aggDate1);
 	Call call2 = createCall(aggDate2);
@@ -137,20 +137,20 @@ public class RollupCallFieldTest extends CallAggregationBaseTest {
 	assertThat(resultDTO.size(), is(2));
 	
 	RollupResultDTO result1 = resultDTO.get(0);
-	RollupResultDTO result2 = resultDTO.get(1);
-	assertThat(result1.getName(), equalTo(formatter.format(aggDate1)));
+	assertThat(result1.getTimestamp(), equalTo(aggDate1));
 	assertThat(result1.getResult(), is(10000.0));
 	
-	assertThat(result2.getName(), equalTo(formatter.format(aggDate2)));
+	RollupResultDTO result2 = resultDTO.get(1);
+	assertThat(result2.getTimestamp(), equalTo(aggDate2));
 	assertThat(result2.getResult(), is(2000.0));
     }
     
     @Test
     public void rollupCallFieldMonthly() {
-	Date endDate = getInitialDate();
-	Date startDate = DateUtils.addMonths(endDate, -7);
-	Date aggDate1 = DateUtils.addMonths(endDate, -6);
-	Date aggDate2 = DateUtils.addMonths(aggDate1, 1);
+	DateTime endDate = getInitialDate();
+	DateTime startDate = endDate.minusMonths(7);
+	DateTime aggDate1 = endDate.minusMonths(6);
+	DateTime aggDate2 = aggDate1.plusMonths(1);
 	
 	Call call1 = createCall(aggDate1);
 	Call call2 = createCall(aggDate2);
@@ -168,19 +168,19 @@ public class RollupCallFieldTest extends CallAggregationBaseTest {
 	
 	RollupResultDTO result1 = resultDTO.get(0);
 	RollupResultDTO result2 = resultDTO.get(1);
-	assertThat(result1.getName(), equalTo(formatter.format(getStartOfMonth(aggDate1))));
+	assertThat(result1.getTimestamp(), equalTo(getStartOfMonth(aggDate1)));
 	assertThat(result1.getResult(), is(10000.0));
 	
-	assertThat(result2.getName(), equalTo(formatter.format(getStartOfMonth(aggDate2))));
+	assertThat(result2.getTimestamp(), equalTo(getStartOfMonth(aggDate2)));
 	assertThat(result2.getResult(), is(2000.0));
     }
     
     @Test
     public void rollupCallFieldYearly() {
-	Date endDate = getInitialDate();
-	Date startDate = DateUtils.addYears(endDate, -7);
-	Date aggDate1 = DateUtils.addYears(endDate, -6);
-	Date aggDate2 = DateUtils.addYears(aggDate1, 1);
+	DateTime endDate = getInitialDate();
+	DateTime startDate = endDate.minusYears(7);
+	DateTime aggDate1 = endDate.minusYears(6);
+	DateTime aggDate2 = aggDate1.plusYears(1);
 	
 	Call call1 = createCall(aggDate1);
 	Call call2 = createCall(aggDate2);
@@ -198,49 +198,34 @@ public class RollupCallFieldTest extends CallAggregationBaseTest {
 	
 	RollupResultDTO result1 = resultDTO.get(0);
 	RollupResultDTO result2 = resultDTO.get(1);
-	assertThat(result1.getName(), equalTo(formatter.format(getStartOfYear(aggDate1))));
+	assertThat(result1.getTimestamp(), equalTo(getStartOfYear(aggDate1)));
 	assertThat(result1.getResult(), is(10000.0));
 	
-	assertThat(result2.getName(), equalTo(formatter.format(getStartOfYear(aggDate2))));
+	assertThat(result2.getTimestamp(), equalTo(getStartOfYear(aggDate2)));
 	assertThat(result2.getResult(), is(2000.0));
     }
     
-    private Date getStartOfYear(Date date) {
-	Calendar calendar = Calendar.getInstance();
-	calendar.setTime(date);
-	clearTime(calendar);
-	clearDay(calendar);
-	clearMonth(calendar);
-	return calendar.getTime();
+    private DateTime getStartOfYear(DateTime dateTime) {
+	return clearMonth(clearDay(clearTime(dateTime)));
     }
     
-    private Date getStartOfMonth(Date date) {
-	Calendar calendar = Calendar.getInstance();
-	calendar.setTime(date);
-	clearTime(calendar);
-	clearDay(calendar);
-	return calendar.getTime();
+    private DateTime getStartOfMonth(DateTime dateTime) {
+	return clearDay(clearTime(dateTime));
     }
     
-    private Date getInitialDate() {
-	Calendar calendar = Calendar.getInstance();
-	clearTime(calendar);
-	return calendar.getTime();
+    private DateTime getInitialDate() {
+	return clearTime(new DateTime(DateTimeZone.UTC));
     }
     
-    private void clearMonth(Calendar calendar) {
-	calendar.set(Calendar.MONTH, 0);
+    private DateTime clearMonth(DateTime dateTime) {
+	return dateTime.withMonthOfYear(1);
     }
     
-    private void clearDay(Calendar calendar) {
-	calendar.set(Calendar.DAY_OF_MONTH, 1);
+    private DateTime clearDay(DateTime dateTime) {
+	return dateTime.withDayOfMonth(1);
     }
     
-    private Calendar clearTime(Calendar calendar) {
-	calendar.set(Calendar.HOUR_OF_DAY, 0);
-	calendar.set(Calendar.MINUTE, 0);
-	calendar.set(Calendar.SECOND, 0);
-	calendar.set(Calendar.MILLISECOND, 0);
-	return calendar;
+    private DateTime clearTime(DateTime dateTime) {
+	return dateTime.withTime(0, 0, 0, 0);
     }
 }
