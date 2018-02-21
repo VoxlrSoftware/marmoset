@@ -29,6 +29,26 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public abstract class AbstractAggregation<T> {
     
+    public enum RollupCadence {
+	HOURLY("%Y-%m-%dT%H:00:00.000"),
+	DAILY("%Y-%m-%dT00:00:00.000"),
+	MONTHLY("%Y-%m-01T00:00:00.000"),
+	YEARLY("%Y-01-01T00:00:00.000")
+	;
+	
+	private String value;
+	
+	private RollupCadence(String value) {
+	    this.value = value;
+	}
+	
+	public String getValue() {
+	    return this.value;
+	}
+    }
+    public static final String RESULT = "result";
+    public static final String NAME = "name";
+    
     private final MongoTemplate mongoTemplate;
     private final Class<T> entityClass;
     
@@ -47,6 +67,24 @@ public abstract class AbstractAggregation<T> {
 	List<TotalCountDTO> results = totalCountResults.getMappedResults();
 	
 	return results.size() > 0 ? results.get(0).getTotalCount() : 0;
+    }
+    
+    public <U> AggregationResults<U> getAggregationResults(TypedAggregation<T> aggregation, Class<U> outputClass) {
+	return mongoTemplate.aggregate(aggregation, outputClass);
+    }
+    
+    public <U> List<U> executeAggregation(TypedAggregation<T> aggregation, Class<U> outputClass) {
+	return getAggregationResults(aggregation, outputClass).getMappedResults();
+    }
+    
+    public <U> U executeSingleAggregation(TypedAggregation<T> aggregation, Class<U> outputClass) {
+	AggregationResults<U> results = mongoTemplate.aggregate(aggregation, outputClass);
+	
+	if (results.getMappedResults().size() > 0) {
+	    return results.getMappedResults().get(0);
+	}
+	
+	return null;
     }
     
     public <U> Page<U> executePagedAggregation(MatchOperation matchOperation, Pageable pageable, TypedAggregation<T> aggregation, Class<U> outputClass) {
