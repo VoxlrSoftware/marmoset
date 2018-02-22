@@ -8,7 +8,10 @@ import static org.springframework.data.mongodb.core.aggregation.Aggregation.sort
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.joda.time.DateTime;
 import org.springframework.data.domain.Page;
@@ -21,6 +24,9 @@ import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
 import org.springframework.data.mongodb.core.aggregation.TypedAggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+import com.voxlr.marmoset.model.ConvertibleEnum;
 import com.voxlr.marmoset.model.dto.aggregation.CallAggregateDTO;
 import com.voxlr.marmoset.model.dto.aggregation.RollupResultDTO;
 import com.voxlr.marmoset.model.persistence.Call;
@@ -36,7 +42,7 @@ public class CallAggregation extends AbstractAggregation<Call> {
 		    CallAggregationField.CUSTOMER_TALK_RATIO
 		));
     
-    public enum CallAggregationField {
+    public static enum CallAggregationField implements ConvertibleEnum {
 	CREATE_DATE("createDate"),
 	CALL_OUTCOME("callOutcome"),
 	COMPANY_ID("companyId"),
@@ -48,6 +54,17 @@ public class CallAggregation extends AbstractAggregation<Call> {
 	DETECTION_RATIO("detectionRatio", 0.0),
 	CUSTOMER_TALK_RATIO("customerTalkRatio", 0.0)
 	;
+	
+	static Map<String, CallAggregationField> callAggregationFields;
+	
+	static {
+	    callAggregationFields = Arrays.asList(CallAggregationField.values()).stream().collect(Collectors.toMap(CallAggregationField::get, Function.identity()));
+	}
+
+	@JsonCreator
+	public static CallAggregationField fromString(String value) {
+	    return callAggregationFields.get(value);
+	}
 	
 	private String name;
 	private Object defaultValue = null;
@@ -61,6 +78,7 @@ public class CallAggregation extends AbstractAggregation<Call> {
 	    this.defaultValue = defaultValue;
 	}
 	
+	@JsonValue
 	public String get() {
 	    return this.name;
 	}

@@ -9,7 +9,11 @@ import static org.springframework.data.mongodb.core.aggregation.Aggregation.proj
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.skip;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.sort;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -22,6 +26,9 @@ import org.springframework.data.mongodb.core.aggregation.MatchOperation;
 import org.springframework.data.mongodb.core.aggregation.SortOperation;
 import org.springframework.data.mongodb.core.aggregation.TypedAggregation;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+import com.voxlr.marmoset.model.ConvertibleEnum;
 import com.voxlr.marmoset.model.dto.aggregation.TotalCountDTO;
 
 import lombok.RequiredArgsConstructor;
@@ -29,17 +36,35 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public abstract class AbstractAggregation<T> {
     
-    public enum RollupCadence {
-	HOURLY("%Y-%m-%dT%H:00:00.000%z"),
-	DAILY("%Y-%m-%dT00:00:00.000%z"),
-	MONTHLY("%Y-%m-01T00:00:00.000%z"),
-	YEARLY("%Y-01-01T00:00:00.000%z")
+    public static enum RollupCadence implements ConvertibleEnum {
+	HOURLY("hourly", "%Y-%m-%dT%H:00:00.000%z"),
+	DAILY("daily", "%Y-%m-%dT00:00:00.000%z"),
+	MONTHLY("monthly", "%Y-%m-01T00:00:00.000%z"),
+	YEARLY("yearly", "%Y-01-01T00:00:00.000%z")
 	;
 	
-	private String value;
+	static Map<String, RollupCadence> rollupCadences;
 	
-	private RollupCadence(String value) {
+	static {
+	    rollupCadences = Arrays.asList(RollupCadence.values()).stream().collect(Collectors.toMap(RollupCadence::getName, Function.identity()));
+	}
+
+	@JsonCreator
+	public static RollupCadence fromString(String value) {
+	    return rollupCadences.get(value);
+	}
+	
+	private String value;
+	private String name;
+	
+	private RollupCadence(String name, String value) {
+	    this.name = name;
 	    this.value = value;
+	}
+	
+	@JsonValue
+	public String getName() {
+	    return this.name;
 	}
 	
 	public String getValue() {

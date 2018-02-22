@@ -205,6 +205,60 @@ public void rollupCallFieldHourly() {
 	assertThat(result2.getResult(), is(2000.0));
     }
     
+    @Test
+    public void rollupCallFieldByCompanyOnlyIncludesSameCompany() {
+	DateTime endDate = getInitialDate();
+	DateTime startDate = endDate.minusDays(7);
+	DateTime aggDate1 = endDate.minusDays(6);
+	DateTime aggDate2 = aggDate1.plusDays(1);
+	
+	Call call1 = createCall(aggDate1);
+	Call call2 = createCall(aggDate2);
+	call2.setCompanyId("123");
+	call2.getStatistics().setTotalTalkTime(2000);
+	persistenceUtils.save(call1, call2);
+	
+	List<RollupResultDTO> resultDTO = callAggregation.rollupCallFieldByCompany(
+		mockCompany.getId(),
+		startDate,
+		endDate,
+		CallAggregationField.TOTAL_TALK_TIME,
+		RollupCadence.DAILY
+	);
+	assertThat(resultDTO.size(), is(1));
+	
+	RollupResultDTO result1 = resultDTO.get(0);
+	assertThat(result1.getTimestamp(), equalTo(aggDate1));
+	assertThat(result1.getResult(), is(10000.0));
+    }
+    
+    @Test
+    public void rollupCallFieldByUserOnlyIncludesSameUser() {
+	DateTime endDate = getInitialDate();
+	DateTime startDate = endDate.minusDays(7);
+	DateTime aggDate1 = endDate.minusDays(6);
+	DateTime aggDate2 = aggDate1.plusDays(1);
+	
+	Call call1 = createCall(aggDate1);
+	Call call2 = createCall(aggDate2);
+	call2.setUserId("123");
+	call2.getStatistics().setTotalTalkTime(2000);
+	persistenceUtils.save(call1, call2);
+	
+	List<RollupResultDTO> resultDTO = callAggregation.rollupCallFieldByUser(
+		mockUser.getId(),
+		startDate,
+		endDate,
+		CallAggregationField.TOTAL_TALK_TIME,
+		RollupCadence.DAILY
+	);
+	assertThat(resultDTO.size(), is(1));
+	
+	RollupResultDTO result1 = resultDTO.get(0);
+	assertThat(result1.getTimestamp(), equalTo(aggDate1));
+	assertThat(result1.getResult(), is(10000.0));
+    }
+    
     private DateTime getStartOfYear(DateTime dateTime) {
 	return clearMonth(clearDay(clearTime(dateTime)));
     }

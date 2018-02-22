@@ -2,12 +2,15 @@ package com.voxlr.marmoset.repositories;
 
 import static com.voxlr.marmoset.aggregation.CallAggregation.aCallAggregation;
 
+import java.util.List;
+
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
+import com.voxlr.marmoset.aggregation.AbstractAggregation.RollupCadence;
 import com.voxlr.marmoset.aggregation.CallAggregation.CallAggregationField;
 import com.voxlr.marmoset.model.dto.aggregation.CallAggregateDTO;
 import com.voxlr.marmoset.model.dto.aggregation.RollupResultDTO;
@@ -41,6 +44,20 @@ public class CustomizedCallRepositoryImpl implements CustomizedCallRepository {
 	    CallAggregationField field) {
 	return aCallAggregation(mongoTemplate)
 		.averageCallFieldByCompany(companyId, startDate, endDate, field);
+    }
+
+    @Override
+    public List<RollupResultDTO> rollupCallFieldByUser(String userId, DateTime startDate, DateTime endDate,
+	    CallAggregationField field, RollupCadence cadence) {
+	return aCallAggregation(mongoTemplate)
+		.rollupCallFieldByUser(userId, startDate, endDate, field, cadence);
+    }
+
+    @Override
+    public List<RollupResultDTO> rollupCallFieldByCompany(String companyId, DateTime startDate, DateTime endDate,
+	    CallAggregationField field, RollupCadence cadence) {
+	return aCallAggregation(mongoTemplate)
+		.rollupCallFieldByCompany(companyId, startDate, endDate, field, cadence);
     }
 
 }

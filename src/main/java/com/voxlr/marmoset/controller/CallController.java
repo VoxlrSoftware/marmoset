@@ -3,7 +3,10 @@ package com.voxlr.marmoset.controller;
 import static com.voxlr.marmoset.controller.CompanyController.COMPANY;
 import static com.voxlr.marmoset.controller.UserController.USER;
 
+import java.util.List;
+
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 import org.joda.time.DateTime;
 import org.modelmapper.ModelMapper;
@@ -14,6 +17,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,9 +25,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.voxlr.marmoset.aggregation.AbstractAggregation.RollupCadence;
+import com.voxlr.marmoset.aggregation.CallAggregation.CallAggregationField;
 import com.voxlr.marmoset.model.AuthUser;
 import com.voxlr.marmoset.model.dto.DateConstrained;
 import com.voxlr.marmoset.model.dto.aggregation.CallAggregateDTO;
+import com.voxlr.marmoset.model.dto.aggregation.RollupResultDTO;
 import com.voxlr.marmoset.model.persistence.Call;
 import com.voxlr.marmoset.model.persistence.CallRequest;
 import com.voxlr.marmoset.model.persistence.dto.CallCreateDTO;
@@ -37,6 +44,7 @@ import com.voxlr.marmoset.util.MapperUtils;
 import com.voxlr.marmoset.util.exception.EntityNotFoundException;
 
 @RestController
+@Validated
 public class CallController extends ApiController {
     public static final String CALL = "/call";
     public static final String CALL_REQUEST = CALL + "/request";
@@ -118,8 +126,8 @@ public class CallController extends ApiController {
 	value = COMPANY_CALL)
     public ResponseEntity<?> getCallsByCompany(
 	    @PathVariable String companyId,
-	    @RequestParam DateTime startDate,
-	    @RequestParam DateTime endDate,
+	    @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime startDate,
+	    @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime endDate,
 	    Pageable pageable,
 	    @AuthenticationPrincipal AuthUser authUser) throws Exception {
 	DateConstrained dateConstrained = DateConstrained.builder()
@@ -128,6 +136,39 @@ public class CallController extends ApiController {
 	Page<CallAggregateDTO> results = callService.getCallsByCompanyId(companyId, authUser, dateConstrained, page(pageable));
 	PageDTO<CallAggregateDTO> mappedResults = mapperUtils.mapPage(results);
 	return new ResponseEntity<PageDTO<CallAggregateDTO>>(mappedResults, HttpStatus.OK);
+    }
+    
+    @RequestMapping(
+	method = RequestMethod.GET,
+	value = COMPANY_CALL + "/average")
+    public ResponseEntity<?> averageCallsByCompany(
+	@PathVariable String companyId,
+	@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime startDate,
+	@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime endDate,
+	@Valid @NotNull @RequestParam CallAggregationField field,
+	@AuthenticationPrincipal AuthUser authUser) throws Exception {
+	DateConstrained dateConstrained = DateConstrained.builder()
+		.startDate(startDate)
+		.endDate(endDate).build();
+	RollupResultDTO result = callService.averageCallsByCompanyId(companyId, authUser, dateConstrained, field);
+	return new ResponseEntity<RollupResultDTO>(result, HttpStatus.OK);
+    }
+    
+    @RequestMapping(
+	method = RequestMethod.GET,
+	value = COMPANY_CALL + "/rollup")
+    public ResponseEntity<?> rollupCallsByCompany(
+	@PathVariable String companyId,
+	@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime startDate,
+	@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime endDate,
+	@Valid @NotNull @RequestParam CallAggregationField field,
+	@RequestParam(defaultValue = "daily") RollupCadence cadence,
+	@AuthenticationPrincipal AuthUser authUser) throws Exception {
+	DateConstrained dateConstrained = DateConstrained.builder()
+		.startDate(startDate)
+		.endDate(endDate).build();
+	List<RollupResultDTO> result = callService.rollupCallsByCompanyId(companyId, authUser, dateConstrained, field, cadence);
+	return new ResponseEntity<List<RollupResultDTO>>(result, HttpStatus.OK);
     }
     
     @RequestMapping(
@@ -145,5 +186,38 @@ public class CallController extends ApiController {
 	Page<CallAggregateDTO> results = callService.getCallsByUserId(userId, authUser, dateConstrained, page(pageable));
 	PageDTO<CallAggregateDTO> mappedResults = mapperUtils.mapPage(results);
 	return new ResponseEntity<PageDTO<CallAggregateDTO>>(mappedResults, HttpStatus.OK);
+    }
+    
+    @RequestMapping(
+	method = RequestMethod.GET,
+	value = USER_CALL + "/average")
+    public ResponseEntity<?> averageCallsByUser(
+	@PathVariable String userId,
+	@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime startDate,
+	@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime endDate,
+	@Valid @NotNull @RequestParam CallAggregationField field,
+	@AuthenticationPrincipal AuthUser authUser) throws Exception {
+	DateConstrained dateConstrained = DateConstrained.builder()
+		.startDate(startDate)
+		.endDate(endDate).build();
+	RollupResultDTO result = callService.averageCallsByUserId(userId, authUser, dateConstrained, field);
+	return new ResponseEntity<RollupResultDTO>(result, HttpStatus.OK);
+    }
+    
+    @RequestMapping(
+	method = RequestMethod.GET,
+	value = USER_CALL + "/rollup")
+    public ResponseEntity<?> rollupCallsByUser(
+	@PathVariable String userId,
+	@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime startDate,
+	@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime endDate,
+	@Valid @RequestParam CallAggregationField field,
+	@RequestParam(defaultValue = "daily") RollupCadence cadence,
+	@AuthenticationPrincipal AuthUser authUser) throws Exception {
+	DateConstrained dateConstrained = DateConstrained.builder()
+		.startDate(startDate)
+		.endDate(endDate).build();
+	List<RollupResultDTO> result = callService.rollupCallsByUserId(userId, authUser, dateConstrained, field, cadence);
+	return new ResponseEntity<List<RollupResultDTO>>(result, HttpStatus.OK);
     }
 }
