@@ -34,30 +34,30 @@ public class CustomizedCallRepositoryImpl implements CustomizedCallRepository {
 
     @Override
     public RollupResultDTO averageCallFieldByUser(String userId, DateTime startDate, DateTime endDate,
-	    CallAggregationField field) {
+	    List<CallAggregationField> fields) {
 	return aCallAggregation(mongoTemplate)
-		.averageCallFieldByUser(userId, startDate, endDate, field);
+		.averageCallFieldsByUser(userId, startDate, endDate, fields);
     }
 
     @Override
     public RollupResultDTO averageCallFieldByCompany(String companyId, DateTime startDate, DateTime endDate,
-	    CallAggregationField field) {
+	    List<CallAggregationField> fields) {
 	return aCallAggregation(mongoTemplate)
-		.averageCallFieldByCompany(companyId, startDate, endDate, field);
+		.averageCallFieldsByCompany(companyId, startDate, endDate, fields);
     }
 
     @Override
     public List<RollupResultDTO> rollupCallFieldByUser(String userId, DateTime startDate, DateTime endDate,
-	    CallAggregationField field, RollupCadence cadence) {
+	    RollupCadence cadence, List<CallAggregationField> fields) {
 	return aCallAggregation(mongoTemplate)
-		.rollupCallFieldByUser(userId, startDate, endDate, field, cadence);
+		.rollupCallFieldByUser(userId, startDate, endDate, cadence, fields);
     }
 
     @Override
     public List<RollupResultDTO> rollupCallFieldByCompany(String companyId, DateTime startDate, DateTime endDate,
-	    CallAggregationField field, RollupCadence cadence) {
+	    RollupCadence cadence, List<CallAggregationField> fields) {
 	return aCallAggregation(mongoTemplate)
-		.rollupCallFieldByCompany(companyId, startDate, endDate, field, cadence);
+		.rollupCallFieldByCompany(companyId, startDate, endDate, cadence, fields);
     }
 
 }

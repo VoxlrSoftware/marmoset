@@ -72,7 +72,7 @@ public abstract class AbstractAggregation<T> {
 	}
     }
     public static final String RESULT = "result";
-    public static final String TIMESTAMPT = "timestamp";
+    public static final String TIMESTAMP = "timestamp";
     
     private final MongoTemplate mongoTemplate;
     private final Class<T> entityClass;

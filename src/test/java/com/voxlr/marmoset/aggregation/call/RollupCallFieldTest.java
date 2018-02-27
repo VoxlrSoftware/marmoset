@@ -1,5 +1,6 @@
 package com.voxlr.marmoset.aggregation.call;
 
+import static com.voxlr.marmoset.util.ListUtils.listOf;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -9,8 +10,6 @@ import java.util.List;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.junit.Test;
 import org.springframework.data.mongodb.core.query.Criteria;
 
@@ -20,7 +19,6 @@ import com.voxlr.marmoset.model.dto.aggregation.RollupResultDTO;
 import com.voxlr.marmoset.model.persistence.Call;
 
 public class RollupCallFieldTest extends CallAggregationBaseTest {
-    final DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
     
     @Test
     public void rollupCallFieldHandlesEmptyDataSet() {
@@ -28,7 +26,7 @@ public class RollupCallFieldTest extends CallAggregationBaseTest {
 		Criteria.where("id").exists(true),
 		new DateTime(),
 		new DateTime(),
-		CallAggregationField.TOTAL_TALK_TIME
+		listOf(CallAggregationField.TOTAL_TALK_TIME)
 	);
 	
 	assertThat(resultDTO, is(notNullValue()));
@@ -50,13 +48,13 @@ public class RollupCallFieldTest extends CallAggregationBaseTest {
 		Criteria.where("id").exists(true),
 		startDate,
 		endDate,
-		CallAggregationField.TOTAL_TALK_TIME
+		listOf(CallAggregationField.TOTAL_TALK_TIME)
 	);
 	
 	assertThat(resultDTO.size(), is(1));
 	
 	RollupResultDTO result = resultDTO.get(0);
-	assertThat(result.getResult(), is(6000.0));
+	assertThat(result.getResult().get(CallAggregationField.TOTAL_TALK_TIME.get()), is(6000.0));
 	assertThat(result.getTimestamp(), equalTo(aggDate));
     }
     
@@ -76,17 +74,44 @@ public class RollupCallFieldTest extends CallAggregationBaseTest {
 		Criteria.where("id").exists(true),
 		startDate,
 		endDate,
-		CallAggregationField.TOTAL_TALK_TIME
+		listOf(CallAggregationField.TOTAL_TALK_TIME)
 	);
 	assertThat(resultDTO.size(), is(2));
 	
 	RollupResultDTO result1 = resultDTO.get(0);
 	assertThat(result1.getTimestamp(), equalTo(aggDate1));
-	assertThat(result1.getResult(), is(10000.0));
+	assertThat(result1.getResult().get(CallAggregationField.TOTAL_TALK_TIME.get()), is(10000.0));
 	
 	RollupResultDTO result2 = resultDTO.get(1);
 	assertThat(result2.getTimestamp(), equalTo(aggDate2));
-	assertThat(result2.getResult(), is(2000.0));
+	assertThat(result2.getResult().get(CallAggregationField.TOTAL_TALK_TIME.get()), is(2000.0));
+    }
+    
+    @Test
+    public void rollupCallFieldHandlesMultipleFields() {
+	DateTime endDate = getInitialDate();
+	DateTime startDate = endDate.minusDays(7);
+	DateTime aggDate = endDate.minusDays(6);
+	
+	Call call1 = createCall(aggDate);
+	Call call2 = createCall(aggDate);
+	call2.getStatistics().setTotalTalkTime(2000);
+	call2.getStatistics().setDuration(2);
+	persistenceUtils.save(call1, call2);
+	
+	List<RollupResultDTO> resultDTO = callAggregation.rollupCallField(
+		Criteria.where("id").exists(true),
+		startDate,
+		endDate,
+		listOf(CallAggregationField.TOTAL_TALK_TIME, CallAggregationField.DURATION)
+	);
+	
+	assertThat(resultDTO.size(), is(1));
+	
+	RollupResultDTO result = resultDTO.get(0);
+	assertThat(result.getResult().get(CallAggregationField.TOTAL_TALK_TIME.get()), is(6000.0));
+	assertThat(result.getResult().get(CallAggregationField.DURATION.get()), is(6.0));
+	assertThat(result.getTimestamp(), equalTo(aggDate));
     }
     
     @Test
@@ -105,13 +130,13 @@ public class RollupCallFieldTest extends CallAggregationBaseTest {
 		Criteria.where("id").exists(true),
 		startDate,
 		endDate,
-		CallAggregationField.TOTAL_TALK_TIME
+		listOf(CallAggregationField.TOTAL_TALK_TIME)
 	);
 	
 	assertThat(resultDTO.size(), is(1));
 	
 	RollupResultDTO result = resultDTO.get(0);
-	assertThat(result.getResult(), is(10000.0));
+	assertThat(result.getResult().get(CallAggregationField.TOTAL_TALK_TIME.get()), is(10000.0));
 	assertThat(result.getTimestamp(), equalTo(aggDate1));
     }
     
@@ -131,18 +156,18 @@ public void rollupCallFieldHourly() {
 		Criteria.where("id").exists(true),
 		startDate,
 		endDate,
-		CallAggregationField.TOTAL_TALK_TIME,
-		RollupCadence.HOURLY
+		RollupCadence.HOURLY,
+		listOf(CallAggregationField.TOTAL_TALK_TIME)
 	);
 	assertThat(resultDTO.size(), is(2));
 	
 	RollupResultDTO result1 = resultDTO.get(0);
 	assertThat(result1.getTimestamp(), equalTo(aggDate1));
-	assertThat(result1.getResult(), is(10000.0));
+	assertThat(result1.getResult().get(CallAggregationField.TOTAL_TALK_TIME.get()), is(10000.0));
 	
 	RollupResultDTO result2 = resultDTO.get(1);
 	assertThat(result2.getTimestamp(), equalTo(aggDate2));
-	assertThat(result2.getResult(), is(2000.0));
+	assertThat(result2.getResult().get(CallAggregationField.TOTAL_TALK_TIME.get()), is(2000.0));
     }
     
     @Test
@@ -161,18 +186,18 @@ public void rollupCallFieldHourly() {
 		Criteria.where("id").exists(true),
 		startDate,
 		endDate,
-		CallAggregationField.TOTAL_TALK_TIME,
-		RollupCadence.MONTHLY
+		RollupCadence.MONTHLY,
+		listOf(CallAggregationField.TOTAL_TALK_TIME)
 	);
 	assertThat(resultDTO.size(), is(2));
 	
 	RollupResultDTO result1 = resultDTO.get(0);
 	RollupResultDTO result2 = resultDTO.get(1);
 	assertThat(result1.getTimestamp(), equalTo(getStartOfMonth(aggDate1)));
-	assertThat(result1.getResult(), is(10000.0));
+	assertThat(result1.getResult().get(CallAggregationField.TOTAL_TALK_TIME.get()), is(10000.0));
 	
 	assertThat(result2.getTimestamp(), equalTo(getStartOfMonth(aggDate2)));
-	assertThat(result2.getResult(), is(2000.0));
+	assertThat(result2.getResult().get(CallAggregationField.TOTAL_TALK_TIME.get()), is(2000.0));
     }
     
     @Test
@@ -191,18 +216,18 @@ public void rollupCallFieldHourly() {
 		Criteria.where("id").exists(true),
 		startDate,
 		endDate,
-		CallAggregationField.TOTAL_TALK_TIME,
-		RollupCadence.YEARLY
+		RollupCadence.YEARLY,
+		listOf(CallAggregationField.TOTAL_TALK_TIME)
 	);
 	assertThat(resultDTO.size(), is(2));
 	
 	RollupResultDTO result1 = resultDTO.get(0);
 	RollupResultDTO result2 = resultDTO.get(1);
 	assertThat(result1.getTimestamp(), equalTo(getStartOfYear(aggDate1)));
-	assertThat(result1.getResult(), is(10000.0));
+	assertThat(result1.getResult().get(CallAggregationField.TOTAL_TALK_TIME.get()), is(10000.0));
 	
 	assertThat(result2.getTimestamp(), equalTo(getStartOfYear(aggDate2)));
-	assertThat(result2.getResult(), is(2000.0));
+	assertThat(result2.getResult().get(CallAggregationField.TOTAL_TALK_TIME.get()), is(2000.0));
     }
     
     @Test
@@ -222,14 +247,14 @@ public void rollupCallFieldHourly() {
 		mockCompany.getId(),
 		startDate,
 		endDate,
-		CallAggregationField.TOTAL_TALK_TIME,
-		RollupCadence.DAILY
+		RollupCadence.DAILY,
+		listOf(CallAggregationField.TOTAL_TALK_TIME)
 	);
 	assertThat(resultDTO.size(), is(1));
 	
 	RollupResultDTO result1 = resultDTO.get(0);
 	assertThat(result1.getTimestamp(), equalTo(aggDate1));
-	assertThat(result1.getResult(), is(10000.0));
+	assertThat(result1.getResult().get(CallAggregationField.TOTAL_TALK_TIME.get()), is(10000.0));
     }
     
     @Test
@@ -249,14 +274,14 @@ public void rollupCallFieldHourly() {
 		mockUser.getId(),
 		startDate,
 		endDate,
-		CallAggregationField.TOTAL_TALK_TIME,
-		RollupCadence.DAILY
+		RollupCadence.DAILY,
+		listOf(CallAggregationField.TOTAL_TALK_TIME)
 	);
 	assertThat(resultDTO.size(), is(1));
 	
 	RollupResultDTO result1 = resultDTO.get(0);
 	assertThat(result1.getTimestamp(), equalTo(aggDate1));
-	assertThat(result1.getResult(), is(10000.0));
+	assertThat(result1.getResult().get(CallAggregationField.TOTAL_TALK_TIME.get()), is(10000.0));
     }
     
     private DateTime getStartOfYear(DateTime dateTime) {

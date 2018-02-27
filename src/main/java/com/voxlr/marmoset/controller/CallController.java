@@ -145,12 +145,12 @@ public class CallController extends ApiController {
 	@PathVariable String companyId,
 	@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime startDate,
 	@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime endDate,
-	@Valid @NotNull @RequestParam CallAggregationField field,
+	@Valid @NotNull @RequestParam List<CallAggregationField> fields,
 	@AuthenticationPrincipal AuthUser authUser) throws Exception {
 	DateConstrained dateConstrained = DateConstrained.builder()
 		.startDate(startDate)
 		.endDate(endDate).build();
-	RollupResultDTO result = callService.averageCallsByCompanyId(companyId, authUser, dateConstrained, field);
+	RollupResultDTO result = callService.averageCallsByCompanyId(companyId, authUser, dateConstrained, fields);
 	return new ResponseEntity<RollupResultDTO>(result, HttpStatus.OK);
     }
     
@@ -161,13 +161,13 @@ public class CallController extends ApiController {
 	@PathVariable String companyId,
 	@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime startDate,
 	@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime endDate,
-	@Valid @NotNull @RequestParam CallAggregationField field,
+	@Valid @NotNull @RequestParam List<CallAggregationField> fields,
 	@RequestParam(defaultValue = "daily") RollupCadence cadence,
 	@AuthenticationPrincipal AuthUser authUser) throws Exception {
 	DateConstrained dateConstrained = DateConstrained.builder()
 		.startDate(startDate)
 		.endDate(endDate).build();
-	List<RollupResultDTO> result = callService.rollupCallsByCompanyId(companyId, authUser, dateConstrained, field, cadence);
+	List<RollupResultDTO> result = callService.rollupCallsByCompanyId(companyId, authUser, dateConstrained, cadence, fields);
 	return new ResponseEntity<List<RollupResultDTO>>(result, HttpStatus.OK);
     }
     
@@ -195,12 +195,12 @@ public class CallController extends ApiController {
 	@PathVariable String userId,
 	@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime startDate,
 	@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime endDate,
-	@Valid @NotNull @RequestParam CallAggregationField field,
+	@Valid @NotNull @RequestParam List<CallAggregationField> fields,
 	@AuthenticationPrincipal AuthUser authUser) throws Exception {
 	DateConstrained dateConstrained = DateConstrained.builder()
 		.startDate(startDate)
 		.endDate(endDate).build();
-	RollupResultDTO result = callService.averageCallsByUserId(userId, authUser, dateConstrained, field);
+	RollupResultDTO result = callService.averageCallsByUserId(userId, authUser, dateConstrained, fields);
 	return new ResponseEntity<RollupResultDTO>(result, HttpStatus.OK);
     }
     
@@ -211,13 +211,13 @@ public class CallController extends ApiController {
 	@PathVariable String userId,
 	@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime startDate,
 	@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime endDate,
-	@Valid @RequestParam CallAggregationField field,
+	@Valid @NotNull @RequestParam List<CallAggregationField> fields,
 	@RequestParam(defaultValue = "daily") RollupCadence cadence,
 	@AuthenticationPrincipal AuthUser authUser) throws Exception {
 	DateConstrained dateConstrained = DateConstrained.builder()
 		.startDate(startDate)
 		.endDate(endDate).build();
-	List<RollupResultDTO> result = callService.rollupCallsByUserId(userId, authUser, dateConstrained, field, cadence);
+	List<RollupResultDTO> result = callService.rollupCallsByUserId(userId, authUser, dateConstrained, cadence, fields);
 	return new ResponseEntity<List<RollupResultDTO>>(result, HttpStatus.OK);
     }
 }

@@ -6,9 +6,12 @@ import static com.voxlr.marmoset.util.AssertUtils.wrapNoException;
 import static com.voxlr.marmoset.util.ListUtils.listOf;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.collection.IsMapContaining.hasKey;
 import static org.junit.Assert.assertThat;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.joda.time.DateTime;
@@ -22,17 +25,20 @@ import com.voxlr.marmoset.model.persistence.Call;
 public class AverageCallFieldTest extends CallAggregationBaseTest {
     @Test
     public void averageCallFieldReturnsValidDefaultValue() throws Exception {
+	RollupResultDTO resultDTO = callAggregation.averageCallFields(
+		Criteria.where("id").exists(true),
+		new DateTime(),
+		new DateTime(),
+		new ArrayList<CallAggregationField>(AVG_FIELDS_WHITE_LIST)
+	);
+	
+	assertThat(resultDTO.getResult().size(), is(AVG_FIELDS_WHITE_LIST.size()));
+	
+	Map<String, Object> result = resultDTO.getResult();
+	
 	AVG_FIELDS_WHITE_LIST.stream().forEach(field -> {
-	    wrapNoException(() -> {
-		RollupResultDTO resultDTO = callAggregation.averageCallField(
-			Criteria.where("id").exists(true),
-			new DateTime(),
-			new DateTime(),
-			field
-		);
-		
-		assertThat(resultDTO.getResult(), is(field.getDefaultValue()));
-	    });
+	    assertThat(result, hasKey(field.get()));
+	    assertThat(result.get(field.get()), is(field.getDefaultValue()));
 	});
     }
     
@@ -46,14 +52,14 @@ public class AverageCallFieldTest extends CallAggregationBaseTest {
 	call2.getStatistics().setTotalTalkTime(2000);
 	persistenceUtils.save(call1, call2);
 	
-	RollupResultDTO resultDTO = callAggregation.averageCallField(
+	RollupResultDTO resultDTO = callAggregation.averageCallFields(
 		Criteria.where("id").exists(true),
 		startDate,
 		endDate,
-		CallAggregationField.TOTAL_TALK_TIME
+		listOf(CallAggregationField.TOTAL_TALK_TIME)
 	);
-	
-	assertThat(resultDTO.getResult(), equalTo(6000.0));
+
+	assertThat(resultDTO.getResult().get(CallAggregationField.TOTAL_TALK_TIME.get()), equalTo(6000.0));
     }
     
     @Test
@@ -66,14 +72,14 @@ public class AverageCallFieldTest extends CallAggregationBaseTest {
 	call2.getStatistics().setTotalTalkTime(2000);
 	persistenceUtils.save(call1, call2);
 	
-	RollupResultDTO resultDTO = callAggregation.averageCallField(
+	RollupResultDTO resultDTO = callAggregation.averageCallFields(
 		Criteria.where("id").exists(true),
 		startDate,
 		endDate,
-		CallAggregationField.TOTAL_TALK_TIME
+		listOf(CallAggregationField.TOTAL_TALK_TIME)
 	);
 	
-	assertThat(resultDTO.getResult(), equalTo(10000.0));
+	assertThat(resultDTO.getResult().get(CallAggregationField.TOTAL_TALK_TIME.get()), equalTo(10000.0));
     }
     
     @Test
@@ -86,11 +92,11 @@ public class AverageCallFieldTest extends CallAggregationBaseTest {
 	
 	AVG_FIELDS_WHITE_LIST.stream().forEach(field -> {
 	    wrapNoException(() -> {
-		callAggregation.averageCallField(
+		callAggregation.averageCallFields(
 			Criteria.where("id").exists(true),
 			startDate,
 			endDate,
-			field
+			listOf(field)
 		);
 	    });
 	});
@@ -109,11 +115,11 @@ public class AverageCallFieldTest extends CallAggregationBaseTest {
 	
 	fields.stream().forEach(field -> {
 	    wrapAssertException(() -> {
-		callAggregation.averageCallField(
+		callAggregation.averageCallFields(
 			Criteria.where("id").exists(true),
 			startDate,
 			endDate,
-			field
+			listOf(field)
 		);
 	    }, IllegalArgumentException.class);
 	});
@@ -129,14 +135,14 @@ public class AverageCallFieldTest extends CallAggregationBaseTest {
 	call2.setCompanyId("123");
 	persistenceUtils.save(call1, call2);
 	
-	RollupResultDTO resultDTO = callAggregation.averageCallFieldByCompany(
+	RollupResultDTO resultDTO = callAggregation.averageCallFieldsByCompany(
 		mockCompany.getId(),
 		startDate,
 		endDate,
-		CallAggregationField.TOTAL_TALK_TIME
+		listOf(CallAggregationField.TOTAL_TALK_TIME)
 	);
 	
-	assertThat(resultDTO.getResult(), equalTo(10000.0));
+	assertThat(resultDTO.getResult().get(CallAggregationField.TOTAL_TALK_TIME.get()), equalTo(10000.0));
     }
     
     @Test
@@ -149,13 +155,13 @@ public class AverageCallFieldTest extends CallAggregationBaseTest {
 	call2.setUserId("123");
 	persistenceUtils.save(call1, call2);
 	
-	RollupResultDTO resultDTO = callAggregation.averageCallFieldByUser(
+	RollupResultDTO resultDTO = callAggregation.averageCallFieldsByUser(
 		mockUser.getId(),
 		startDate,
 		endDate,
-		CallAggregationField.TOTAL_TALK_TIME
+		listOf(CallAggregationField.TOTAL_TALK_TIME)
 	);
 	
-	assertThat(resultDTO.getResult(), equalTo(10000.0));
+	assertThat(resultDTO.getResult().get(CallAggregationField.TOTAL_TALK_TIME.get()), equalTo(10000.0));
     }
 }

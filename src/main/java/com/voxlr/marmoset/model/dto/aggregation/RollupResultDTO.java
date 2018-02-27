@@ -1,5 +1,7 @@
 package com.voxlr.marmoset.model.dto.aggregation;
 
+import java.util.Map;
+
 import org.joda.time.DateTime;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -19,9 +21,9 @@ import lombok.Setter;
 public class RollupResultDTO {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private DateTime timestamp;
-    private Object result;
+    private Map<String, Object> result;
     
-    public RollupResultDTO(Object result) {
+    public RollupResultDTO(Map<String, Object>  result) {
 	this.result = result;
     }
 }

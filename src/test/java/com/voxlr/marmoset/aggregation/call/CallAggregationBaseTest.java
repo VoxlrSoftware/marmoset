@@ -23,6 +23,14 @@ import com.voxlr.marmoset.model.persistence.User;
 import com.voxlr.marmoset.test.DataTest;
 
 public abstract class CallAggregationBaseTest extends DataTest {
+    public static final int DEFAULT_DURATION = 10;
+    public static final int DEFAULT_TALK_TIME = 10000;
+    public static final int DEFAULT_CUSTOMER_TALK_TIME = 5000;
+    public static final int DEFAULT_EMPLOYEE_TALK_TIME = 5000;
+    public static final int DEFAULT_PHRASE_COUNT = 2;
+    public static final double DEFAULT_DETECTION_RATIO = 0.5;
+    
+    
     @Autowired
     MongoTemplate mongoTemplate;
     
@@ -50,13 +58,13 @@ public abstract class CallAggregationBaseTest extends DataTest {
 		.callOutcome(CallOutcome.WON)
 		.callStrategy(new CallStrategy("Test Strategy", newArrayList()))
 		.statistics(Statistic.builder()
-			.duration(10)
-			.totalTalkTime(10000)
-			.customerTalkTime(5000)
-			.employeeTalkTime(5000).build())
+			.duration(DEFAULT_DURATION)
+			.totalTalkTime(DEFAULT_TALK_TIME)
+			.customerTalkTime(DEFAULT_CUSTOMER_TALK_TIME)
+			.employeeTalkTime(DEFAULT_EMPLOYEE_TALK_TIME).build())
 		.analysis(Analysis.builder()
-			.detectionRatio(0.5)
-			.detectedPhraseCount(2).build())
+			.detectionRatio(DEFAULT_DETECTION_RATIO)
+			.detectedPhraseCount(DEFAULT_PHRASE_COUNT).build())
 		.build());
 	call.setCreateDate(createDate);
 	return call;

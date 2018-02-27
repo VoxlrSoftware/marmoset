@@ -231,53 +231,42 @@ public class CallService extends ValidateableService {
 	    String companyId,
 	    AuthUser authUser,
 	    DateConstrained dateConstrained,
-	    CallAggregationField field) throws Exception {
+	    List<CallAggregationField> fields) throws Exception {
 	validate(authUser, dateConstrained);
 	Company company = companyService.get(companyId, authUser);
-	return callRepository.averageCallFieldByCompany(company.getId(), dateConstrained.getStartDate(), dateConstrained.getEndDate(), field);
-    }
-    
-    public RollupResultDTO averageCallsByUserId(
-	    String userId,
-	    AuthUser authUser,
-	    DateConstrained dateConstrained,
-	    CallAggregationField field) throws Exception {
-	validate(authUser, dateConstrained);
-	User user = userService.get(userId, authUser);
-	return callRepository.averageCallFieldByUser(user.getId(), dateConstrained.getStartDate(), dateConstrained.getEndDate(), field);
+	return callRepository.averageCallFieldByCompany(company.getId(), dateConstrained.getStartDate(), dateConstrained.getEndDate(), fields);
     }
     
     public List<RollupResultDTO> rollupCallsByCompanyId(
 	    String companyId,
 	    AuthUser authUser,
 	    DateConstrained dateConstrained,
-	    CallAggregationField field,
-	    RollupCadence cadence) throws Exception {
+	    RollupCadence cadence,
+	    List<CallAggregationField> fields) throws Exception {
 	validate(authUser, dateConstrained);
 	Company company = companyService.get(companyId, authUser);
-	return callRepository.rollupCallFieldByCompany(company.getId(), dateConstrained.getStartDate(), dateConstrained.getEndDate(), field, cadence);
+	return callRepository.rollupCallFieldByCompany(company.getId(), dateConstrained.getStartDate(), dateConstrained.getEndDate(), cadence, fields);
     }
     
-    public List<RollupResultDTO> averageCallsByUserId(
+    public RollupResultDTO averageCallsByUserId(
 	    String userId,
 	    AuthUser authUser,
 	    DateConstrained dateConstrained,
-	    CallAggregationField field,
-	    RollupCadence cadence) throws Exception {
+	    List<CallAggregationField> fields) throws Exception {
 	validate(authUser, dateConstrained);
 	User user = userService.get(userId, authUser);
-	return callRepository.rollupCallFieldByUser(user.getId(), dateConstrained.getStartDate(), dateConstrained.getEndDate(), field, cadence);
+	return callRepository.averageCallFieldByUser(user.getId(), dateConstrained.getStartDate(), dateConstrained.getEndDate(), fields);
     }
     
     public List<RollupResultDTO> rollupCallsByUserId(
 	    String userId,
 	    AuthUser authUser,
 	    DateConstrained dateConstrained,
-	    CallAggregationField field,
-	    RollupCadence cadence) throws Exception {
+	    RollupCadence cadence,
+	    List<CallAggregationField> fields) throws Exception {
 	validate(authUser, dateConstrained);
 	User user = userService.get(userId, authUser);
-	return callRepository.rollupCallFieldByUser(user.getId(), dateConstrained.getStartDate(), dateConstrained.getEndDate(), field, cadence);
+	return callRepository.rollupCallFieldByUser(user.getId(), dateConstrained.getStartDate(), dateConstrained.getEndDate(), cadence, fields);
     }
 
 }

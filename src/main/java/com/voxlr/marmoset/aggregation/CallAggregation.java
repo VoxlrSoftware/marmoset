@@ -1,5 +1,9 @@
 package com.voxlr.marmoset.aggregation;
 
+import static com.voxlr.marmoset.aggregation.operation.AddFieldsOperation.addFields;
+import static com.voxlr.marmoset.aggregation.operation.ProjectFieldsOperation.projectFields;
+import static com.voxlr.marmoset.aggregation.operation.SortFieldsOperation.sortFields;
+import static com.voxlr.marmoset.util.ListUtils.mapList;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.group;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.match;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.project;
@@ -140,72 +144,97 @@ public class CallAggregation extends AbstractAggregation<Call> {
 	return getCalls(getUserConstrained(userId), startDate, endDate, pageable);
     }
     
-    public RollupResultDTO averageCallField(Criteria scopeCriteria, DateTime startDate, DateTime endDate, CallAggregationField field) {
-	if (!AVG_FIELDS_WHITE_LIST.contains(field)) {
-	    throw new IllegalArgumentException("Field [" + field.get() + "] cannot be averaged");
-	}
+    public RollupResultDTO averageCallFields(Criteria scopeCriteria, DateTime startDate, DateTime endDate, List<CallAggregationField> fields) {
+	List<String> averageFields = getAndValidateAggFields(fields);
 	
 	MatchOperation matchOperation = match(
 		scopeCriteria
 		.andOperator(getDateConstrained(startDate, endDate), hasBeenAnalyzed)
 	);
 	
-	GroupOperation groupOperation = group().avg(field.get()).as("result");
+	GroupOperation groupOperation = groupAndAverage(null, averageFields);
 	
 	TypedAggregation<Call> aggregation = anAggregation()
 		.append(
 			matchOperation,
 			callAggregateProjection,
-			groupOperation
+			groupOperation,
+			addFields().withObject("result", averageFields).build(),
+			projectFields("result").build()
 		)
 		.build();
 	
 	RollupResultDTO resultDTO =  executeSingleAggregation(aggregation, RollupResultDTO.class);
 	
-	return resultDTO != null ? resultDTO : new RollupResultDTO(field.getDefaultValue());
+	return resultDTO != null ? resultDTO : new RollupResultDTO(getDefaultResult(fields));
     }
     
-    public RollupResultDTO averageCallFieldByCompany(String companyId, DateTime startDate, DateTime endDate, CallAggregationField field) {
-	return averageCallField(getCompanyConstrained(companyId), startDate, endDate, field);
+    public RollupResultDTO averageCallFieldsByCompany(String companyId, DateTime startDate, DateTime endDate, List<CallAggregationField> fields) {
+	return averageCallFields(getCompanyConstrained(companyId), startDate, endDate, fields);
     }
     
-    public RollupResultDTO averageCallFieldByUser(String userId, DateTime startDate, DateTime endDate, CallAggregationField field) {
-	return averageCallField(getUserConstrained(userId), startDate, endDate, field);
+    public RollupResultDTO averageCallFieldsByUser(String userId, DateTime startDate, DateTime endDate, List<CallAggregationField> fields) {
+	return averageCallFields(getUserConstrained(userId), startDate, endDate, fields);
     }
     
-    public List<RollupResultDTO> rollupCallField(Criteria scopeCriteria, DateTime startDate, DateTime endDate, CallAggregationField field) {
-	return rollupCallField(scopeCriteria, startDate, endDate, field, RollupCadence.DAILY);
+    public List<RollupResultDTO> rollupCallField(Criteria scopeCriteria, DateTime startDate, DateTime endDate, List<CallAggregationField> fields) {
+	return rollupCallField(scopeCriteria, startDate, endDate, RollupCadence.DAILY, fields);
     }
     
-    public List<RollupResultDTO> rollupCallField(Criteria scopeCriteria, DateTime startDate, DateTime endDate, CallAggregationField field, RollupCadence cadence) {
-	if (!AVG_FIELDS_WHITE_LIST.contains(field)) {
-	    throw new IllegalArgumentException("Field [" + field.get() + "] cannot be averaged");
-	}
+    public List<RollupResultDTO> rollupCallField(Criteria scopeCriteria, DateTime startDate, DateTime endDate, RollupCadence cadence, List<CallAggregationField> fields) {
+	List<String> averageFields = getAndValidateAggFields(fields);
 	
 	MatchOperation matchOperation = match(
 		scopeCriteria
 		.andOperator(getDateConstrained(startDate, endDate), hasBeenAnalyzed)
 	);
+	
+	GroupOperation groupOperation = groupAndAverage("rollup", averageFields);
 	
 	TypedAggregation<Call> aggregation = anAggregation()
 		.append(
 			matchOperation,
 			callAggregateProjection
 				.and("createDate").dateAsFormattedString(cadence.getValue()).as("rollup"),
-			group("rollup").avg(field.get()).as(RESULT),
-			project("result").and(TIMESTAMPT).previousOperation(),
-			sort(Direction.ASC, TIMESTAMPT)
+			groupOperation,
+			addFields().withObject("result", averageFields).build(),
+			projectFields("result").and(TIMESTAMP).previousOperation().build(),
+			sortFields(Direction.ASC, TIMESTAMP).build()
 		)
 		.build();
 	
 	return executeAggregation(aggregation, RollupResultDTO.class);
     }
     
-    public List<RollupResultDTO> rollupCallFieldByCompany(String companyId, DateTime startDate, DateTime endDate, CallAggregationField field, RollupCadence cadence) {
-	return rollupCallField(getCompanyConstrained(companyId), startDate, endDate, field, cadence);
+    public List<RollupResultDTO> rollupCallFieldByCompany(String companyId, DateTime startDate, DateTime endDate, RollupCadence cadence, List<CallAggregationField> fields) {
+	return rollupCallField(getCompanyConstrained(companyId), startDate, endDate, cadence, fields);
     }
     
-    public List<RollupResultDTO> rollupCallFieldByUser(String userId, DateTime startDate, DateTime endDate, CallAggregationField field, RollupCadence cadence) {
-	return rollupCallField(getUserConstrained(userId), startDate, endDate, field, cadence);
+    public List<RollupResultDTO> rollupCallFieldByUser(String userId, DateTime startDate, DateTime endDate, RollupCadence cadence, List<CallAggregationField> fields) {
+	return rollupCallField(getUserConstrained(userId), startDate, endDate, cadence, fields);
+    }
+    
+    private Map<String, Object> getDefaultResult(List<CallAggregationField> fields) {
+	return fields.stream().collect(Collectors.toMap(CallAggregationField::get, CallAggregationField::getDefaultValue));
+    }
+    
+    private GroupOperation groupAndAverage(String groupField, List<String> fields) {
+	GroupOperation groupOperation = groupField != null ? group(groupField) : group();
+	
+	for(String field : fields) {
+	    groupOperation = groupOperation.avg(field).as(field);
+	}
+	
+	return groupOperation;
+    }
+    
+    private List<String> getAndValidateAggFields(List<CallAggregationField> fields) {
+	List<CallAggregationField> invalidFieldList = fields.stream().filter(field -> !AVG_FIELDS_WHITE_LIST.contains(field)).collect(Collectors.toList());
+	if (invalidFieldList.size() > 0) {
+	    String invalidFields = invalidFieldList.stream().map(CallAggregationField::get).collect(Collectors.joining(","));
+	    throw new IllegalArgumentException("Field(s) [" + invalidFields + "] cannot be averaged");
+	}
+	
+	return mapList(fields, CallAggregationField::get);
     }
 }
