@@ -18,10 +18,10 @@ import org.springframework.web.servlet.HandlerMapping;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.voxlr.marmoset.callback.CallbackBody;
+import com.voxlr.marmoset.exception.CallbackException;
+import com.voxlr.marmoset.exception.HandlerNotFoundException;
 import com.voxlr.marmoset.model.dto.CallbackResult;
 import com.voxlr.marmoset.service.CallbackService;
-import com.voxlr.marmoset.util.exception.CallbackException;
-import com.voxlr.marmoset.util.exception.HandlerNotFoundException;
 
 @RestController
 public class CallbackController extends ApiController {

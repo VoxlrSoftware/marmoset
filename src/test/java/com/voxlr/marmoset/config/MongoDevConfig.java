@@ -13,7 +13,7 @@ import com.mongodb.MongoClient;
 
 import cz.jirutka.spring.embedmongo.EmbeddedMongoFactoryBean;
 
-@Profile("dev")
+@Profile("test")
 @Configuration
 @EnableMongoAuditing
 public class MongoDevConfig {

@@ -7,13 +7,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.voxlr.marmoset.callback.Callback;
 import com.voxlr.marmoset.callback.CallbackBody;
 import com.voxlr.marmoset.callback.CallbackHandler;
+import com.voxlr.marmoset.exception.CallbackException;
 import com.voxlr.marmoset.model.dto.CallbackResult;
 import com.voxlr.marmoset.model.persistence.Call;
 import com.voxlr.marmoset.service.CallbackService.CallbackType;
 import com.voxlr.marmoset.service.CallbackService.Platform;
 import com.voxlr.marmoset.service.domain.CallService;
 import com.voxlr.marmoset.service.TwilioService;
-import com.voxlr.marmoset.util.exception.CallbackException;
 
 @Callback(
 	type = CallbackType.CALL,

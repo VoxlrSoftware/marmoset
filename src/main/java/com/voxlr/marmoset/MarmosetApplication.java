@@ -43,13 +43,6 @@ public class MarmosetApplication {
             jacksonObjectMapperBuilder.timeZone(TimeZone.getDefault());
     }
     
-//    @Bean
-//    public ObjectMapper objectMapper() {
-//	ObjectMapper objectMapper = new ObjectMapper();
-//	objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-//	return new ObjectMapper();
-//    }
-    
     public static void main(String[] args) {
 	SpringApplication.run(MarmosetApplication.class, args);
     }

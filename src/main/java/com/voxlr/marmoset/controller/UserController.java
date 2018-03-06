@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.voxlr.marmoset.exception.EntityNotFoundException;
 import com.voxlr.marmoset.model.AuthUser;
 import com.voxlr.marmoset.model.dto.RemovedEntityDTO;
 import com.voxlr.marmoset.model.persistence.User;
@@ -31,7 +32,6 @@ import com.voxlr.marmoset.model.persistence.dto.UserDTO;
 import com.voxlr.marmoset.model.persistence.dto.UserUpdateDTO;
 import com.voxlr.marmoset.service.domain.UserService;
 import com.voxlr.marmoset.util.MapperUtils;
-import com.voxlr.marmoset.util.exception.EntityNotFoundException;
 
 @RestController
 public class UserController extends ApiController {

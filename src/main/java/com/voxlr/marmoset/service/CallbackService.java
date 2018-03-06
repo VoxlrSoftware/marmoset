@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.voxlr.marmoset.callback.Callback;
 import com.voxlr.marmoset.callback.CallbackHandler;
 import com.voxlr.marmoset.config.properties.AppProperties;
-import com.voxlr.marmoset.util.exception.HandlerNotFoundException;
+import com.voxlr.marmoset.exception.HandlerNotFoundException;
 
 import lombok.Getter;
 

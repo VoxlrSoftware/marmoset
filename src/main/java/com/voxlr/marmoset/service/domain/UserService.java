@@ -10,6 +10,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.stereotype.Service;
 
+import com.voxlr.marmoset.exception.EntityNotFoundException;
 import com.voxlr.marmoset.model.AuthUser;
 import com.voxlr.marmoset.model.persistence.Company;
 import com.voxlr.marmoset.model.persistence.User;
@@ -18,7 +19,6 @@ import com.voxlr.marmoset.model.persistence.dto.UserUpdateDTO;
 import com.voxlr.marmoset.repositories.UserRepository;
 import com.voxlr.marmoset.service.AuthorizationService;
 import com.voxlr.marmoset.service.ValidateableService;
-import com.voxlr.marmoset.util.exception.EntityNotFoundException;
 
 @Service
 public class UserService extends ValidateableService {

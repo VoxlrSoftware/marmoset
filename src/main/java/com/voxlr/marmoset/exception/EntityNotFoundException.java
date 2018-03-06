@@ -1,4 +1,4 @@
-package com.voxlr.marmoset.util.exception;
+package com.voxlr.marmoset.exception;
 
 import java.util.HashMap;
 import java.util.Map;

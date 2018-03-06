@@ -2,9 +2,9 @@ package com.voxlr.marmoset.validation.validator;
 
 import org.joda.time.DateTime;
 
+import com.voxlr.marmoset.exception.InvalidArgumentsException;
 import com.voxlr.marmoset.model.AuthUser;
 import com.voxlr.marmoset.model.dto.DateConstrained;
-import com.voxlr.marmoset.util.exception.InvalidArgumentsException;
 
 @TypeValidator(forClass = DateConstrained.class)
 public class DateConstrainedValidator implements Validator<DateConstrained> {

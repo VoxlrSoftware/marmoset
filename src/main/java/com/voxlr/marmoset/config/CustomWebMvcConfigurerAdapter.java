@@ -13,14 +13,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.util.StdDateFormat;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
-import com.voxlr.marmoset.converter.EnumConverter;
 
 @Configuration
 public class CustomWebMvcConfigurerAdapter implements WebMvcConfigurer {
     
     @Override
     public void addFormatters(FormatterRegistry registry) {
-      registry.addConverter(new EnumConverter());
+//      registry.addConverter();
     }
     
     @Autowired

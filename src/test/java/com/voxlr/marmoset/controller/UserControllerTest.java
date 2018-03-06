@@ -35,6 +35,7 @@ import org.springframework.test.web.servlet.RequestBuilder;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.voxlr.marmoset.exception.EntityNotFoundException;
 import com.voxlr.marmoset.model.AuthUser;
 import com.voxlr.marmoset.model.dto.RemovedEntityDTO;
 import com.voxlr.marmoset.model.persistence.User;
@@ -46,7 +47,6 @@ import com.voxlr.marmoset.service.domain.CompanyService;
 import com.voxlr.marmoset.service.domain.TeamService;
 import com.voxlr.marmoset.service.domain.UserService;
 import com.voxlr.marmoset.test.ControllerTest;
-import com.voxlr.marmoset.util.exception.EntityNotFoundException;
 
 @WebMvcTest(UserController.class)
 @AutoConfigureMockMvc(secure = false)

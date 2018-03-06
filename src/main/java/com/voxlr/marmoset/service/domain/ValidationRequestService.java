@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.twilio.exception.ApiException;
+import com.voxlr.marmoset.exception.EntityNotFoundException;
 import com.voxlr.marmoset.model.AuthUser;
 import com.voxlr.marmoset.model.PhoneNumberHolder;
 import com.voxlr.marmoset.model.Phoneable;
@@ -21,7 +22,6 @@ import com.voxlr.marmoset.model.persistence.dto.ValidatePhoneResponseDTO;
 import com.voxlr.marmoset.repositories.ValidationRequestRepository;
 import com.voxlr.marmoset.service.AuthorizationService;
 import com.voxlr.marmoset.service.TwilioService;
-import com.voxlr.marmoset.util.exception.EntityNotFoundException;
 
 import lombok.Getter;
 

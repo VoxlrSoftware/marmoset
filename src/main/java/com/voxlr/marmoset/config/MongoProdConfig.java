@@ -14,7 +14,7 @@ import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
 import com.mongodb.MongoClient;
 import com.voxlr.marmoset.config.properties.MongoProperties;
 
-@Profile("!dev")
+@Profile("!test")
 @Configuration
 @EnableMongoAuditing
 @EnableConfigurationProperties(MongoProperties.class)

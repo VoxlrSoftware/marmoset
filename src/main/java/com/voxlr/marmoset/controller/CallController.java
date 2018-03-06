@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.voxlr.marmoset.aggregation.AbstractAggregation.RollupCadence;
-import com.voxlr.marmoset.aggregation.CallAggregation.CallAggregationField;
+import com.voxlr.marmoset.exception.EntityNotFoundException;
 import com.voxlr.marmoset.model.AuthUser;
 import com.voxlr.marmoset.model.dto.DateConstrained;
 import com.voxlr.marmoset.model.dto.aggregation.CallAggregateDTO;
@@ -41,7 +41,6 @@ import com.voxlr.marmoset.model.persistence.dto.CallUpdateDTO;
 import com.voxlr.marmoset.model.persistence.dto.PageDTO;
 import com.voxlr.marmoset.service.domain.CallService;
 import com.voxlr.marmoset.util.MapperUtils;
-import com.voxlr.marmoset.util.exception.EntityNotFoundException;
 
 @RestController
 @Validated
@@ -145,7 +144,7 @@ public class CallController extends ApiController {
 	@PathVariable String companyId,
 	@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime startDate,
 	@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime endDate,
-	@Valid @NotNull @RequestParam List<CallAggregationField> fields,
+	@Valid @NotNull @RequestParam List<String> fields,
 	@AuthenticationPrincipal AuthUser authUser) throws Exception {
 	DateConstrained dateConstrained = DateConstrained.builder()
 		.startDate(startDate)
@@ -161,7 +160,7 @@ public class CallController extends ApiController {
 	@PathVariable String companyId,
 	@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime startDate,
 	@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime endDate,
-	@Valid @NotNull @RequestParam List<CallAggregationField> fields,
+	@Valid @NotNull @RequestParam List<String> fields,
 	@RequestParam(defaultValue = "daily") RollupCadence cadence,
 	@AuthenticationPrincipal AuthUser authUser) throws Exception {
 	DateConstrained dateConstrained = DateConstrained.builder()
@@ -195,7 +194,7 @@ public class CallController extends ApiController {
 	@PathVariable String userId,
 	@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime startDate,
 	@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime endDate,
-	@Valid @NotNull @RequestParam List<CallAggregationField> fields,
+	@Valid @NotNull @RequestParam List<String> fields,
 	@AuthenticationPrincipal AuthUser authUser) throws Exception {
 	DateConstrained dateConstrained = DateConstrained.builder()
 		.startDate(startDate)
@@ -211,7 +210,7 @@ public class CallController extends ApiController {
 	@PathVariable String userId,
 	@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime startDate,
 	@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime endDate,
-	@Valid @NotNull @RequestParam List<CallAggregationField> fields,
+	@Valid @NotNull @RequestParam List<String> fields,
 	@RequestParam(defaultValue = "daily") RollupCadence cadence,
 	@AuthenticationPrincipal AuthUser authUser) throws Exception {
 	DateConstrained dateConstrained = DateConstrained.builder()

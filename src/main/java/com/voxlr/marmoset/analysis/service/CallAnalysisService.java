@@ -13,13 +13,13 @@ import org.springframework.stereotype.Service;
 
 import com.voxlr.marmoset.analysis.model.CallAnalysisResult;
 import com.voxlr.marmoset.analysis.model.CallAnalysisResult.PhraseResult;
+import com.voxlr.marmoset.exception.EntityNotFoundException;
 import com.voxlr.marmoset.model.persistence.Call;
 import com.voxlr.marmoset.model.persistence.Call.Analysis;
 import com.voxlr.marmoset.model.persistence.PhraseAnalysis;
 import com.voxlr.marmoset.model.persistence.PhraseAnalysis.Detection;
 import com.voxlr.marmoset.model.persistence.PhraseAnalysis.DetectionType;
 import com.voxlr.marmoset.service.domain.CallService;
-import com.voxlr.marmoset.util.exception.EntityNotFoundException;
 
 @Service
 public class CallAnalysisService {

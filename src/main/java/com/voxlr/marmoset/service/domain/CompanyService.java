@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.stereotype.Service;
 
+import com.voxlr.marmoset.exception.EntityNotFoundException;
 import com.voxlr.marmoset.model.AuthUser;
 import com.voxlr.marmoset.model.persistence.CallStrategy;
 import com.voxlr.marmoset.model.persistence.Company;
@@ -18,7 +19,6 @@ import com.voxlr.marmoset.model.persistence.dto.CompanyUpdateDTO;
 import com.voxlr.marmoset.model.persistence.dto.TeamCreateDTO;
 import com.voxlr.marmoset.repositories.CompanyRepository;
 import com.voxlr.marmoset.service.AuthorizationService;
-import com.voxlr.marmoset.util.exception.EntityNotFoundException;
 
 @Service
 public class CompanyService {

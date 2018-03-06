@@ -5,8 +5,8 @@ import java.lang.reflect.Field;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
+import com.voxlr.marmoset.exception.CallbackException;
 import com.voxlr.marmoset.model.dto.CallbackResult;
-import com.voxlr.marmoset.util.exception.CallbackException;
 
 public abstract class CallbackHandler<T> {
     public abstract CallbackResult<T> handleRequest(String requestPath, CallbackBody callbackBody) throws CallbackException;

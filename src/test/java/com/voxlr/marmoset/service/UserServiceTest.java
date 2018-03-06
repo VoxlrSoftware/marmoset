@@ -20,6 +20,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 
 import com.voxlr.marmoset.auth.UserRole;
+import com.voxlr.marmoset.exception.EntityNotFoundException;
 import com.voxlr.marmoset.model.AuthUser;
 import com.voxlr.marmoset.model.persistence.Company;
 import com.voxlr.marmoset.model.persistence.Team;
@@ -28,7 +29,6 @@ import com.voxlr.marmoset.model.persistence.dto.UserCreateDTO;
 import com.voxlr.marmoset.model.persistence.dto.UserUpdateDTO;
 import com.voxlr.marmoset.service.domain.UserService;
 import com.voxlr.marmoset.test.DataTest;
-import com.voxlr.marmoset.util.exception.EntityNotFoundException;
 
 public class UserServiceTest extends DataTest {
     

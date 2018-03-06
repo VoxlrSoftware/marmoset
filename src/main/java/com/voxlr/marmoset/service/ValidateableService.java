@@ -2,8 +2,8 @@ package com.voxlr.marmoset.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.voxlr.marmoset.exception.InvalidArgumentsException;
 import com.voxlr.marmoset.model.AuthUser;
-import com.voxlr.marmoset.util.exception.InvalidArgumentsException;
 
 public abstract class ValidateableService {
 

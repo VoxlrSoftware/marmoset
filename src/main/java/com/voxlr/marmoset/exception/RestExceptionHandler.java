@@ -1,4 +1,4 @@
-package com.voxlr.marmoset.util.exception;
+package com.voxlr.marmoset.exception;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -6,7 +6,6 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -159,6 +158,15 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 	    InvalidArgumentsException ex) {
 	ApiError apiError = new ApiError(BAD_REQUEST);
 	apiError.setMessage("Could not complete request.");
+        apiError.setDebugMessage(ex.getMessage());
+        return buildResponseEntity(apiError);
+    }
+    
+    @ExceptionHandler(ConvertException.class)
+    protected ResponseEntity<Object> handlerInvalidArgumentsException(
+	    ConvertException ex) {
+	ApiError apiError = new ApiError(BAD_REQUEST);
+	apiError.setMessage("Invalid arguments [" + String.join(",", ex.getNonConvertableStrings()) + "]");
         apiError.setDebugMessage(ex.getMessage());
         return buildResponseEntity(apiError);
     }

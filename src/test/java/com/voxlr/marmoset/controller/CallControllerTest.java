@@ -42,6 +42,7 @@ import org.springframework.test.web.servlet.RequestBuilder;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.voxlr.marmoset.exception.EntityNotFoundException;
 import com.voxlr.marmoset.model.AuthUser;
 import com.voxlr.marmoset.model.PhoneNumberHolder;
 import com.voxlr.marmoset.model.persistence.Call;
@@ -52,7 +53,6 @@ import com.voxlr.marmoset.model.persistence.dto.CallUpdateDTO;
 import com.voxlr.marmoset.repositories.CallRepository;
 import com.voxlr.marmoset.service.domain.CallService;
 import com.voxlr.marmoset.test.ControllerTest;
-import com.voxlr.marmoset.util.exception.EntityNotFoundException;
 
 @WebMvcTest(CallController.class)
 @AutoConfigureMockMvc(secure = false)

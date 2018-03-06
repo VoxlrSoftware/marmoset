@@ -1,4 +1,4 @@
-package com.voxlr.marmoset.converter;
+package com.voxlr.marmoset.convert;
 
 import org.joda.time.DateTime;
 import org.springframework.core.convert.converter.Converter;

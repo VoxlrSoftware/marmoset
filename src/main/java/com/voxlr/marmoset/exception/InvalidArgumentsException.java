@@ -1,4 +1,4 @@
-package com.voxlr.marmoset.util.exception;
+package com.voxlr.marmoset.exception;
 
 public class InvalidArgumentsException extends Exception {
 

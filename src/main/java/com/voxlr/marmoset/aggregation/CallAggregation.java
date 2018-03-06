@@ -43,7 +43,8 @@ public class CallAggregation extends AbstractAggregation<Call> {
 		    CallAggregationField.DURATION,
 		    CallAggregationField.DETECTED_PHRASE_COUNT,
 		    CallAggregationField.DETECTION_RATIO,
-		    CallAggregationField.CUSTOMER_TALK_RATIO
+		    CallAggregationField.CUSTOMER_TALK_RATIO,
+		    CallAggregationField.CONVERSATION
 		));
     
     public static enum CallAggregationField implements ConvertibleEnum {
@@ -56,7 +57,9 @@ public class CallAggregation extends AbstractAggregation<Call> {
 	DURATION("duration", 0.0),
 	DETECTED_PHRASE_COUNT("detectedPhraseCount", 0),
 	DETECTION_RATIO("detectionRatio", 0.0),
-	CUSTOMER_TALK_RATIO("customerTalkRatio", 0.0)
+	CUSTOMER_TALK_RATIO("customerTalkRatio", 0.0),
+	CONVERSATION("conversation", 0),
+	TOTAL_COUNT("totalCount", 0)
 	;
 	
 	static Map<String, CallAggregationField> callAggregationFields;
@@ -100,7 +103,8 @@ public class CallAggregation extends AbstractAggregation<Call> {
 		.and("statistics.duration").as("duration")
 		.and("analysis.detectedPhraseCount").as("detectedPhraseCount")
 		.and("analysis.detectionRatio").as("detectionRatio")
-		.andExpression("cond(statistics.totalTalkTime > 0, statistics.customerTalkTime / statistics.totalTalkTime, 0)").as("customerTalkRatio");
+		.andExpression("cond(statistics.totalTalkTime > 0, statistics.customerTalkTime / statistics.totalTalkTime, 0)").as("customerTalkRatio")
+		.andExpression("cond(in(callOutcome, new String[]{'Lost', 'Won', 'Progress'}), 1, 0)").as("conversation");
     
     public CallAggregation(MongoTemplate mongoTemplate) {
 	super(mongoTemplate, Call.class);
@@ -152,7 +156,7 @@ public class CallAggregation extends AbstractAggregation<Call> {
 		.andOperator(getDateConstrained(startDate, endDate), hasBeenAnalyzed)
 	);
 	
-	GroupOperation groupOperation = groupAndAverage(null, averageFields);
+	GroupOperation groupOperation = groupAndAverage(null, fields);
 	
 	TypedAggregation<Call> aggregation = anAggregation()
 		.append(
@@ -189,7 +193,7 @@ public class CallAggregation extends AbstractAggregation<Call> {
 		.andOperator(getDateConstrained(startDate, endDate), hasBeenAnalyzed)
 	);
 	
-	GroupOperation groupOperation = groupAndAverage("rollup", averageFields);
+	GroupOperation groupOperation = groupAndAverage("rollup", fields);
 	
 	TypedAggregation<Call> aggregation = anAggregation()
 		.append(
@@ -218,11 +222,17 @@ public class CallAggregation extends AbstractAggregation<Call> {
 	return fields.stream().collect(Collectors.toMap(CallAggregationField::get, CallAggregationField::getDefaultValue));
     }
     
-    private GroupOperation groupAndAverage(String groupField, List<String> fields) {
+    private GroupOperation groupAndAverage(String groupField, List<CallAggregationField> fields) {
 	GroupOperation groupOperation = groupField != null ? group(groupField) : group();
 	
-	for(String field : fields) {
-	    groupOperation = groupOperation.avg(field).as(field);
+	for(CallAggregationField field : fields) {
+	    if (field.equals(CallAggregationField.CONVERSATION)) {
+		groupOperation = groupOperation.sum(field.get()).as(field.get());
+	    } else if (field.equals(CallAggregationField.TOTAL_COUNT)) {
+		groupOperation = groupOperation.count().as(field.get());
+	    } else {		
+		groupOperation = groupOperation.avg(field.get()).as(field.get());
+	    }
 	}
 	
 	return groupOperation;

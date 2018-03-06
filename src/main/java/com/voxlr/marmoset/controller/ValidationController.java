@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.voxlr.marmoset.exception.EntityNotFoundException;
 import com.voxlr.marmoset.model.AuthUser;
 import com.voxlr.marmoset.model.Phoneable;
 import com.voxlr.marmoset.model.persistence.Company;
@@ -27,7 +28,6 @@ import com.voxlr.marmoset.model.persistence.dto.ValidatePhoneResponseDTO;
 import com.voxlr.marmoset.service.AuthorizationService;
 import com.voxlr.marmoset.service.domain.ValidationRequestService;
 import com.voxlr.marmoset.service.domain.ValidationRequestService.ValidationType;
-import com.voxlr.marmoset.util.exception.EntityNotFoundException;
 
 @RestController
 public class ValidationController extends ApiController {

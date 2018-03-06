@@ -1,4 +1,4 @@
-package com.voxlr.marmoset.util.exception;
+package com.voxlr.marmoset.exception;
 
 @SuppressWarnings("serial")
 public class HandlerNotFoundException extends Exception {

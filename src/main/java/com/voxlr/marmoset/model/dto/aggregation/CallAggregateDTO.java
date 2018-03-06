@@ -18,4 +18,5 @@ public class CallAggregateDTO {
     private int detectedPhraseCount;
     private double detectionRatio;
     private double customerTalkRatio;
+    private boolean conversation;
 }

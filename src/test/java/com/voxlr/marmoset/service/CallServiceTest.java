@@ -24,6 +24,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 
 import com.voxlr.marmoset.auth.UserRole;
+import com.voxlr.marmoset.exception.EntityNotFoundException;
 import com.voxlr.marmoset.model.AuthUser;
 import com.voxlr.marmoset.model.PhoneNumberHolder;
 import com.voxlr.marmoset.model.dto.DateConstrained;
@@ -35,7 +36,6 @@ import com.voxlr.marmoset.model.persistence.dto.CallCreateDTO;
 import com.voxlr.marmoset.model.persistence.dto.CallUpdateDTO;
 import com.voxlr.marmoset.service.domain.CallService;
 import com.voxlr.marmoset.test.DataTest;
-import com.voxlr.marmoset.util.exception.EntityNotFoundException;
 
 public class CallServiceTest extends DataTest {
     

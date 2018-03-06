@@ -9,10 +9,10 @@ import com.voxlr.marmoset.analysis.service.CallAnalysisService;
 import com.voxlr.marmoset.callback.Callback;
 import com.voxlr.marmoset.callback.CallbackBody;
 import com.voxlr.marmoset.callback.CallbackHandler;
+import com.voxlr.marmoset.exception.CallbackException;
 import com.voxlr.marmoset.model.dto.CallbackResult;
 import com.voxlr.marmoset.service.CallbackService.CallbackType;
 import com.voxlr.marmoset.service.CallbackService.Platform;
-import com.voxlr.marmoset.util.exception.CallbackException;
 
 import lombok.extern.log4j.Log4j2;
 
