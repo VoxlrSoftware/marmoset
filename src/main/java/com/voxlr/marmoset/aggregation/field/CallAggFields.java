@@ -5,91 +5,127 @@ import static com.voxlr.marmoset.aggregation.field.AggregationOperationModifiers
 import static com.voxlr.marmoset.util.MapUtils.mapOf;
 import static com.voxlr.marmoset.util.MapUtils.KVPair.entry;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+import com.voxlr.marmoset.model.ConvertibleEnum;
 
 public class CallAggFields {
-    public static String CREATE_DATE = "createDate";
-    public static String CALL_OUTCOME = "callOutcome";
-    public static String COMPANY_ID = "companyId";
-    public static String USER_ID = "userId";
-    public static String CALL_STRATEGY_NAME = "callStrategyName";
-    public static String TOTAL_TALK_TIME = "totalTalkTime";
-    public static String DURATION = "duration";
-    public static String DETECTED_PHRASE_COUNT = "detectedPhraseCount";
-    public static String DETECTION_RATIO = "detectionRatio";
-    public static String CUSTOMER_TALK_RATIO = "customerTalkRatio";
-    public static String CONVERSATION = "conversation";
-    public static String TOTAL_COUNT = "totalCount";
+    public static AggregationField field(CallField field) {
+	return callAggregationFields.get(field);
+    }
     
-    public final Map<String, AggregationField> callAggregationFields = mapOf(
+    public static enum CallField implements ConvertibleEnum {
+	CREATE_DATE("createDate"),
+	CALL_OUTCOME("callOutcome"),
+	COMPANY_ID("companyId"),
+	USER_ID("userId"),
+	CALL_STRATEGY_NAME("callStrategyName"),
+	TOTAL_TALK_TIME("totalTalkTime"),
+	DURATION("duration"),
+	DETECTED_PHRASE_COUNT("detectedPhraseCount"),
+	DETECTION_RATIO("detectionRatio"),
+	CUSTOMER_TALK_RATIO("customerTalkRatio"),
+	CONVERSATION("conversation"),
+	TOTAL_COUNT("totalCount")
+	;
+	
+	static Map<String, CallField> callFields;
+	
+	static {
+	    callFields = Arrays.asList(CallField.values()).stream().collect(Collectors.toMap(CallField::get, Function.identity()));
+	}
+	
+	public static List<CallField> getAll() {
+	    return new ArrayList<CallField>(callFields.values());
+	}
+
+	@JsonCreator
+	public static CallField fromString(String value) {
+	    return callFields.get(value);
+	}
+	
+	private String name;
+	
+	private CallField(String name) {
+	    this.name = name;
+	}
+	
+	@JsonValue
+	public String get() {
+	    return this.name;
+	}
+    }
+    
+    private static final Map<CallField, AggregationField> callAggregationFields = mapOf(
 	entry(
-		CREATE_DATE,
-		AggregationField.builder(CREATE_DATE)
+		CallField.CREATE_DATE,
+		AggregationField.builder(CallField.CREATE_DATE.get())
 		.ableToRollup(false)
 		.build()
 	),
 	entry(
-		CALL_OUTCOME,
-		AggregationField.builder(CALL_OUTCOME)
+		CallField.CALL_OUTCOME,
+		AggregationField.builder(CallField.CALL_OUTCOME.get())
 		.ableToRollup(false)
 		.build()
 	),
 	entry(
-		COMPANY_ID,
-		AggregationField.builder(COMPANY_ID)
+		CallField.COMPANY_ID,
+		AggregationField.builder(CallField.COMPANY_ID.get())
 		.ableToRollup(false)
 		.build()
 	),
 	entry(
-		COMPANY_ID,
-		AggregationField.builder(COMPANY_ID)
+		CallField.USER_ID,
+		AggregationField.builder(CallField.USER_ID.get())
 		.ableToRollup(false)
 		.build()
 	),
 	entry(
-		USER_ID,
-		AggregationField.builder(USER_ID)
-		.ableToRollup(false)
-		.build()
-	),
-	entry(
-		CALL_STRATEGY_NAME,
-		AggregationField.builder(CALL_STRATEGY_NAME)
+		CallField.CALL_STRATEGY_NAME,
+		AggregationField.builder(CallField.CALL_STRATEGY_NAME.get())
 		.pathName("callStrategy.name")
 		.ableToRollup(false)
 		.build()
 	),
 	entry(
-		TOTAL_TALK_TIME,
-		AggregationField.builder(TOTAL_TALK_TIME)
+		CallField.TOTAL_TALK_TIME,
+		AggregationField.builder(CallField.TOTAL_TALK_TIME.get())
 		.pathName("statistics.totalTalkTime")
 		.defaultValue(0)
 		.build()
 	),
 	entry(
-		DURATION,
-		AggregationField.builder(DURATION)
+		CallField.DURATION,
+		AggregationField.builder(CallField.DURATION.get())
 		.pathName("statistics.duration")
 		.defaultValue(0)
 		.build()
 	),
 	entry(
-		DETECTED_PHRASE_COUNT,
-		AggregationField.builder(DETECTED_PHRASE_COUNT)
+		CallField.DETECTED_PHRASE_COUNT,
+		AggregationField.builder(CallField.DETECTED_PHRASE_COUNT.get())
 		.pathName("analysis.detectedPhraseCount")
 		.defaultValue(0)
 		.build()
 	),
 	entry(
-		DETECTION_RATIO,
-		AggregationField.builder(DETECTION_RATIO)
+		CallField.DETECTION_RATIO,
+		AggregationField.builder(CallField.DETECTION_RATIO.get())
 		.pathName("analysis.detectionRatio")
-		.defaultValue(0)
+		.defaultValue(0.0)
 		.build()
 	),
 	entry(
-		CUSTOMER_TALK_RATIO,
-		AggregationField.builder(CUSTOMER_TALK_RATIO)
+		CallField.CUSTOMER_TALK_RATIO,
+		AggregationField.builder(CallField.CUSTOMER_TALK_RATIO.get())
 		.projectOperationModifier((project, field) ->
 			project.andExpression("cond(statistics.totalTalkTime > 0, statistics.customerTalkTime / statistics.totalTalkTime, 0)")
 		)
@@ -97,8 +133,8 @@ public class CallAggFields {
 		.build()
 	),
 	entry(
-		CONVERSATION,
-		AggregationField.builder(CONVERSATION)
+		CallField.CONVERSATION,
+		AggregationField.builder(CallField.CONVERSATION.get())
 		.projectOperationModifier((project, field) ->
 			project.andExpression("cond(in(callOutcome, new String[]{'Lost', 'Won', 'Progress'}), 1, 0)")
 		)
@@ -107,8 +143,8 @@ public class CallAggFields {
 		.build()
 	),
 	entry(
-		TOTAL_COUNT,
-		AggregationField.builder(TOTAL_COUNT)
+		CallField.TOTAL_COUNT,
+		AggregationField.builder(CallField.TOTAL_COUNT.get())
 		.pathName("analysis.detectionRatio")
 		.projectable(false)
 		.groupOperationModifier(groupCountModifier)

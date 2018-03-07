@@ -127,12 +127,13 @@ public class CallController extends ApiController {
 	    @PathVariable String companyId,
 	    @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime startDate,
 	    @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime endDate,
+	    @Valid @NotNull @RequestParam List<String> fields,
 	    Pageable pageable,
 	    @AuthenticationPrincipal AuthUser authUser) throws Exception {
 	DateConstrained dateConstrained = DateConstrained.builder()
 		.startDate(startDate)
 		.endDate(endDate).build();
-	Page<CallAggregateDTO> results = callService.getCallsByCompanyId(companyId, authUser, dateConstrained, page(pageable));
+	Page<CallAggregateDTO> results = callService.getCallsByCompanyId(companyId, authUser, dateConstrained, fields, page(pageable));
 	PageDTO<CallAggregateDTO> mappedResults = mapperUtils.mapPage(results);
 	return new ResponseEntity<PageDTO<CallAggregateDTO>>(mappedResults, HttpStatus.OK);
     }
@@ -161,7 +162,7 @@ public class CallController extends ApiController {
 	@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime startDate,
 	@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime endDate,
 	@Valid @NotNull @RequestParam List<String> fields,
-	@RequestParam(defaultValue = "daily") RollupCadence cadence,
+	@RequestParam(defaultValue = "daily") String cadence,
 	@AuthenticationPrincipal AuthUser authUser) throws Exception {
 	DateConstrained dateConstrained = DateConstrained.builder()
 		.startDate(startDate)
@@ -177,12 +178,13 @@ public class CallController extends ApiController {
 	    @PathVariable String userId,
 	    @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime startDate,
 	    @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime endDate,
+	    @Valid @NotNull @RequestParam List<String> fields,
 	    Pageable pageable,
 	    @AuthenticationPrincipal AuthUser authUser) throws Exception {
 	DateConstrained dateConstrained = DateConstrained.builder()
 		.startDate(startDate)
 		.endDate(endDate).build();
-	Page<CallAggregateDTO> results = callService.getCallsByUserId(userId, authUser, dateConstrained, page(pageable));
+	Page<CallAggregateDTO> results = callService.getCallsByUserId(userId, authUser, dateConstrained, fields, page(pageable));
 	PageDTO<CallAggregateDTO> mappedResults = mapperUtils.mapPage(results);
 	return new ResponseEntity<PageDTO<CallAggregateDTO>>(mappedResults, HttpStatus.OK);
     }
@@ -211,7 +213,7 @@ public class CallController extends ApiController {
 	@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime startDate,
 	@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime endDate,
 	@Valid @NotNull @RequestParam List<String> fields,
-	@RequestParam(defaultValue = "daily") RollupCadence cadence,
+	@RequestParam(defaultValue = "daily") String cadence,
 	@AuthenticationPrincipal AuthUser authUser) throws Exception {
 	DateConstrained dateConstrained = DateConstrained.builder()
 		.startDate(startDate)

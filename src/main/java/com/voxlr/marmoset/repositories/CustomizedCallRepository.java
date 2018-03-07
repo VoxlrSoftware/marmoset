@@ -7,15 +7,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.voxlr.marmoset.aggregation.AbstractAggregation.RollupCadence;
-import com.voxlr.marmoset.aggregation.CallAggregation.CallAggregationField;
+import com.voxlr.marmoset.aggregation.field.CallAggFields.CallField;
 import com.voxlr.marmoset.model.dto.aggregation.CallAggregateDTO;
 import com.voxlr.marmoset.model.dto.aggregation.RollupResultDTO;
 
 public interface CustomizedCallRepository {
-    Page<CallAggregateDTO> getCallsByCompany(String companyId, DateTime startDate, DateTime endDate, Pageable pageable);
-    Page<CallAggregateDTO> getCallsByUser(String userId, DateTime startDate, DateTime endDate, Pageable pageable);
-    RollupResultDTO averageCallFieldByUser(String userId, DateTime startDate, DateTime endDate, List<CallAggregationField> fields);
-    RollupResultDTO averageCallFieldByCompany(String companyId, DateTime startDate, DateTime endDate, List<CallAggregationField> fields);
-    List<RollupResultDTO> rollupCallFieldByUser(String userId, DateTime startDate, DateTime endDate, RollupCadence cadence, List<CallAggregationField> fields);
-    List<RollupResultDTO> rollupCallFieldByCompany(String companyId, DateTime startDate, DateTime endDate, RollupCadence cadence, List<CallAggregationField> fields);
+    Page<CallAggregateDTO> getCallsByCompany(String companyId, DateTime startDate, DateTime endDate, List<CallField> fields, Pageable pageable);
+    Page<CallAggregateDTO> getCallsByUser(String userId, DateTime startDate, DateTime endDate, List<CallField> fields, Pageable pageable);
+    RollupResultDTO averageCallFieldByUser(String userId, DateTime startDate, DateTime endDate, List<CallField> fields);
+    RollupResultDTO averageCallFieldByCompany(String companyId, DateTime startDate, DateTime endDate, List<CallField> fields);
+    List<RollupResultDTO> rollupCallFieldByUser(String userId, DateTime startDate, DateTime endDate, RollupCadence cadence, List<CallField> fields);
+    List<RollupResultDTO> rollupCallFieldByCompany(String companyId, DateTime startDate, DateTime endDate, RollupCadence cadence, List<CallField> fields);
 }

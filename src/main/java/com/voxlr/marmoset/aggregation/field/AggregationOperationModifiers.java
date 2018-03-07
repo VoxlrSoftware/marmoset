@@ -17,11 +17,11 @@ public class AggregationOperationModifiers {
     }
     
     public final static GroupOperationModifier groupAverageModifier = (group, field) -> {
-	return group.avg(field.getPathName());
+	return group.avg(field.getFieldName());
     };
     
     public final static GroupOperationModifier groupSumModifier = (group, field) -> {
-	return group.sum(field.getPathName());
+	return group.sum(field.getFieldName());
     };
     
     public final static GroupOperationModifier groupCountModifier = (group, field) -> {

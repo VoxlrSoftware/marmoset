@@ -30,6 +30,17 @@ public class TypeConverter {
 	    
 	};
     }
+
+    @SuppressWarnings("unchecked")
+    public static <T, U> T convert(U input, Class<T> clazz, BiFunction<U, Class<T>, T> converter) throws ConvertException {
+	ConvertResult<T> result = getConvertFunction(clazz, converter).apply(input);
+	
+	if (result instanceof ConvertFailedResult) {
+	    throw new ConvertException(((ConvertFailedResult<T, U>) result).getSource());
+	}
+	
+	return result.getResult();
+    }
     
     @SuppressWarnings("unchecked")
     public static <T, U> List<T> convertList(List<U> input, Class<T> clazz, BiFunction<U, Class<T>, T> converter) throws ConvertException {

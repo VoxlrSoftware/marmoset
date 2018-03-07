@@ -163,7 +163,7 @@ public class CallAggregation extends AbstractAggregation<Call> {
 			matchOperation,
 			callAggregateProjection,
 			groupOperation,
-			addFields().withObject("result", averageFields).build(),
+			addFields().withFields("result", averageFields).build(),
 			projectFields("result").build()
 		)
 		.build();
@@ -201,7 +201,7 @@ public class CallAggregation extends AbstractAggregation<Call> {
 			callAggregateProjection
 				.and("createDate").dateAsFormattedString(cadence.getValue()).as("rollup"),
 			groupOperation,
-			addFields().withObject("result", averageFields).build(),
+			addFields().withFields("result", averageFields).build(),
 			projectFields("result").and(TIMESTAMP).previousOperation().build(),
 			sortFields(Direction.ASC, TIMESTAMP).build()
 		)

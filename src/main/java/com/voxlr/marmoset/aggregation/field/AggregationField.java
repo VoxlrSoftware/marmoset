@@ -3,6 +3,10 @@ package com.voxlr.marmoset.aggregation.field;
 import static com.voxlr.marmoset.aggregation.field.AggregationOperationModifiers.groupAverageModifier;
 import static com.voxlr.marmoset.aggregation.field.AggregationOperationModifiers.projectFieldModifier;
 
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.springframework.data.mongodb.core.aggregation.GroupOperation;
 import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
 
@@ -21,6 +25,18 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AggregationField {
+    public static ProjectionOperation projectField(ProjectionOperation input, AggregationField field) {
+	return field.project(input);
+    }
+    
+    public static GroupOperation groupField(GroupOperation input, AggregationField field) {
+	return field.group(input);
+    }
+    
+    public static Map<String, Object> getDefaults(List<AggregationField> fields) {
+	return fields.stream().filter(AggregationField::isAbleToRollup).collect(Collectors.toMap(AggregationField::getFieldName, AggregationField::getDefaultValue));
+    }
+    
     public static AggregationFieldBuilder builder(String fieldName){
         return new AggregationFieldBuilder().fieldName(fieldName).pathName(fieldName);
     }
