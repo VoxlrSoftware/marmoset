@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
+import com.voxlr.marmoset.aggregation.field.CallAggregationFields;
 import com.voxlr.marmoset.model.dto.aggregation.CallAggregateDTO;
 import com.voxlr.marmoset.model.persistence.Call;
 
@@ -20,6 +21,7 @@ public class GetCallsTest extends CallAggregationBaseTest {
 		mockCompany.getId(),
 		new DateTime(),
 		new DateTime(),
+		CallAggregationFields.CallField.getAll(),
 		PageRequest.of(0, 20)
 	);
 	
@@ -37,6 +39,7 @@ public class GetCallsTest extends CallAggregationBaseTest {
 		mockCompany.getId(),
 		createDate,
 		new DateTime(),
+		CallAggregationFields.CallField.getAll(),
 		PageRequest.of(0, 20)
 	);
 
@@ -69,6 +72,7 @@ public class GetCallsTest extends CallAggregationBaseTest {
 		mockCompany.getId(),
 		startDate,
 		endDate,
+		CallAggregationFields.CallField.getAll(),
 		PageRequest.of(0, 20)
 	);
 	
@@ -91,6 +95,7 @@ public class GetCallsTest extends CallAggregationBaseTest {
 		mockCompany.getId(),
 		startDate,
 		endDate,
+		CallAggregationFields.CallField.getAll(),
 		PageRequest.of(0, 20)
 	);
 	
@@ -115,6 +120,7 @@ public class GetCallsTest extends CallAggregationBaseTest {
 		mockCompany.getId(),
 		startDate,
 		endDate,
+		CallAggregationFields.CallField.getAll(),
 		PageRequest.of(0, 20)
 	);
 
@@ -136,6 +142,7 @@ public class GetCallsTest extends CallAggregationBaseTest {
 		mockCompany.getId(),
 		startDate,
 		endDate,
+		CallAggregationFields.CallField.getAll(),
 		PageRequest.of(0, 20)
 	);
 
@@ -149,6 +156,7 @@ public class GetCallsTest extends CallAggregationBaseTest {
 		mockUser.getId(),
 		new DateTime(),
 		new DateTime(),
+		CallAggregationFields.CallField.getAll(),
 		PageRequest.of(0, 20)
 	);
 	
@@ -166,6 +174,7 @@ public class GetCallsTest extends CallAggregationBaseTest {
 		mockUser.getId(),
 		createDate,
 		new DateTime(),
+		CallAggregationFields.CallField.getAll(),
 		PageRequest.of(0, 20)
 	);
 
@@ -198,6 +207,7 @@ public class GetCallsTest extends CallAggregationBaseTest {
 		mockUser.getId(),
 		startDate,
 		endDate,
+		CallAggregationFields.CallField.getAll(),
 		PageRequest.of(0, 20)
 	);
 	
@@ -220,6 +230,7 @@ public class GetCallsTest extends CallAggregationBaseTest {
 		mockUser.getId(),
 		startDate,
 		endDate,
+		CallAggregationFields.CallField.getAll(),
 		PageRequest.of(0, 20)
 	);
 	
@@ -244,6 +255,7 @@ public class GetCallsTest extends CallAggregationBaseTest {
 		mockUser.getId(),
 		startDate,
 		endDate,
+		CallAggregationFields.CallField.getAll(),
 		PageRequest.of(0, 20)
 	);
 
@@ -265,6 +277,7 @@ public class GetCallsTest extends CallAggregationBaseTest {
 		mockUser.getId(),
 		startDate,
 		endDate,
+		CallAggregationFields.CallField.getAll(),
 		PageRequest.of(0, 20)
 	);
 

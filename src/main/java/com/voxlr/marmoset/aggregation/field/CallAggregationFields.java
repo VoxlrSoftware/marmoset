@@ -1,7 +1,6 @@
 package com.voxlr.marmoset.aggregation.field;
 
 import static com.voxlr.marmoset.aggregation.field.AggregationOperationModifiers.groupCountModifier;
-import static com.voxlr.marmoset.aggregation.field.AggregationOperationModifiers.groupSumModifier;
 import static com.voxlr.marmoset.util.MapUtils.mapOf;
 import static com.voxlr.marmoset.util.MapUtils.KVPair.entry;
 
@@ -12,13 +11,24 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.springframework.data.mongodb.core.aggregation.AggregationSpELExpression;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.voxlr.marmoset.model.ConvertibleEnum;
 
-public class CallAggFields {
+public class CallAggregationFields {
     public static AggregationField field(CallField field) {
 	return callAggregationFields.get(field);
+    }
+    
+    public static Map<CallField, AggregationField> getFields() {
+	return callAggregationFields;
+    }
+    
+    public static Map<CallField, AggregationField> getGroupableFields() {
+	return callAggregationFields.keySet().stream().filter(key -> callAggregationFields.get(key).isAbleToRollup())
+		.collect(Collectors.toMap(Function.identity(), callAggregationFields::get));
     }
     
     public static enum CallField implements ConvertibleEnum {
@@ -136,9 +146,11 @@ public class CallAggFields {
 		CallField.CONVERSATION,
 		AggregationField.builder(CallField.CONVERSATION.get())
 		.projectOperationModifier((project, field) ->
-			project.andExpression("cond(in(callOutcome, new String[]{'Lost', 'Won', 'Progress'}), 1, 0)")
+			project.andExpression("cond(in(callOutcome, new String[]{'Lost', 'Won', 'Progress'}), true, false)")
 		)
-		.groupOperationModifier(groupSumModifier)
+		.groupOperationModifier((group, field) -> {
+		    return group.sum(AggregationSpELExpression.expressionOf("cond(conversation, 1, 0)"));
+		})
 		.defaultValue(0)
 		.build()
 	),

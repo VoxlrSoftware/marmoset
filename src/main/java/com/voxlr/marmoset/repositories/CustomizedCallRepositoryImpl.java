@@ -1,6 +1,6 @@
 package com.voxlr.marmoset.repositories;
 
-import static com.voxlr.marmoset.aggregation.NewCallAggregation.aNewCallAggregation;
+import static com.voxlr.marmoset.aggregation.CallAggregation.aCallAggregation;
 
 import java.util.List;
 
@@ -11,7 +11,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
 import com.voxlr.marmoset.aggregation.AbstractAggregation.RollupCadence;
-import com.voxlr.marmoset.aggregation.field.CallAggFields.CallField;
+import com.voxlr.marmoset.aggregation.field.CallAggregationFields.CallField;
+import com.voxlr.marmoset.exception.InvalidArgumentsException;
 import com.voxlr.marmoset.model.dto.aggregation.CallAggregateDTO;
 import com.voxlr.marmoset.model.dto.aggregation.RollupResultDTO;
 
@@ -22,41 +23,41 @@ public class CustomizedCallRepositoryImpl implements CustomizedCallRepository {
     
     @Override
     public Page<CallAggregateDTO> getCallsByCompany(String companyId, DateTime startDate, DateTime endDate, List<CallField> fields, Pageable pageable) {
-	return aNewCallAggregation(mongoTemplate)
+	return aCallAggregation(mongoTemplate)
 		.getCallsByCompany(companyId, startDate, endDate, fields, pageable);
     }
 
     @Override
     public Page<CallAggregateDTO> getCallsByUser(String userId, DateTime startDate, DateTime endDate, List<CallField> fields, Pageable pageable) {
-	return aNewCallAggregation(mongoTemplate)
+	return aCallAggregation(mongoTemplate)
 		.getCallsByUser(userId, startDate, endDate, fields, pageable);
     }
 
     @Override
     public RollupResultDTO averageCallFieldByUser(String userId, DateTime startDate, DateTime endDate,
-	    List<CallField> fields) {
-	return aNewCallAggregation(mongoTemplate)
+	    List<CallField> fields) throws InvalidArgumentsException {
+	return aCallAggregation(mongoTemplate)
 		.averageCallFieldsByUser(userId, startDate, endDate, fields);
     }
 
     @Override
     public RollupResultDTO averageCallFieldByCompany(String companyId, DateTime startDate, DateTime endDate,
-	    List<CallField> fields) {
-	return aNewCallAggregation(mongoTemplate)
+	    List<CallField> fields) throws InvalidArgumentsException {
+	return aCallAggregation(mongoTemplate)
 		.averageCallFieldsByCompany(companyId, startDate, endDate, fields);
     }
 
     @Override
     public List<RollupResultDTO> rollupCallFieldByUser(String userId, DateTime startDate, DateTime endDate,
-	    RollupCadence cadence, List<CallField> fields) {
-	return aNewCallAggregation(mongoTemplate)
+	    RollupCadence cadence, List<CallField> fields) throws InvalidArgumentsException {
+	return aCallAggregation(mongoTemplate)
 		.rollupCallFieldByUser(userId, startDate, endDate, cadence, fields);
     }
 
     @Override
     public List<RollupResultDTO> rollupCallFieldByCompany(String companyId, DateTime startDate, DateTime endDate,
-	    RollupCadence cadence, List<CallField> fields) {
-	return aNewCallAggregation(mongoTemplate)
+	    RollupCadence cadence, List<CallField> fields) throws InvalidArgumentsException {
+	return aCallAggregation(mongoTemplate)
 		.rollupCallFieldByCompany(companyId, startDate, endDate, cadence, fields);
     }
 

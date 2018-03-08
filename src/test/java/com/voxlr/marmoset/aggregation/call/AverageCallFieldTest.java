@@ -1,6 +1,5 @@
 package com.voxlr.marmoset.aggregation.call;
 
-import static com.voxlr.marmoset.aggregation.CallAggregation.AVG_FIELDS_WHITE_LIST;
 import static com.voxlr.marmoset.util.AssertUtils.wrapAssertException;
 import static com.voxlr.marmoset.util.AssertUtils.wrapNoException;
 import static com.voxlr.marmoset.util.ListUtils.listOf;
@@ -10,40 +9,44 @@ import static org.hamcrest.collection.IsMapContaining.hasKey;
 import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.springframework.data.mongodb.core.query.Criteria;
 
-import com.voxlr.marmoset.aggregation.CallAggregation.CallAggregationField;
+import com.voxlr.marmoset.aggregation.CallAggregation;
+import com.voxlr.marmoset.aggregation.field.AggregationField;
+import com.voxlr.marmoset.aggregation.field.CallAggregationFields;
+import com.voxlr.marmoset.aggregation.field.CallAggregationFields.CallField;
+import com.voxlr.marmoset.exception.InvalidArgumentsException;
 import com.voxlr.marmoset.model.dto.aggregation.RollupResultDTO;
 import com.voxlr.marmoset.model.persistence.Call;
 
 public class AverageCallFieldTest extends CallAggregationBaseTest {
     @Test
     public void averageCallFieldReturnsValidDefaultValue() throws Exception {
+	Map<CallField, AggregationField> groupableFields = CallAggregationFields.getGroupableFields();
+	
 	RollupResultDTO resultDTO = callAggregation.averageCallFields(
-		Criteria.where("id").exists(true),
-		new DateTime(),
-		new DateTime(),
-		new ArrayList<CallAggregationField>(AVG_FIELDS_WHITE_LIST)
+		Criteria.where("id").exists(true).andOperator(CallAggregation.getDateConstrained(new DateTime(), new DateTime())),
+		new ArrayList<>(groupableFields.keySet())
 	);
 	
-	assertThat(resultDTO.getResult().size(), is(AVG_FIELDS_WHITE_LIST.size()));
+	assertThat(resultDTO.getResult().size(), is(groupableFields.size()));
 	
 	Map<String, Object> result = resultDTO.getResult();
 	
-	AVG_FIELDS_WHITE_LIST.stream().forEach(field -> {
-	    assertThat(result, hasKey(field.get()));
-	    assertThat(result.get(field.get()), is(field.getDefaultValue()));
+	groupableFields.values().stream().forEach(field -> {
+	    assertThat(result, hasKey(field.getFieldName()));
+	    assertThat(result.get(field.getFieldName()), is(field.getDefaultValue()));
 	});
     }
     
     @Test
-    public void averageCallFieldReturnsValidValue() {
+    public void averageCallFieldReturnsValidValue() throws InvalidArgumentsException {
 	DateTime startDate = new DateTime().minusDays(7);
 	DateTime endDate = new DateTime().minusDays(1);
 	
@@ -53,17 +56,15 @@ public class AverageCallFieldTest extends CallAggregationBaseTest {
 	persistenceUtils.save(call1, call2);
 	
 	RollupResultDTO resultDTO = callAggregation.averageCallFields(
-		Criteria.where("id").exists(true),
-		startDate,
-		endDate,
-		listOf(CallAggregationField.TOTAL_TALK_TIME)
+		Criteria.where("id").exists(true).andOperator(CallAggregation.getDateConstrained(startDate, endDate)),
+		listOf(CallField.TOTAL_TALK_TIME)
 	);
 
-	assertThat(resultDTO.getResult().get(CallAggregationField.TOTAL_TALK_TIME.get()), equalTo(6000.0));
+	assertThat(resultDTO.getResult().get(CallField.TOTAL_TALK_TIME.get()), equalTo(6000.0));
     }
     
     @Test
-    public void averageCallFieldIgnoresOutOfDateRange() {
+    public void averageCallFieldIgnoresOutOfDateRange() throws InvalidArgumentsException {
 	DateTime startDate = new DateTime().minusDays(7);
 	DateTime endDate = new DateTime().minusDays(1);
 
@@ -73,13 +74,11 @@ public class AverageCallFieldTest extends CallAggregationBaseTest {
 	persistenceUtils.save(call1, call2);
 	
 	RollupResultDTO resultDTO = callAggregation.averageCallFields(
-		Criteria.where("id").exists(true),
-		startDate,
-		endDate,
-		listOf(CallAggregationField.TOTAL_TALK_TIME)
+		Criteria.where("id").exists(true).andOperator(CallAggregation.getDateConstrained(startDate, endDate)),
+		listOf(CallField.TOTAL_TALK_TIME)
 	);
 	
-	assertThat(resultDTO.getResult().get(CallAggregationField.TOTAL_TALK_TIME.get()), equalTo(10000.0));
+	assertThat(resultDTO.getResult().get(CallField.TOTAL_TALK_TIME.get()), equalTo(10000.0));
     }
     
     @Test
@@ -90,12 +89,10 @@ public class AverageCallFieldTest extends CallAggregationBaseTest {
 	Call call = createCall(startDate.plusDays(1));
 	persistenceUtils.save(call);
 	
-	AVG_FIELDS_WHITE_LIST.stream().forEach(field -> {
+	CallAggregationFields.getGroupableFields().keySet().stream().forEach(field -> {
 	    wrapNoException(() -> {
 		callAggregation.averageCallFields(
-			Criteria.where("id").exists(true),
-			startDate,
-			endDate,
+			Criteria.where("id").exists(true).andOperator(CallAggregation.getDateConstrained(startDate, endDate)),
 			listOf(field)
 		);
 	    });
@@ -110,23 +107,22 @@ public class AverageCallFieldTest extends CallAggregationBaseTest {
 	Call call = createCall(startDate.plusDays(1));
 	persistenceUtils.save(call);
 	
-	Set<CallAggregationField> fields = new HashSet<CallAggregationField>(listOf(CallAggregationField.values()));
-	fields.removeAll(AVG_FIELDS_WHITE_LIST);
+	Map<CallField, AggregationField> aggregationFields = CallAggregationFields.getFields();
+	List<CallField> nonGroupableFields = aggregationFields.keySet().stream()
+		.filter(field -> !aggregationFields.get(field).isAbleToRollup()).collect(Collectors.toList());
 	
-	fields.stream().forEach(field -> {
+	nonGroupableFields.stream().forEach(field -> {
 	    wrapAssertException(() -> {
 		callAggregation.averageCallFields(
-			Criteria.where("id").exists(true),
-			startDate,
-			endDate,
+			Criteria.where("id").exists(true).andOperator(CallAggregation.getDateConstrained(startDate, endDate)),
 			listOf(field)
 		);
-	    }, IllegalArgumentException.class);
+	    }, InvalidArgumentsException.class);
 	});
     }
     
     @Test
-    public void averageCallFieldByCompanyOnlyAveragesSameCompany() {
+    public void averageCallFieldByCompanyOnlyAveragesSameCompany() throws InvalidArgumentsException {
 	DateTime startDate = new DateTime().minusDays(7);
 	DateTime endDate = new DateTime().minusDays(1);
 
@@ -139,14 +135,14 @@ public class AverageCallFieldTest extends CallAggregationBaseTest {
 		mockCompany.getId(),
 		startDate,
 		endDate,
-		listOf(CallAggregationField.TOTAL_TALK_TIME)
+		listOf(CallField.TOTAL_TALK_TIME)
 	);
 	
-	assertThat(resultDTO.getResult().get(CallAggregationField.TOTAL_TALK_TIME.get()), equalTo(10000.0));
+	assertThat(resultDTO.getResult().get(CallField.TOTAL_TALK_TIME.get()), equalTo(10000.0));
     }
     
     @Test
-    public void averageCallFieldByUserOnlyAveragesSameUser() {
+    public void averageCallFieldByUserOnlyAveragesSameUser() throws InvalidArgumentsException {
 	DateTime startDate = new DateTime().minusDays(7);
 	DateTime endDate = new DateTime().minusDays(1);
 
@@ -159,9 +155,9 @@ public class AverageCallFieldTest extends CallAggregationBaseTest {
 		mockUser.getId(),
 		startDate,
 		endDate,
-		listOf(CallAggregationField.TOTAL_TALK_TIME)
+		listOf(CallField.TOTAL_TALK_TIME)
 	);
 	
-	assertThat(resultDTO.getResult().get(CallAggregationField.TOTAL_TALK_TIME.get()), equalTo(10000.0));
+	assertThat(resultDTO.getResult().get(CallField.TOTAL_TALK_TIME.get()), equalTo(10000.0));
     }
 }

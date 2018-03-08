@@ -14,19 +14,19 @@ import org.junit.Test;
 import org.springframework.data.mongodb.core.query.Criteria;
 
 import com.voxlr.marmoset.aggregation.AbstractAggregation.RollupCadence;
-import com.voxlr.marmoset.aggregation.CallAggregation.CallAggregationField;
+import com.voxlr.marmoset.aggregation.CallAggregation;
+import com.voxlr.marmoset.aggregation.field.CallAggregationFields.CallField;
+import com.voxlr.marmoset.exception.InvalidArgumentsException;
 import com.voxlr.marmoset.model.dto.aggregation.RollupResultDTO;
 import com.voxlr.marmoset.model.persistence.Call;
 
 public class RollupCallFieldTest extends CallAggregationBaseTest {
     
     @Test
-    public void rollupCallFieldHandlesEmptyDataSet() {
+    public void rollupCallFieldHandlesEmptyDataSet() throws InvalidArgumentsException {
 	List<RollupResultDTO> resultDTO = callAggregation.rollupCallField(
-		Criteria.where("id").exists(true),
-		new DateTime(),
-		new DateTime(),
-		listOf(CallAggregationField.TOTAL_TALK_TIME)
+		Criteria.where("id").exists(true).andOperator(CallAggregation.getDateConstrained(new DateTime(), new DateTime())),
+		listOf(CallField.TOTAL_TALK_TIME)
 	);
 	
 	assertThat(resultDTO, is(notNullValue()));
@@ -34,7 +34,7 @@ public class RollupCallFieldTest extends CallAggregationBaseTest {
     }
     
     @Test
-    public void rollupCallFieldReturnsValidValue() {
+    public void rollupCallFieldReturnsValidValue() throws InvalidArgumentsException {
 	DateTime endDate = getInitialDate();
 	DateTime startDate = endDate.minusDays(7);
 	DateTime aggDate = endDate.minusDays(6);
@@ -45,21 +45,19 @@ public class RollupCallFieldTest extends CallAggregationBaseTest {
 	persistenceUtils.save(call1, call2);
 	
 	List<RollupResultDTO> resultDTO = callAggregation.rollupCallField(
-		Criteria.where("id").exists(true),
-		startDate,
-		endDate,
-		listOf(CallAggregationField.TOTAL_TALK_TIME)
+		Criteria.where("id").exists(true).andOperator(CallAggregation.getDateConstrained(startDate, endDate)),
+		listOf(CallField.TOTAL_TALK_TIME)
 	);
 	
 	assertThat(resultDTO.size(), is(1));
 	
 	RollupResultDTO result = resultDTO.get(0);
-	assertThat(result.getResult().get(CallAggregationField.TOTAL_TALK_TIME.get()), is(6000.0));
+	assertThat(result.getResult().get(CallField.TOTAL_TALK_TIME.get()), is(6000.0));
 	assertThat(result.getTimestamp(), equalTo(aggDate));
     }
     
     @Test
-    public void rollupCallFieldHandlesMultipleDates() {
+    public void rollupCallFieldHandlesMultipleDates() throws InvalidArgumentsException {
 	DateTime endDate = getInitialDate();
 	DateTime startDate = endDate.minusDays(7);
 	DateTime aggDate1 = endDate.minusDays(6);
@@ -71,24 +69,22 @@ public class RollupCallFieldTest extends CallAggregationBaseTest {
 	persistenceUtils.save(call1, call2);
 	
 	List<RollupResultDTO> resultDTO = callAggregation.rollupCallField(
-		Criteria.where("id").exists(true),
-		startDate,
-		endDate,
-		listOf(CallAggregationField.TOTAL_TALK_TIME)
+		Criteria.where("id").exists(true).andOperator(CallAggregation.getDateConstrained(startDate, endDate)),
+		listOf(CallField.TOTAL_TALK_TIME)
 	);
 	assertThat(resultDTO.size(), is(2));
 	
 	RollupResultDTO result1 = resultDTO.get(0);
 	assertThat(result1.getTimestamp(), equalTo(aggDate1));
-	assertThat(result1.getResult().get(CallAggregationField.TOTAL_TALK_TIME.get()), is(10000.0));
+	assertThat(result1.getResult().get(CallField.TOTAL_TALK_TIME.get()), is(10000.0));
 	
 	RollupResultDTO result2 = resultDTO.get(1);
 	assertThat(result2.getTimestamp(), equalTo(aggDate2));
-	assertThat(result2.getResult().get(CallAggregationField.TOTAL_TALK_TIME.get()), is(2000.0));
+	assertThat(result2.getResult().get(CallField.TOTAL_TALK_TIME.get()), is(2000.0));
     }
     
     @Test
-    public void rollupCallFieldHandlesMultipleFields() {
+    public void rollupCallFieldHandlesMultipleFields() throws InvalidArgumentsException {
 	DateTime endDate = getInitialDate();
 	DateTime startDate = endDate.minusDays(7);
 	DateTime aggDate = endDate.minusDays(6);
@@ -100,22 +96,20 @@ public class RollupCallFieldTest extends CallAggregationBaseTest {
 	persistenceUtils.save(call1, call2);
 	
 	List<RollupResultDTO> resultDTO = callAggregation.rollupCallField(
-		Criteria.where("id").exists(true),
-		startDate,
-		endDate,
-		listOf(CallAggregationField.TOTAL_TALK_TIME, CallAggregationField.DURATION)
+		Criteria.where("id").exists(true).andOperator(CallAggregation.getDateConstrained(startDate, endDate)),
+		listOf(CallField.TOTAL_TALK_TIME, CallField.DURATION)
 	);
 	
 	assertThat(resultDTO.size(), is(1));
 	
 	RollupResultDTO result = resultDTO.get(0);
-	assertThat(result.getResult().get(CallAggregationField.TOTAL_TALK_TIME.get()), is(6000.0));
-	assertThat(result.getResult().get(CallAggregationField.DURATION.get()), is(6.0));
+	assertThat(result.getResult().get(CallField.TOTAL_TALK_TIME.get()), is(6000.0));
+	assertThat(result.getResult().get(CallField.DURATION.get()), is(6.0));
 	assertThat(result.getTimestamp(), equalTo(aggDate));
     }
     
     @Test
-    public void rollupCallFieldOnlyIncludesInDateRange() {
+    public void rollupCallFieldOnlyIncludesInDateRange() throws InvalidArgumentsException {
 	DateTime endDate = getInitialDate();
 	DateTime startDate = endDate.minusDays(7);
 	DateTime aggDate1 = endDate.minusDays(6);
@@ -127,21 +121,19 @@ public class RollupCallFieldTest extends CallAggregationBaseTest {
 	persistenceUtils.save(call1, call2);
 	
 	List<RollupResultDTO> resultDTO = callAggregation.rollupCallField(
-		Criteria.where("id").exists(true),
-		startDate,
-		endDate,
-		listOf(CallAggregationField.TOTAL_TALK_TIME)
+		Criteria.where("id").exists(true).andOperator(CallAggregation.getDateConstrained(startDate, endDate)),
+		listOf(CallField.TOTAL_TALK_TIME)
 	);
 	
 	assertThat(resultDTO.size(), is(1));
 	
 	RollupResultDTO result = resultDTO.get(0);
-	assertThat(result.getResult().get(CallAggregationField.TOTAL_TALK_TIME.get()), is(10000.0));
+	assertThat(result.getResult().get(CallField.TOTAL_TALK_TIME.get()), is(10000.0));
 	assertThat(result.getTimestamp(), equalTo(aggDate1));
     }
     
     @Test
-public void rollupCallFieldHourly() {
+public void rollupCallFieldHourly() throws InvalidArgumentsException {
 	DateTime endDate = getInitialDate();
 	DateTime startDate = endDate.minusHours(7);
 	DateTime aggDate1 = endDate.minusHours(6);
@@ -153,25 +145,23 @@ public void rollupCallFieldHourly() {
 	persistenceUtils.save(call1, call2);
 	
 	List<RollupResultDTO> resultDTO = callAggregation.rollupCallField(
-		Criteria.where("id").exists(true),
-		startDate,
-		endDate,
+		Criteria.where("id").exists(true).andOperator(CallAggregation.getDateConstrained(startDate, endDate)),
 		RollupCadence.HOURLY,
-		listOf(CallAggregationField.TOTAL_TALK_TIME)
+		listOf(CallField.TOTAL_TALK_TIME)
 	);
 	assertThat(resultDTO.size(), is(2));
 	
 	RollupResultDTO result1 = resultDTO.get(0);
 	assertThat(result1.getTimestamp(), equalTo(aggDate1));
-	assertThat(result1.getResult().get(CallAggregationField.TOTAL_TALK_TIME.get()), is(10000.0));
+	assertThat(result1.getResult().get(CallField.TOTAL_TALK_TIME.get()), is(10000.0));
 	
 	RollupResultDTO result2 = resultDTO.get(1);
 	assertThat(result2.getTimestamp(), equalTo(aggDate2));
-	assertThat(result2.getResult().get(CallAggregationField.TOTAL_TALK_TIME.get()), is(2000.0));
+	assertThat(result2.getResult().get(CallField.TOTAL_TALK_TIME.get()), is(2000.0));
     }
     
     @Test
-    public void rollupCallFieldMonthly() {
+    public void rollupCallFieldMonthly() throws InvalidArgumentsException {
 	DateTime endDate = getInitialDate();
 	DateTime startDate = endDate.minusMonths(7);
 	DateTime aggDate1 = endDate.minusMonths(6);
@@ -183,25 +173,23 @@ public void rollupCallFieldHourly() {
 	persistenceUtils.save(call1, call2);
 	
 	List<RollupResultDTO> resultDTO = callAggregation.rollupCallField(
-		Criteria.where("id").exists(true),
-		startDate,
-		endDate,
+		Criteria.where("id").exists(true).andOperator(CallAggregation.getDateConstrained(startDate, endDate)),
 		RollupCadence.MONTHLY,
-		listOf(CallAggregationField.TOTAL_TALK_TIME)
+		listOf(CallField.TOTAL_TALK_TIME)
 	);
 	assertThat(resultDTO.size(), is(2));
 	
 	RollupResultDTO result1 = resultDTO.get(0);
 	RollupResultDTO result2 = resultDTO.get(1);
 	assertThat(result1.getTimestamp(), equalTo(getStartOfMonth(aggDate1)));
-	assertThat(result1.getResult().get(CallAggregationField.TOTAL_TALK_TIME.get()), is(10000.0));
+	assertThat(result1.getResult().get(CallField.TOTAL_TALK_TIME.get()), is(10000.0));
 	
 	assertThat(result2.getTimestamp(), equalTo(getStartOfMonth(aggDate2)));
-	assertThat(result2.getResult().get(CallAggregationField.TOTAL_TALK_TIME.get()), is(2000.0));
+	assertThat(result2.getResult().get(CallField.TOTAL_TALK_TIME.get()), is(2000.0));
     }
     
     @Test
-    public void rollupCallFieldYearly() {
+    public void rollupCallFieldYearly() throws InvalidArgumentsException {
 	DateTime endDate = getInitialDate();
 	DateTime startDate = endDate.minusYears(7);
 	DateTime aggDate1 = endDate.minusYears(6);
@@ -213,25 +201,23 @@ public void rollupCallFieldHourly() {
 	persistenceUtils.save(call1, call2);
 	
 	List<RollupResultDTO> resultDTO = callAggregation.rollupCallField(
-		Criteria.where("id").exists(true),
-		startDate,
-		endDate,
+		Criteria.where("id").exists(true).andOperator(CallAggregation.getDateConstrained(startDate, endDate)),
 		RollupCadence.YEARLY,
-		listOf(CallAggregationField.TOTAL_TALK_TIME)
+		listOf(CallField.TOTAL_TALK_TIME)
 	);
 	assertThat(resultDTO.size(), is(2));
 	
 	RollupResultDTO result1 = resultDTO.get(0);
 	RollupResultDTO result2 = resultDTO.get(1);
 	assertThat(result1.getTimestamp(), equalTo(getStartOfYear(aggDate1)));
-	assertThat(result1.getResult().get(CallAggregationField.TOTAL_TALK_TIME.get()), is(10000.0));
+	assertThat(result1.getResult().get(CallField.TOTAL_TALK_TIME.get()), is(10000.0));
 	
 	assertThat(result2.getTimestamp(), equalTo(getStartOfYear(aggDate2)));
-	assertThat(result2.getResult().get(CallAggregationField.TOTAL_TALK_TIME.get()), is(2000.0));
+	assertThat(result2.getResult().get(CallField.TOTAL_TALK_TIME.get()), is(2000.0));
     }
     
     @Test
-    public void rollupCallFieldByCompanyOnlyIncludesSameCompany() {
+    public void rollupCallFieldByCompanyOnlyIncludesSameCompany() throws InvalidArgumentsException {
 	DateTime endDate = getInitialDate();
 	DateTime startDate = endDate.minusDays(7);
 	DateTime aggDate1 = endDate.minusDays(6);
@@ -248,17 +234,17 @@ public void rollupCallFieldHourly() {
 		startDate,
 		endDate,
 		RollupCadence.DAILY,
-		listOf(CallAggregationField.TOTAL_TALK_TIME)
+		listOf(CallField.TOTAL_TALK_TIME)
 	);
 	assertThat(resultDTO.size(), is(1));
 	
 	RollupResultDTO result1 = resultDTO.get(0);
 	assertThat(result1.getTimestamp(), equalTo(aggDate1));
-	assertThat(result1.getResult().get(CallAggregationField.TOTAL_TALK_TIME.get()), is(10000.0));
+	assertThat(result1.getResult().get(CallField.TOTAL_TALK_TIME.get()), is(10000.0));
     }
     
     @Test
-    public void rollupCallFieldByUserOnlyIncludesSameUser() {
+    public void rollupCallFieldByUserOnlyIncludesSameUser() throws InvalidArgumentsException {
 	DateTime endDate = getInitialDate();
 	DateTime startDate = endDate.minusDays(7);
 	DateTime aggDate1 = endDate.minusDays(6);
@@ -275,13 +261,13 @@ public void rollupCallFieldHourly() {
 		startDate,
 		endDate,
 		RollupCadence.DAILY,
-		listOf(CallAggregationField.TOTAL_TALK_TIME)
+		listOf(CallField.TOTAL_TALK_TIME)
 	);
 	assertThat(resultDTO.size(), is(1));
 	
 	RollupResultDTO result1 = resultDTO.get(0);
 	assertThat(result1.getTimestamp(), equalTo(aggDate1));
-	assertThat(result1.getResult().get(CallAggregationField.TOTAL_TALK_TIME.get()), is(10000.0));
+	assertThat(result1.getResult().get(CallField.TOTAL_TALK_TIME.get()), is(10000.0));
     }
     
     private DateTime getStartOfYear(DateTime dateTime) {

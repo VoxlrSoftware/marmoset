@@ -16,6 +16,7 @@ import static org.junit.Assert.assertThat;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.joda.time.DateTime;
 import org.junit.Test;
@@ -23,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 
+import com.voxlr.marmoset.aggregation.field.CallAggregationFields.CallField;
 import com.voxlr.marmoset.auth.UserRole;
 import com.voxlr.marmoset.exception.EntityNotFoundException;
 import com.voxlr.marmoset.model.AuthUser;
@@ -267,6 +269,7 @@ public class CallServiceTest extends DataTest {
     				.startDate(new DateTime())
     				.endDate(new DateTime())
     				.build(),
+			CallField.getAll().stream().map(CallField::get).collect(Collectors.toList()),
     			PageRequest.of(0, 20));
 	    });
 	});
@@ -284,6 +287,7 @@ public class CallServiceTest extends DataTest {
     				.startDate(new DateTime())
     				.endDate(new DateTime())
     				.build(),
+			CallField.getAll().stream().map(CallField::get).collect(Collectors.toList()),
     			PageRequest.of(0, 20));
 	    }, UnauthorizedUserException.class);
 	});
@@ -305,6 +309,7 @@ public class CallServiceTest extends DataTest {
     				.startDate(new DateTime())
     				.endDate(new DateTime())
     				.build(),
+    			CallField.getAll().stream().map(CallField::get).collect(Collectors.toList()),
     			PageRequest.of(0, 20));
 	    });
 	});
@@ -322,6 +327,7 @@ public class CallServiceTest extends DataTest {
     				.startDate(new DateTime())
     				.endDate(new DateTime())
     				.build(),
+    			CallField.getAll().stream().map(CallField::get).collect(Collectors.toList()),
     			PageRequest.of(0, 20));
 	    }, UnauthorizedUserException.class);
 	});

@@ -13,7 +13,7 @@ import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserExc
 import org.springframework.stereotype.Service;
 
 import com.voxlr.marmoset.aggregation.AbstractAggregation.RollupCadence;
-import com.voxlr.marmoset.aggregation.field.CallAggFields.CallField;
+import com.voxlr.marmoset.aggregation.field.CallAggregationFields.CallField;
 import com.voxlr.marmoset.convert.TypeConverter;
 import com.voxlr.marmoset.exception.ConvertException;
 import com.voxlr.marmoset.exception.EntityNotFoundException;
@@ -277,7 +277,8 @@ public class CallService extends ValidateableService {
 	validate(authUser, dateConstrained);
 	User user = userService.get(userId, authUser);
 	List<CallField> callFields = getCallFields(fields);
-	return callRepository.rollupCallFieldByUser(user.getId(), dateConstrained.getStartDate(), dateConstrained.getEndDate(), getRollupCadence(cadence), callFields);
+	RollupCadence rollupCadence = getRollupCadence(cadence);
+	return callRepository.rollupCallFieldByUser(user.getId(), dateConstrained.getStartDate(), dateConstrained.getEndDate(), rollupCadence, callFields);
     }
     
     private List<CallField> getCallFields(List<String> fields) throws Exception {

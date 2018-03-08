@@ -2,6 +2,7 @@ package com.voxlr.marmoset.aggregation.field;
 
 import static com.voxlr.marmoset.aggregation.field.AggregationOperationModifiers.groupAverageModifier;
 import static com.voxlr.marmoset.aggregation.field.AggregationOperationModifiers.projectFieldModifier;
+import static com.voxlr.marmoset.util.ListUtils.reduce;
 
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,14 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AggregationField {
+    public static ProjectionOperation getFieldProjections(ProjectionOperation initial, List<AggregationField> fields) {
+	return reduce(initial, fields, AggregationField::projectField);
+    }
+    
+    public static GroupOperation getFieldGroups(GroupOperation initial, List<AggregationField> fields) {
+	return reduce(initial, fields, AggregationField::groupField);
+    }
+    
     public static ProjectionOperation projectField(ProjectionOperation input, AggregationField field) {
 	return field.project(input);
     }
@@ -35,6 +44,14 @@ public class AggregationField {
     
     public static Map<String, Object> getDefaults(List<AggregationField> fields) {
 	return fields.stream().filter(AggregationField::isAbleToRollup).collect(Collectors.toMap(AggregationField::getFieldName, AggregationField::getDefaultValue));
+    }
+    
+    public static boolean isProjectable(List<AggregationField> fields) {
+	return fields.stream().anyMatch(AggregationField::isProjectable);
+    }
+    
+    public static boolean isGroupable(List<AggregationField> fields) {
+	return fields.stream().anyMatch(AggregationField::isAbleToRollup);
     }
     
     public static AggregationFieldBuilder builder(String fieldName){
