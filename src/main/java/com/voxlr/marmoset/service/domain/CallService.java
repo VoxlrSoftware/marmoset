@@ -13,6 +13,9 @@ import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserExc
 import org.springframework.stereotype.Service;
 
 import com.voxlr.marmoset.aggregation.AbstractAggregation.RollupCadence;
+import com.voxlr.marmoset.aggregation.dto.AggregateResultDTO;
+import com.voxlr.marmoset.aggregation.dto.CallAggregateDTO;
+import com.voxlr.marmoset.aggregation.dto.RollupResultDTO;
 import com.voxlr.marmoset.aggregation.field.CallAggregationFields.CallField;
 import com.voxlr.marmoset.convert.TypeConverter;
 import com.voxlr.marmoset.exception.ConvertException;
@@ -22,8 +25,6 @@ import com.voxlr.marmoset.model.AuthUser;
 import com.voxlr.marmoset.model.CallOutcome;
 import com.voxlr.marmoset.model.CallScoped;
 import com.voxlr.marmoset.model.dto.DateConstrained;
-import com.voxlr.marmoset.model.dto.aggregation.CallAggregateDTO;
-import com.voxlr.marmoset.model.dto.aggregation.RollupResultDTO;
 import com.voxlr.marmoset.model.persistence.Call;
 import com.voxlr.marmoset.model.persistence.CallRequest;
 import com.voxlr.marmoset.model.persistence.CallStrategy;
@@ -279,6 +280,24 @@ public class CallService extends ValidateableService {
 	List<CallField> callFields = getCallFields(fields);
 	RollupCadence rollupCadence = getRollupCadence(cadence);
 	return callRepository.rollupCallFieldByUser(user.getId(), dateConstrained.getStartDate(), dateConstrained.getEndDate(), rollupCadence, callFields);
+    }
+    
+    public AggregateResultDTO getCallOutcomesByCompany (
+	    String companyId,
+	    AuthUser authUser,
+	    DateConstrained dateConstrained) throws Exception {
+	validate(authUser, dateConstrained);
+	Company company = companyService.get(companyId, authUser);
+	return callRepository.getCallOutcomesByCompany(company.getId(), dateConstrained.getStartDate(), dateConstrained.getEndDate());
+    }
+    
+    public AggregateResultDTO getCallOutcomesByUser (
+	    String userId,
+	    AuthUser authUser,
+	    DateConstrained dateConstrained) throws Exception {
+	validate(authUser, dateConstrained);
+	User user = userService.get(userId, authUser);
+	return callRepository.getCallOutcomesByUser(user.getId(), dateConstrained.getStartDate(), dateConstrained.getEndDate());
     }
     
     private List<CallField> getCallFields(List<String> fields) throws Exception {

@@ -18,11 +18,11 @@ import org.junit.Test;
 import org.springframework.data.mongodb.core.query.Criteria;
 
 import com.voxlr.marmoset.aggregation.CallAggregation;
+import com.voxlr.marmoset.aggregation.dto.RollupResultDTO;
 import com.voxlr.marmoset.aggregation.field.AggregationField;
 import com.voxlr.marmoset.aggregation.field.CallAggregationFields;
 import com.voxlr.marmoset.aggregation.field.CallAggregationFields.CallField;
 import com.voxlr.marmoset.exception.InvalidArgumentsException;
-import com.voxlr.marmoset.model.dto.aggregation.RollupResultDTO;
 import com.voxlr.marmoset.model.persistence.Call;
 
 public class AverageCallFieldTest extends CallAggregationBaseTest {

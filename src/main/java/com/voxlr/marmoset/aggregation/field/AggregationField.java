@@ -5,12 +5,12 @@ import static com.voxlr.marmoset.aggregation.field.AggregationOperationModifiers
 import static com.voxlr.marmoset.util.ListUtils.reduce;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.data.mongodb.core.aggregation.GroupOperation;
 import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
 
+import com.voxlr.marmoset.aggregation.dto.AggregateResultDTO;
 import com.voxlr.marmoset.aggregation.field.AggregationOperationModifiers.GroupOperationModifier;
 import com.voxlr.marmoset.aggregation.field.AggregationOperationModifiers.ProjectOperationModifier;
 
@@ -42,8 +42,8 @@ public class AggregationField {
 	return field.group(input);
     }
     
-    public static Map<String, Object> getDefaults(List<AggregationField> fields) {
-	return fields.stream().filter(AggregationField::isAbleToRollup).collect(Collectors.toMap(AggregationField::getFieldName, AggregationField::getDefaultValue));
+    public static AggregateResultDTO getDefaults(List<AggregationField> fields) {
+	return new AggregateResultDTO(fields.stream().filter(AggregationField::isAbleToRollup).collect(Collectors.toMap(AggregationField::getFieldName, AggregationField::getDefaultValue)));
     }
     
     public static boolean isProjectable(List<AggregationField> fields) {

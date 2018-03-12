@@ -31,12 +31,12 @@ import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
 import org.springframework.data.mongodb.core.aggregation.TypedAggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 
+import com.voxlr.marmoset.aggregation.dto.CallAggregateDTO;
+import com.voxlr.marmoset.aggregation.dto.RollupResultDTO;
 import com.voxlr.marmoset.aggregation.field.AggregationField;
 import com.voxlr.marmoset.aggregation.field.CallAggregationFields;
 import com.voxlr.marmoset.aggregation.field.CallAggregationFields.CallField;
 import com.voxlr.marmoset.exception.InvalidArgumentsException;
-import com.voxlr.marmoset.model.dto.aggregation.CallAggregateDTO;
-import com.voxlr.marmoset.model.dto.aggregation.RollupResultDTO;
 import com.voxlr.marmoset.model.persistence.Call;
 
 public class CallAggregation extends AbstractAggregation<Call> {
@@ -53,10 +53,6 @@ public class CallAggregation extends AbstractAggregation<Call> {
     }
     public static CallAggregation aCallAggregation(MongoTemplate mongoTemplate) {
 	return new CallAggregation(mongoTemplate);
-    }
-    
-    public static Criteria getDateConstrained(DateTime startDate, DateTime endDate) {
-	return Criteria.where("createDate").gte(startDate).lte(endDate);
     }
     
     public static Criteria getUserConstrained(String userId) {

@@ -9,8 +9,8 @@ import org.junit.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
+import com.voxlr.marmoset.aggregation.dto.CallAggregateDTO;
 import com.voxlr.marmoset.aggregation.field.CallAggregationFields;
-import com.voxlr.marmoset.model.dto.aggregation.CallAggregateDTO;
 import com.voxlr.marmoset.model.persistence.Call;
 
 public class GetCallsTest extends CallAggregationBaseTest {

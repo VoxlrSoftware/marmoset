@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.joda.time.DateTime;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -22,14 +23,17 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.aggregation.GroupOperation;
 import org.springframework.data.mongodb.core.aggregation.MatchOperation;
 import org.springframework.data.mongodb.core.aggregation.SortOperation;
 import org.springframework.data.mongodb.core.aggregation.TypedAggregation;
+import org.springframework.data.mongodb.core.query.Criteria;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.voxlr.marmoset.aggregation.dto.TotalCountDTO;
 import com.voxlr.marmoset.model.ConvertibleEnum;
-import com.voxlr.marmoset.model.dto.aggregation.TotalCountDTO;
+import com.voxlr.marmoset.model.persistence.AuditModel;
 
 import lombok.RequiredArgsConstructor;
 
@@ -71,14 +75,24 @@ public abstract class AbstractAggregation<T> {
 	    return this.value;
 	}
     }
+    
+    public static final String COUNT = "count";
     public static final String RESULT = "result";
     public static final String TIMESTAMP = "timestamp";
+    
+    public static Criteria getDateConstrained(DateTime startDate, DateTime endDate) {
+	return Criteria.where(AuditModel.CREATE_DATE).gte(startDate).lte(endDate);
+    }
     
     private final MongoTemplate mongoTemplate;
     private final Class<T> entityClass;
     
     public MongoTemplate mongo() {
 	return mongoTemplate;
+    }
+    
+    public GroupOperation count(GroupOperation group) {
+	return group.count().as(COUNT);
     }
 
     public int doCount(MatchOperation matchOperation) {
