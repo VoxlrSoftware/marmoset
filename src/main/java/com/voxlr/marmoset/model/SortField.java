@@ -1,10 +1,6 @@
 package com.voxlr.marmoset.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
@@ -12,6 +8,6 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 public class SortField {
-    private String sortBy;
-    private String sortOrder;
+  private String sortBy;
+  private String sortOrder;
 }

@@ -1,12 +1,7 @@
 package com.voxlr.marmoset.model.persistence.dto;
 
 import com.voxlr.marmoset.validation.constraint.TeamExistsConstraint;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
@@ -14,12 +9,11 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserUpdateDTO {
-    
-    @TeamExistsConstraint
-    private String teamId;
-    private String firstName;
-    private String lastName;
-    private String password;
-    private String role;
-    private String id;
+
+  @TeamExistsConstraint private String teamId;
+  private String firstName;
+  private String lastName;
+  private String password;
+  private String role;
+  private String id;
 }

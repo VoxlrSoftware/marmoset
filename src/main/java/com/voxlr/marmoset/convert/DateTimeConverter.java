@@ -7,9 +7,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class DateTimeConverter implements Converter<String, DateTime> {
 
-    @Override
-    public DateTime convert(String source) {
-	return DateTime.parse(source);
-    }
-
+  @Override
+  public DateTime convert(String source) {
+    return DateTime.parse(source);
+  }
 }

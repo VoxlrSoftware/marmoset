@@ -1,12 +1,8 @@
 package com.voxlr.marmoset.model.dto;
 
-import java.util.List;
+import lombok.*;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import java.util.List;
 
 @Getter
 @Setter
@@ -14,9 +10,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CallAnalysisRequestDTO {
-    private List<String> searchPhrases;
-    private String text;
-    private String callId;
-    private String callbackUrl;
-    
+  private List<String> searchPhrases;
+  private String text;
+  private String callId;
+  private String callbackUrl;
 }

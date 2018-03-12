@@ -4,9 +4,9 @@ import lombok.Getter;
 
 @Getter
 public abstract class ConvertResult<T> {
-    private T result;
-    
-    public ConvertResult(T result) {
-	this.result = result;
-    }
+  private T result;
+
+  public ConvertResult(T result) {
+    this.result = result;
+  }
 }

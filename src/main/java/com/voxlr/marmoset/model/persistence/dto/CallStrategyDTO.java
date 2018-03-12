@@ -1,14 +1,9 @@
 package com.voxlr.marmoset.model.persistence.dto;
 
-import java.util.List;
+import lombok.*;
 
 import javax.validation.constraints.NotNull;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import java.util.List;
 
 @Getter
 @Setter
@@ -16,11 +11,9 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CallStrategyDTO {
-    private String id;
-    
-    @NotNull
-    private String name;
-    
-    @NotNull
-    private List<String> phrases;
+  private String id;
+
+  @NotNull private String name;
+
+  @NotNull private List<String> phrases;
 }

@@ -8,5 +8,5 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class TotalCountDTO {
-    private int totalCount;
+  private int totalCount;
 }

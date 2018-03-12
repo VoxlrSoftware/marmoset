@@ -1,12 +1,7 @@
 package com.voxlr.marmoset.model.persistence.dto;
 
 import com.voxlr.marmoset.model.CallScoped;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
@@ -14,7 +9,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CallUpdateDTO implements CallScoped {
-    private String id;
-    private String callSid;
-    private String callOutcome;
+  private String id;
+  private String callSid;
+  private String callOutcome;
 }

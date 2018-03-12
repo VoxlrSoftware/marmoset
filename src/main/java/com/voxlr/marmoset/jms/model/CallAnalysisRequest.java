@@ -1,10 +1,6 @@
 package com.voxlr.marmoset.jms.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
@@ -12,7 +8,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CallAnalysisRequest {
-    private String callId;
-    private String transcriptionId;
-    private String transcriptionUrl;
+  private String callId;
+  private String transcriptionId;
+  private String transcriptionUrl;
 }

@@ -7,13 +7,13 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ValidationResult<T> {
-    T result;
-    
-    @Setter(AccessLevel.NONE)
-    boolean resultSet = false;
-    
-    public void setResult(T result) {
-	this.result = result;
-	this.resultSet = true;
-    }
+  T result;
+
+  @Setter(AccessLevel.NONE)
+  boolean resultSet = false;
+
+  public void setResult(T result) {
+    this.result = result;
+    this.resultSet = true;
+  }
 }

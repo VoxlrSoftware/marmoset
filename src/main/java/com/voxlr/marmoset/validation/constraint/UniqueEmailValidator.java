@@ -1,18 +1,16 @@
 package com.voxlr.marmoset.validation.constraint;
 
+import com.voxlr.marmoset.service.domain.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
-import com.voxlr.marmoset.service.domain.UserService;
-
 public class UniqueEmailValidator implements ConstraintValidator<UniqueEmailConstraint, String> {
-    @Autowired
-    UserService userService;
+  @Autowired UserService userService;
 
-    @Override
-    public boolean isValid(String email, ConstraintValidatorContext context) {
-	return userService.validateUniqueEmail(email);
-    }
+  @Override
+  public boolean isValid(String email, ConstraintValidatorContext context) {
+    return userService.validateUniqueEmail(email);
+  }
 }

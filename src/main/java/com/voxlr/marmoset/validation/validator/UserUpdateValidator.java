@@ -6,14 +6,12 @@ import com.voxlr.marmoset.validation.handler.UserRoleValidationHandler;
 
 @TypeValidator(forClass = UserUpdateDTO.class)
 public class UserUpdateValidator implements Validator<UserUpdateDTO> {
-    
-    private final UserRoleValidationHandler userRoleValidationHandler
-    	= new UserRoleValidationHandler();
 
-    @Override
-    public void validate(AuthUser authUser, UserUpdateDTO entity) throws Exception {
-	userRoleValidationHandler.validate(
-		authUser, entity::getRole);
-    }
+  private final UserRoleValidationHandler userRoleValidationHandler =
+      new UserRoleValidationHandler();
 
+  @Override
+  public void validate(AuthUser authUser, UserUpdateDTO entity) throws Exception {
+    userRoleValidationHandler.validate(authUser, entity::getRole);
+  }
 }

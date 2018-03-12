@@ -1,29 +1,27 @@
 package com.voxlr.marmoset.service.domain;
 
+import com.voxlr.marmoset.model.AuthUser;
+import com.voxlr.marmoset.model.persistence.User;
+import com.voxlr.marmoset.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.voxlr.marmoset.model.AuthUser;
-import com.voxlr.marmoset.model.persistence.User;
-import com.voxlr.marmoset.repositories.UserRepository;
-
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
-	
-    @Autowired
-    private UserRepository userRepository;
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(username);
-        
-        if(user == null) {
-            throw new UsernameNotFoundException(String.format("The username %s doesn't exist", username));
-        }
-        
-        return AuthUser.buildFromUser(user);
+  @Autowired private UserRepository userRepository;
+
+  @Override
+  public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    User user = userRepository.findByEmail(username);
+
+    if (user == null) {
+      throw new UsernameNotFoundException(String.format("The username %s doesn't exist", username));
     }
+
+    return AuthUser.buildFromUser(user);
+  }
 }

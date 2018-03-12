@@ -1,18 +1,11 @@
 package com.voxlr.marmoset.model.persistence.dto;
 
-import java.util.List;
-
-import org.hibernate.validator.constraints.NotBlank;
-
 import com.voxlr.marmoset.model.PhoneNumberHolder;
 import com.voxlr.marmoset.validation.constraint.PhoneNumberValidConstraint;
+import lombok.*;
+import org.hibernate.validator.constraints.NotBlank;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.Singular;
+import java.util.List;
 
 @Getter
 @Setter
@@ -20,15 +13,12 @@ import lombok.Singular;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CallCreateDTO {
-    @NotBlank
-    private String callSid;
-    
-    @PhoneNumberValidConstraint
-    private PhoneNumberHolder employeeNumber;
-    
-    @PhoneNumberValidConstraint
-    private PhoneNumberHolder customerNumber;
+  @NotBlank private String callSid;
 
-    @Singular("strategy")
-    private List<String> strategyList;
+  @PhoneNumberValidConstraint private PhoneNumberHolder employeeNumber;
+
+  @PhoneNumberValidConstraint private PhoneNumberHolder customerNumber;
+
+  @Singular("strategy")
+  private List<String> strategyList;
 }

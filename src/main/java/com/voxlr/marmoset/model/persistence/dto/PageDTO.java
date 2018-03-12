@@ -1,14 +1,9 @@
 package com.voxlr.marmoset.model.persistence.dto;
 
-import java.util.List;
-
 import com.voxlr.marmoset.model.Pagination;
+import lombok.*;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import java.util.List;
 
 @Getter
 @Setter
@@ -16,8 +11,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 public class PageDTO<T> {
-    private List<T> results;
-    private long totalCount;
-    private int totalPages;
-    private Pagination pagination;
+  private List<T> results;
+  private long totalCount;
+  private int totalPages;
+  private Pagination pagination;
 }

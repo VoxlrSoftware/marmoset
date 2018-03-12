@@ -1,16 +1,11 @@
 package com.voxlr.marmoset.model.persistence;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import lombok.*;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -18,27 +13,27 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 public class CallStrategy extends AuditModel {
-    private String name;
-    
-    private List<String> phrases = new ArrayList<String>();
-    
-    public CallStrategy update(String name, List<String> phrases) {
-	if (name != null) {
-	    this.name = name;
-	}
-	
-	if (phrases != null) {
-	    this.phrases = phrases;
-	}
-	
-	this.setLastModified(new DateTime());
-	return this;
+  private String name;
+
+  private List<String> phrases = new ArrayList<String>();
+
+  public CallStrategy update(String name, List<String> phrases) {
+    if (name != null) {
+      this.name = name;
     }
 
-    public static CallStrategy createNew() {
-	CallStrategy callStrategy = new CallStrategy();
-	callStrategy.setId(new ObjectId().toHexString());
-	callStrategy.setCreateDate(new DateTime());
-	return callStrategy;
+    if (phrases != null) {
+      this.phrases = phrases;
     }
+
+    this.setLastModified(new DateTime());
+    return this;
+  }
+
+  public static CallStrategy createNew() {
+    CallStrategy callStrategy = new CallStrategy();
+    callStrategy.setId(new ObjectId().toHexString());
+    callStrategy.setCreateDate(new DateTime());
+    return callStrategy;
+  }
 }

@@ -6,9 +6,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class SimpleResponseDTO<T> {
-    private T data;
-    
-    public SimpleResponseDTO(T data) {
-	this.data = data;
-    }
+  private T data;
+
+  public SimpleResponseDTO(T data) {
+    this.data = data;
+  }
 }

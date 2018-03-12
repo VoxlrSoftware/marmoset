@@ -1,6 +1,7 @@
 package com.voxlr.marmoset.model;
 
 public interface CallScoped {
-    String getId();
-    String getCallSid();
+  String getId();
+
+  String getCallSid();
 }

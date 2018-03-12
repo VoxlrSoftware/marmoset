@@ -1,10 +1,6 @@
 package com.voxlr.marmoset.jms.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
@@ -12,11 +8,10 @@ import lombok.Setter;
 @NoArgsConstructor
 @Builder
 public class CallRecordingRequest {
-    private String recordingUrl;
-    private int recordingDuration;
-    private String callSid;
-    private String callId;
-    
-    @Builder.Default
-    private String extension = "";
+  private String recordingUrl;
+  private int recordingDuration;
+  private String callSid;
+  private String callId;
+
+  @Builder.Default private String extension = "";
 }
