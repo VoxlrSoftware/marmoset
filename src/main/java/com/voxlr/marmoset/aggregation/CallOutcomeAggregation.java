@@ -11,6 +11,9 @@ import org.springframework.data.mongodb.core.aggregation.MatchOperation;
 import org.springframework.data.mongodb.core.aggregation.TypedAggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 
+import java.util.List;
+
+import static com.voxlr.marmoset.util.ListUtils.reduce;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.group;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.match;
 
@@ -22,12 +25,23 @@ public class CallOutcomeAggregation extends AbstractAggregation<Call> {
     super(mongoTemplate, Call.class);
   }
 
+  private AggregateResultDTO reduceCounts(List<AggregateResultDTO> resultDTO) {
+    return reduce(new AggregateResultDTO(), resultDTO, (results, result) -> {
+      results.put(result.get(ID).toString(), result.get(COUNT));
+      return results;
+    });
+  }
+
   public AggregateResultDTO getCallOutcomes(Criteria matchCriteria) {
     MatchOperation matchOperation = match(matchCriteria);
     TypedAggregation<Call> aggregation =
-        anAggregation().append(matchOperation, count(group(CALL_OUTCOME.getFieldName()))).build();
+        anAggregation().append(
+                matchOperation,
+                count(group(CALL_OUTCOME.getFieldName()))
+        ).build();
 
-    return executeSingleAggregation(aggregation, AggregateResultDTO.class);
+    List<AggregateResultDTO> resultDTO = executeAggregation(aggregation, AggregateResultDTO.class);
+    return reduceCounts(resultDTO);
   }
 
   public AggregateResultDTO getCallOutcomesByUser(

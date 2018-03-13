@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Validated
-public class CallAggregationController {
+public class CallAggregationController extends ApiController {
   @Autowired private CallService callService;
 
-  @RequestMapping(method = RequestMethod.GET, value = CallController.USER_CALL + "/callOutcomes")
+  @RequestMapping(method = RequestMethod.GET, value = CallController.USER_CALL + "/outcomes")
   public ResponseEntity<?> averageCallsByUser(
       @PathVariable String userId,
       @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime startDate,
@@ -32,7 +32,7 @@ public class CallAggregationController {
     return new ResponseEntity<AggregateResultDTO>(result, HttpStatus.OK);
   }
 
-  @RequestMapping(method = RequestMethod.GET, value = CallController.COMPANY_CALL + "/callOutcomes")
+  @RequestMapping(method = RequestMethod.GET, value = CallController.COMPANY_CALL + "/outcomes")
   public ResponseEntity<?> averageCallsByCompany(
       @PathVariable String companyId,
       @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime startDate,

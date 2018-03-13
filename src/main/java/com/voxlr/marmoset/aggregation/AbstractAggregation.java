@@ -66,6 +66,7 @@ public abstract class AbstractAggregation<T> {
     }
   }
 
+  public static final String ID = "_id";
   public static final String COUNT = "count";
   public static final String RESULT = "result";
   public static final String TIMESTAMP = "timestamp";
