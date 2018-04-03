@@ -3,8 +3,10 @@ package com.voxlr.marmoset.jms.consumer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 
 @Log4j2
+@Profile("test")
 public abstract class JMSConsumer {
 
   @Autowired private ObjectMapper objectMapper;

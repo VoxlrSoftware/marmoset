@@ -1,5 +1,7 @@
 package com.voxlr.marmoset.service;
 
+import static com.voxlr.marmoset.model.persistence.factory.CallUpdate.anUpdate;
+
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,6 +11,8 @@ import com.voxlr.marmoset.model.persistence.Call;
 import com.voxlr.marmoset.service.CallbackService.Platform;
 import com.voxlr.marmoset.service.domain.CallService;
 import com.voxlr.marmoset.transcription.ProcessedTranscriptionResult;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.extern.log4j.Log4j2;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -21,11 +25,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import static com.voxlr.marmoset.model.persistence.factory.CallUpdate.anUpdate;
 
 @Service
 @Log4j2

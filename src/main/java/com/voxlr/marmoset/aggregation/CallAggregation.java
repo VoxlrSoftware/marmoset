@@ -7,6 +7,7 @@ import com.voxlr.marmoset.aggregation.field.CallAggregationFields;
 import com.voxlr.marmoset.aggregation.field.CallAggregationFields.CallField;
 import com.voxlr.marmoset.exception.InvalidArgumentsException;
 import com.voxlr.marmoset.model.persistence.Call;
+import java.util.function.Function;
 import org.joda.time.DateTime;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,17 +32,18 @@ import static com.voxlr.marmoset.util.ListUtils.listOf;
 import static com.voxlr.marmoset.util.ListUtils.reduce;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 
-public class CallAggregation extends AbstractAggregation<Call> {
-  private final List<AggregationField> REQUIRED_FIELDS =
-      listOf(
-          CallAggregationFields.field(CallField.USER_ID),
-          CallAggregationFields.field(CallField.COMPANY_ID),
-          CallAggregationFields.field(CallField.CREATE_DATE));
-
+public class CallAggregation extends AbstractAggregation<Call, CallField> {
   private final Criteria hasBeenAnalyzed = Criteria.where("hasBeenAnalyzed").is(true);
 
   public CallAggregation(MongoTemplate mongoTemplate) {
-    super(mongoTemplate, Call.class);
+    super(
+        mongoTemplate,
+        Call.class,
+        listOf(
+            CallAggregationFields.field(CallField.USER_ID),
+            CallAggregationFields.field(CallField.COMPANY_ID),
+            CallAggregationFields.field(CallField.CREATE_DATE))
+        );
   }
 
   public static CallAggregation aCallAggregation(MongoTemplate mongoTemplate) {
@@ -49,24 +51,15 @@ public class CallAggregation extends AbstractAggregation<Call> {
   }
 
   public static Criteria getUserConstrained(String userId) {
-    return Criteria.where(CallField.USER_ID.get()).is(userId);
+    return Criteria.where(CallField.USER_ID.getName()).is(userId);
   }
 
   public static Criteria getCompanyConstrained(String companyId) {
-    return Criteria.where(CallField.COMPANY_ID.get()).is(companyId);
+    return Criteria.where(CallField.COMPANY_ID.getName()).is(companyId);
   }
 
-  public List<AggregationField> getFields(List<CallField> fields) {
-    return getFields(fields, true);
-  }
-
-  public List<AggregationField> getFields(List<CallField> fields, boolean includeRequired) {
-    Set<AggregationField> fieldSet = new HashSet<>();
-    if (includeRequired) {
-      fieldSet.addAll(REQUIRED_FIELDS);
-    }
-    fieldSet.addAll(fields.stream().map(CallAggregationFields::field).collect(Collectors.toList()));
-    return new ArrayList<AggregationField>(fieldSet);
+  public Function<CallField, AggregationField> getMapper() {
+    return CallAggregationFields::field;
   }
 
   private Page<CallAggregateDTO> getCalls(

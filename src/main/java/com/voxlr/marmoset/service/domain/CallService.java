@@ -1,19 +1,15 @@
 package com.voxlr.marmoset.service.domain;
 
-import com.voxlr.marmoset.aggregation.AbstractAggregation.RollupCadence;
-import com.voxlr.marmoset.aggregation.dto.AggregateResultDTO;
-import com.voxlr.marmoset.aggregation.dto.CallAggregateDTO;
-import com.voxlr.marmoset.aggregation.dto.RollupResultDTO;
-import com.voxlr.marmoset.aggregation.field.CallAggregationFields.CallField;
-import com.voxlr.marmoset.convert.TypeConverter;
-import com.voxlr.marmoset.exception.ConvertException;
+import static com.voxlr.marmoset.model.persistence.factory.CallUpdate.anUpdate;
+
 import com.voxlr.marmoset.exception.EntityNotFoundException;
 import com.voxlr.marmoset.exception.InvalidArgumentsException;
 import com.voxlr.marmoset.model.AuthUser;
 import com.voxlr.marmoset.model.CallOutcome;
 import com.voxlr.marmoset.model.CallScoped;
-import com.voxlr.marmoset.model.dto.DateConstrained;
-import com.voxlr.marmoset.model.persistence.*;
+import com.voxlr.marmoset.model.persistence.Call;
+import com.voxlr.marmoset.model.persistence.CallRequest;
+import com.voxlr.marmoset.model.persistence.CallStrategy;
 import com.voxlr.marmoset.model.persistence.dto.CallCreateDTO;
 import com.voxlr.marmoset.model.persistence.dto.CallRequestCreateDTO;
 import com.voxlr.marmoset.model.persistence.dto.CallUpdateDTO;
@@ -22,18 +18,11 @@ import com.voxlr.marmoset.repositories.CallRepository;
 import com.voxlr.marmoset.repositories.CallRequestRepository;
 import com.voxlr.marmoset.service.AuthorizationService;
 import com.voxlr.marmoset.service.ValidateableService;
-import com.voxlr.marmoset.util.EnumUtils;
+import java.util.Optional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Optional;
-
-import static com.voxlr.marmoset.model.persistence.factory.CallUpdate.anUpdate;
 
 @Service
 public class CallService extends ValidateableService {
@@ -204,140 +193,5 @@ public class CallService extends ValidateableService {
     }
 
     callRepository.delete(call);
-  }
-
-  public Page<CallAggregateDTO> getCallsByCompanyId(
-      String companyId,
-      AuthUser authUser,
-      DateConstrained dateConstrained,
-      List<String> fields,
-      Pageable pageable)
-      throws Exception {
-    validate(authUser, dateConstrained);
-    Company company = companyService.get(companyId, authUser);
-    List<CallField> callFields = getCallFields(fields);
-    return callRepository.getCallsByCompany(
-        company.getId(),
-        dateConstrained.getStartDate(),
-        dateConstrained.getEndDate(),
-        callFields,
-        pageable);
-  }
-
-  public Page<CallAggregateDTO> getCallsByUserId(
-      String userId,
-      AuthUser authUser,
-      DateConstrained dateConstrained,
-      List<String> fields,
-      Pageable pageable)
-      throws Exception {
-    validate(authUser, dateConstrained);
-    User user = userService.get(userId, authUser);
-    List<CallField> callFields = getCallFields(fields);
-    return callRepository.getCallsByUser(
-        user.getId(),
-        dateConstrained.getStartDate(),
-        dateConstrained.getEndDate(),
-        callFields,
-        pageable);
-  }
-
-  public RollupResultDTO averageCallsByCompanyId(
-      String companyId, AuthUser authUser, DateConstrained dateConstrained, List<String> fields)
-      throws Exception {
-    validate(authUser, dateConstrained);
-    Company company = companyService.get(companyId, authUser);
-    List<CallField> callFields = getCallFields(fields);
-    return callRepository.averageCallFieldByCompany(
-        company.getId(), dateConstrained.getStartDate(), dateConstrained.getEndDate(), callFields);
-  }
-
-  public List<RollupResultDTO> rollupCallsByCompanyId(
-      String companyId,
-      AuthUser authUser,
-      DateConstrained dateConstrained,
-      String cadence,
-      List<String> fields)
-      throws Exception {
-    validate(authUser, dateConstrained);
-    Company company = companyService.get(companyId, authUser);
-    List<CallField> callFields = getCallFields(fields);
-    return callRepository.rollupCallFieldByCompany(
-        company.getId(),
-        dateConstrained.getStartDate(),
-        dateConstrained.getEndDate(),
-        getRollupCadence(cadence),
-        callFields);
-  }
-
-  public RollupResultDTO averageCallsByUserId(
-      String userId, AuthUser authUser, DateConstrained dateConstrained, List<String> fields)
-      throws Exception {
-    validate(authUser, dateConstrained);
-    User user = userService.get(userId, authUser);
-    List<CallField> callFields = getCallFields(fields);
-    return callRepository.averageCallFieldByUser(
-        user.getId(), dateConstrained.getStartDate(), dateConstrained.getEndDate(), callFields);
-  }
-
-  public List<RollupResultDTO> rollupCallsByUserId(
-      String userId,
-      AuthUser authUser,
-      DateConstrained dateConstrained,
-      String cadence,
-      List<String> fields)
-      throws Exception {
-    validate(authUser, dateConstrained);
-    User user = userService.get(userId, authUser);
-    List<CallField> callFields = getCallFields(fields);
-    RollupCadence rollupCadence = getRollupCadence(cadence);
-    return callRepository.rollupCallFieldByUser(
-        user.getId(),
-        dateConstrained.getStartDate(),
-        dateConstrained.getEndDate(),
-        rollupCadence,
-        callFields);
-  }
-
-  public AggregateResultDTO getCallOutcomesByCompany(
-      String companyId, AuthUser authUser, DateConstrained dateConstrained) throws Exception {
-    validate(authUser, dateConstrained);
-    Company company = companyService.get(companyId, authUser);
-    return callRepository.getCallOutcomesByCompany(
-        company.getId(), dateConstrained.getStartDate(), dateConstrained.getEndDate());
-  }
-
-  public AggregateResultDTO getCallOutcomesByUser(
-      String userId, AuthUser authUser, DateConstrained dateConstrained) throws Exception {
-    validate(authUser, dateConstrained);
-    User user = userService.get(userId, authUser);
-    return callRepository.getCallOutcomesByUser(
-        user.getId(), dateConstrained.getStartDate(), dateConstrained.getEndDate());
-  }
-
-  private List<CallField> getCallFields(List<String> fields) throws Exception {
-    if (fields.size() == 1 && fields.get(0).equalsIgnoreCase("true")) {
-      return CallField.getAll();
-    }
-
-    try {
-      return TypeConverter.convertList(fields, CallField.class, EnumUtils::convert);
-    } catch (ConvertException e) {
-      throw new InvalidArgumentsException(
-          "Invalid arguments for param fields: ["
-              + String.join(",", e.getNonConvertableStrings())
-              + "]");
-    }
-  }
-
-  private RollupCadence getRollupCadence(String cadence) throws Exception {
-    try {
-      return TypeConverter.convert(cadence, RollupCadence.class, EnumUtils::convert);
-    } catch (ConvertException e) {
-      throw new InvalidArgumentsException(
-          "Invalid arguments for param fields: ["
-              + String.join(",", e.getNonConvertableStrings())
-              + "]");
-    }
   }
 }

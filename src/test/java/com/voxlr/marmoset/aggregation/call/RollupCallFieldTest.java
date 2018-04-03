@@ -1,21 +1,22 @@
 package com.voxlr.marmoset.aggregation.call;
 
+import static com.voxlr.marmoset.util.ListUtils.listOf;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
+
 import com.voxlr.marmoset.aggregation.AbstractAggregation.RollupCadence;
 import com.voxlr.marmoset.aggregation.CallAggregation;
 import com.voxlr.marmoset.aggregation.dto.RollupResultDTO;
 import com.voxlr.marmoset.aggregation.field.CallAggregationFields.CallField;
 import com.voxlr.marmoset.exception.InvalidArgumentsException;
 import com.voxlr.marmoset.model.persistence.Call;
+import java.util.List;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Test;
 import org.springframework.data.mongodb.core.query.Criteria;
-
-import java.util.List;
-
-import static com.voxlr.marmoset.util.ListUtils.listOf;
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
 
 public class RollupCallFieldTest extends CallAggregationBaseTest {
 
@@ -53,7 +54,7 @@ public class RollupCallFieldTest extends CallAggregationBaseTest {
     assertThat(resultDTO.size(), is(1));
 
     RollupResultDTO result = resultDTO.get(0);
-    assertThat(result.getResult().get(CallField.TOTAL_TALK_TIME.get()), is(6000.0));
+    assertThat(result.getResult().get(CallField.TOTAL_TALK_TIME.getName()), is(6000.0));
     assertThat(result.getTimestamp(), equalTo(aggDate));
   }
 
@@ -79,11 +80,11 @@ public class RollupCallFieldTest extends CallAggregationBaseTest {
 
     RollupResultDTO result1 = resultDTO.get(0);
     assertThat(result1.getTimestamp(), equalTo(aggDate1));
-    assertThat(result1.getResult().get(CallField.TOTAL_TALK_TIME.get()), is(10000.0));
+    assertThat(result1.getResult().get(CallField.TOTAL_TALK_TIME.getName()), is(10000.0));
 
     RollupResultDTO result2 = resultDTO.get(1);
     assertThat(result2.getTimestamp(), equalTo(aggDate2));
-    assertThat(result2.getResult().get(CallField.TOTAL_TALK_TIME.get()), is(2000.0));
+    assertThat(result2.getResult().get(CallField.TOTAL_TALK_TIME.getName()), is(2000.0));
   }
 
   @Test
@@ -108,8 +109,8 @@ public class RollupCallFieldTest extends CallAggregationBaseTest {
     assertThat(resultDTO.size(), is(1));
 
     RollupResultDTO result = resultDTO.get(0);
-    assertThat(result.getResult().get(CallField.TOTAL_TALK_TIME.get()), is(6000.0));
-    assertThat(result.getResult().get(CallField.DURATION.get()), is(6.0));
+    assertThat(result.getResult().get(CallField.TOTAL_TALK_TIME.getName()), is(6000.0));
+    assertThat(result.getResult().get(CallField.DURATION.getName()), is(6.0));
     assertThat(result.getTimestamp(), equalTo(aggDate));
   }
 
@@ -135,7 +136,7 @@ public class RollupCallFieldTest extends CallAggregationBaseTest {
     assertThat(resultDTO.size(), is(1));
 
     RollupResultDTO result = resultDTO.get(0);
-    assertThat(result.getResult().get(CallField.TOTAL_TALK_TIME.get()), is(10000.0));
+    assertThat(result.getResult().get(CallField.TOTAL_TALK_TIME.getName()), is(10000.0));
     assertThat(result.getTimestamp(), equalTo(aggDate1));
   }
 
@@ -162,11 +163,11 @@ public class RollupCallFieldTest extends CallAggregationBaseTest {
 
     RollupResultDTO result1 = resultDTO.get(0);
     assertThat(result1.getTimestamp(), equalTo(aggDate1));
-    assertThat(result1.getResult().get(CallField.TOTAL_TALK_TIME.get()), is(10000.0));
+    assertThat(result1.getResult().get(CallField.TOTAL_TALK_TIME.getName()), is(10000.0));
 
     RollupResultDTO result2 = resultDTO.get(1);
     assertThat(result2.getTimestamp(), equalTo(aggDate2));
-    assertThat(result2.getResult().get(CallField.TOTAL_TALK_TIME.get()), is(2000.0));
+    assertThat(result2.getResult().get(CallField.TOTAL_TALK_TIME.getName()), is(2000.0));
   }
 
   @Test
@@ -193,10 +194,10 @@ public class RollupCallFieldTest extends CallAggregationBaseTest {
     RollupResultDTO result1 = resultDTO.get(0);
     RollupResultDTO result2 = resultDTO.get(1);
     assertThat(result1.getTimestamp(), equalTo(getStartOfMonth(aggDate1)));
-    assertThat(result1.getResult().get(CallField.TOTAL_TALK_TIME.get()), is(10000.0));
+    assertThat(result1.getResult().get(CallField.TOTAL_TALK_TIME.getName()), is(10000.0));
 
     assertThat(result2.getTimestamp(), equalTo(getStartOfMonth(aggDate2)));
-    assertThat(result2.getResult().get(CallField.TOTAL_TALK_TIME.get()), is(2000.0));
+    assertThat(result2.getResult().get(CallField.TOTAL_TALK_TIME.getName()), is(2000.0));
   }
 
   @Test
@@ -223,10 +224,10 @@ public class RollupCallFieldTest extends CallAggregationBaseTest {
     RollupResultDTO result1 = resultDTO.get(0);
     RollupResultDTO result2 = resultDTO.get(1);
     assertThat(result1.getTimestamp(), equalTo(getStartOfYear(aggDate1)));
-    assertThat(result1.getResult().get(CallField.TOTAL_TALK_TIME.get()), is(10000.0));
+    assertThat(result1.getResult().get(CallField.TOTAL_TALK_TIME.getName()), is(10000.0));
 
     assertThat(result2.getTimestamp(), equalTo(getStartOfYear(aggDate2)));
-    assertThat(result2.getResult().get(CallField.TOTAL_TALK_TIME.get()), is(2000.0));
+    assertThat(result2.getResult().get(CallField.TOTAL_TALK_TIME.getName()), is(2000.0));
   }
 
   @Test
@@ -253,7 +254,7 @@ public class RollupCallFieldTest extends CallAggregationBaseTest {
 
     RollupResultDTO result1 = resultDTO.get(0);
     assertThat(result1.getTimestamp(), equalTo(aggDate1));
-    assertThat(result1.getResult().get(CallField.TOTAL_TALK_TIME.get()), is(10000.0));
+    assertThat(result1.getResult().get(CallField.TOTAL_TALK_TIME.getName()), is(10000.0));
   }
 
   @Test
@@ -280,7 +281,7 @@ public class RollupCallFieldTest extends CallAggregationBaseTest {
 
     RollupResultDTO result1 = resultDTO.get(0);
     assertThat(result1.getTimestamp(), equalTo(aggDate1));
-    assertThat(result1.getResult().get(CallField.TOTAL_TALK_TIME.get()), is(10000.0));
+    assertThat(result1.getResult().get(CallField.TOTAL_TALK_TIME.getName()), is(10000.0));
   }
 
   private DateTime getStartOfYear(DateTime dateTime) {

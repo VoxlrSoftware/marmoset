@@ -67,7 +67,7 @@ public class AverageCallFieldTest extends CallAggregationBaseTest {
                 .andOperator(CallAggregation.getDateConstrained(startDate, endDate)),
             listOf(CallField.TOTAL_TALK_TIME));
 
-    assertThat(resultDTO.getResult().get(CallField.TOTAL_TALK_TIME.get()), equalTo(6000.0));
+    assertThat(resultDTO.getResult().get(CallField.TOTAL_TALK_TIME.getName()), equalTo(6000.0));
   }
 
   @Test
@@ -87,7 +87,7 @@ public class AverageCallFieldTest extends CallAggregationBaseTest {
                 .andOperator(CallAggregation.getDateConstrained(startDate, endDate)),
             listOf(CallField.TOTAL_TALK_TIME));
 
-    assertThat(resultDTO.getResult().get(CallField.TOTAL_TALK_TIME.get()), equalTo(10000.0));
+    assertThat(resultDTO.getResult().get(CallField.TOTAL_TALK_TIME.getName()), equalTo(10000.0));
   }
 
   @Test
@@ -160,7 +160,7 @@ public class AverageCallFieldTest extends CallAggregationBaseTest {
         callAggregation.averageCallFieldsByCompany(
             mockCompany.getId(), startDate, endDate, listOf(CallField.TOTAL_TALK_TIME));
 
-    assertThat(resultDTO.getResult().get(CallField.TOTAL_TALK_TIME.get()), equalTo(10000.0));
+    assertThat(resultDTO.getResult().get(CallField.TOTAL_TALK_TIME.getName()), equalTo(10000.0));
   }
 
   @Test
@@ -177,6 +177,6 @@ public class AverageCallFieldTest extends CallAggregationBaseTest {
         callAggregation.averageCallFieldsByUser(
             mockUser.getId(), startDate, endDate, listOf(CallField.TOTAL_TALK_TIME));
 
-    assertThat(resultDTO.getResult().get(CallField.TOTAL_TALK_TIME.get()), equalTo(10000.0));
+    assertThat(resultDTO.getResult().get(CallField.TOTAL_TALK_TIME.getName()), equalTo(10000.0));
   }
 }

@@ -3,8 +3,13 @@ package com.voxlr.marmoset.aggregation;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.voxlr.marmoset.aggregation.dto.TotalCountDTO;
+import com.voxlr.marmoset.aggregation.field.AggFieldName;
+import com.voxlr.marmoset.aggregation.field.AggregationField;
 import com.voxlr.marmoset.model.ConvertibleEnum;
 import com.voxlr.marmoset.model.persistence.AuditModel;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.joda.time.DateTime;
 import org.springframework.data.domain.Page;
@@ -25,8 +30,7 @@ import static com.google.common.collect.Lists.newArrayList;
 import static com.voxlr.marmoset.util.ListUtils.listOf;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 
-@RequiredArgsConstructor
-public abstract class AbstractAggregation<T> {
+public abstract class AbstractAggregation<T, U extends AggFieldName> {
 
   public static enum RollupCadence implements ConvertibleEnum {
     HOURLY("hourly", "%Y-%m-%dT%H:00:00.000%z"),
@@ -77,6 +81,41 @@ public abstract class AbstractAggregation<T> {
 
   private final MongoTemplate mongoTemplate;
   private final Class<T> entityClass;
+  private final List<AggregationField> requiredFields;
+
+  public AbstractAggregation(MongoTemplate mongoTemplate, Class<T> entityClass) {
+    this.mongoTemplate = mongoTemplate;
+    this.entityClass = entityClass;
+    this.requiredFields = newArrayList();
+  }
+
+  public AbstractAggregation(MongoTemplate mongoTemplate, Class<T> entityClass, List<AggregationField> requiredFields) {
+    this.mongoTemplate = mongoTemplate;
+    this.entityClass = entityClass;
+    this.requiredFields = requiredFields;
+  }
+
+  public List<AggregationField> getFields(List<U> fields) {
+    return getFields(fields, true);
+  }
+
+  public List<AggregationField> getFields(List<U> fields, boolean includeRequired) {
+    List<AggregationField> aggFields = fields.stream().map(getMapper()).collect(Collectors.toList());
+    if (includeRequired) {
+      return includeRequiredFields(aggFields);
+    }
+
+    return aggFields;
+  }
+
+  public abstract Function<U, AggregationField> getMapper();
+
+  public List<AggregationField> includeRequiredFields(List<AggregationField> fields) {
+    Set<AggregationField> fieldSet = new HashSet<>();
+    fieldSet.addAll(requiredFields);
+    fieldSet.addAll(fields);
+    return new ArrayList<>(fieldSet);
+  }
 
   public MongoTemplate mongo() {
     return mongoTemplate;

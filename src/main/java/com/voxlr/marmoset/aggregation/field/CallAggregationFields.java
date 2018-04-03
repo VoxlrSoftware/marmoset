@@ -1,20 +1,18 @@
 package com.voxlr.marmoset.aggregation.field;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
-import com.voxlr.marmoset.model.ConvertibleEnum;
-import org.springframework.data.mongodb.core.aggregation.AggregationSpELExpression;
+import static com.voxlr.marmoset.aggregation.field.AggregationOperationModifiers.groupCountModifier;
+import static com.voxlr.marmoset.util.MapUtils.KVPair.entry;
+import static com.voxlr.marmoset.util.MapUtils.mapOf;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import static com.voxlr.marmoset.aggregation.field.AggregationOperationModifiers.groupCountModifier;
-import static com.voxlr.marmoset.util.MapUtils.KVPair.entry;
-import static com.voxlr.marmoset.util.MapUtils.mapOf;
+import lombok.Getter;
+import org.springframework.data.mongodb.core.aggregation.AggregationSpELExpression;
 
 public class CallAggregationFields {
   public static AggregationField field(CallField field) {
@@ -33,7 +31,8 @@ public class CallAggregationFields {
         .collect(Collectors.toMap(Function.identity(), callAggregationFields::get));
   }
 
-  public static enum CallField implements ConvertibleEnum {
+  @Getter
+  public enum CallField implements AggFieldName {
     CREATE_DATE("createDate"),
     CALL_OUTCOME("callOutcome"),
     COMPANY_ID("companyId"),
@@ -53,11 +52,11 @@ public class CallAggregationFields {
       callFields =
           Arrays.asList(CallField.values())
               .stream()
-              .collect(Collectors.toMap(CallField::get, Function.identity()));
+              .collect(Collectors.toMap(CallField::getName, Function.identity()));
     }
 
     public static List<CallField> getAll() {
-      return new ArrayList<CallField>(callFields.values());
+      return new ArrayList<>(callFields.values());
     }
 
     @JsonCreator
@@ -67,13 +66,8 @@ public class CallAggregationFields {
 
     private String name;
 
-    private CallField(String name) {
+    CallField(String name) {
       this.name = name;
-    }
-
-    @JsonValue
-    public String get() {
-      return this.name;
     }
   }
 
@@ -81,49 +75,49 @@ public class CallAggregationFields {
       mapOf(
           entry(
               CallField.CREATE_DATE,
-              AggregationField.builder(CallField.CREATE_DATE.get()).ableToRollup(false).build()),
+              AggregationField.builder(CallField.CREATE_DATE.getName()).ableToRollup(false).build()),
           entry(
               CallField.CALL_OUTCOME,
-              AggregationField.builder(CallField.CALL_OUTCOME.get()).ableToRollup(false).build()),
+              AggregationField.builder(CallField.CALL_OUTCOME.getName()).ableToRollup(false).build()),
           entry(
               CallField.COMPANY_ID,
-              AggregationField.builder(CallField.COMPANY_ID.get()).ableToRollup(false).build()),
+              AggregationField.builder(CallField.COMPANY_ID.getName()).ableToRollup(false).build()),
           entry(
               CallField.USER_ID,
-              AggregationField.builder(CallField.USER_ID.get()).ableToRollup(false).build()),
+              AggregationField.builder(CallField.USER_ID.getName()).ableToRollup(false).build()),
           entry(
               CallField.CALL_STRATEGY_NAME,
-              AggregationField.builder(CallField.CALL_STRATEGY_NAME.get())
+              AggregationField.builder(CallField.CALL_STRATEGY_NAME.getName())
                   .pathName("callStrategy.name")
                   .ableToRollup(false)
                   .build()),
           entry(
               CallField.TOTAL_TALK_TIME,
-              AggregationField.builder(CallField.TOTAL_TALK_TIME.get())
+              AggregationField.builder(CallField.TOTAL_TALK_TIME.getName())
                   .pathName("statistics.totalTalkTime")
                   .defaultValue(0)
                   .build()),
           entry(
               CallField.DURATION,
-              AggregationField.builder(CallField.DURATION.get())
+              AggregationField.builder(CallField.DURATION.getName())
                   .pathName("statistics.duration")
                   .defaultValue(0)
                   .build()),
           entry(
               CallField.DETECTED_PHRASE_COUNT,
-              AggregationField.builder(CallField.DETECTED_PHRASE_COUNT.get())
+              AggregationField.builder(CallField.DETECTED_PHRASE_COUNT.getName())
                   .pathName("analysis.detectedPhraseCount")
                   .defaultValue(0)
                   .build()),
           entry(
               CallField.DETECTION_RATIO,
-              AggregationField.builder(CallField.DETECTION_RATIO.get())
+              AggregationField.builder(CallField.DETECTION_RATIO.getName())
                   .pathName("analysis.detectionRatio")
                   .defaultValue(0.0)
                   .build()),
           entry(
               CallField.CUSTOMER_TALK_RATIO,
-              AggregationField.builder(CallField.CUSTOMER_TALK_RATIO.get())
+              AggregationField.builder(CallField.CUSTOMER_TALK_RATIO.getName())
                   .projectOperationModifier(
                       (project, field) ->
                           project.andExpression(
@@ -132,7 +126,7 @@ public class CallAggregationFields {
                   .build()),
           entry(
               CallField.CONVERSATION,
-              AggregationField.builder(CallField.CONVERSATION.get())
+              AggregationField.builder(CallField.CONVERSATION.getName())
                   .projectOperationModifier(
                       (project, field) ->
                           project.andExpression(
@@ -146,7 +140,7 @@ public class CallAggregationFields {
                   .build()),
           entry(
               CallField.TOTAL_COUNT,
-              AggregationField.builder(CallField.TOTAL_COUNT.get())
+              AggregationField.builder(CallField.TOTAL_COUNT.getName())
                   .pathName("analysis.detectionRatio")
                   .projectable(false)
                   .groupOperationModifier(groupCountModifier)

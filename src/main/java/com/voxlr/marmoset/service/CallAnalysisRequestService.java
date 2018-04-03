@@ -1,5 +1,7 @@
 package com.voxlr.marmoset.service;
 
+import static com.voxlr.marmoset.util.PathUtils.combinePaths;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.voxlr.marmoset.config.properties.AppProperties;
 import com.voxlr.marmoset.jms.ProducerService;
@@ -21,8 +23,6 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import static com.voxlr.marmoset.util.PathUtils.combinePaths;
 
 @Service
 @Log4j2

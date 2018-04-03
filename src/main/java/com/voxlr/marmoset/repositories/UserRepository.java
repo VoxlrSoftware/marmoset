@@ -5,7 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.Query;
 
-public interface UserRepository extends EntityRepository<User> {
+public interface UserRepository extends EntityRepository<User>, CustomizedUserRepository {
   @Query(value = "{'isInactive': false, 'email': ?0}")
   User findByEmail(String email);
 

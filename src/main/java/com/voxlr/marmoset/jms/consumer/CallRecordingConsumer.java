@@ -9,6 +9,7 @@ import com.voxlr.marmoset.service.TranscriptionService;
 import com.voxlr.marmoset.service.domain.CallService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,7 @@ import static com.voxlr.marmoset.model.persistence.factory.CallUpdate.anUpdate;
 
 @Service
 @Log4j2
+@Profile("test")
 public class CallRecordingConsumer extends JMSConsumer {
 
   @Autowired private RecordingService recordingService;
