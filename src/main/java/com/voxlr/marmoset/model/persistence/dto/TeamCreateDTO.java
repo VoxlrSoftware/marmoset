@@ -1,18 +1,19 @@
 package com.voxlr.marmoset.model.persistence.dto;
 
 import com.voxlr.marmoset.validation.constraint.CompanyExistsConstraint;
+import javax.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.validator.constraints.NotBlank;
 
 @NoArgsConstructor
 @Builder
 @Getter
 @Setter
 public class TeamCreateDTO {
-  @NotBlank private String name;
+  @NotBlank
+  private String name;
 
   @CompanyExistsConstraint private String companyId;
 

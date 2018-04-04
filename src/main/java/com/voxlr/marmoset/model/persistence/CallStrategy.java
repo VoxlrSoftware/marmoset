@@ -32,7 +32,7 @@ public class CallStrategy extends AuditModel {
 
   public static CallStrategy createNew() {
     CallStrategy callStrategy = new CallStrategy();
-    callStrategy.setId(new ObjectId().toHexString());
+    callStrategy.setId(new ObjectId());
     callStrategy.setCreateDate(new DateTime());
     return callStrategy;
   }

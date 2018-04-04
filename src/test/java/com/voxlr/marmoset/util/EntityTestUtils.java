@@ -6,6 +6,7 @@ import com.voxlr.marmoset.model.persistence.*;
 import com.voxlr.marmoset.model.persistence.Company.CompanyBuilder;
 import com.voxlr.marmoset.model.persistence.Team.TeamBuilder;
 import com.voxlr.marmoset.model.persistence.User.UserBuilder;
+import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 
 import java.util.List;
@@ -13,19 +14,16 @@ import java.util.UUID;
 import java.util.stream.IntStream;
 
 import static com.voxlr.marmoset.util.ListUtils.listOf;
+import static com.voxlr.marmoset.util.MatcherUtils.anyObjectId;
 
 public class EntityTestUtils {
-  public static String generateId() {
-    return UUID.randomUUID().toString();
-  }
-
   public static <T extends Entity> T createEntity(T entity) {
-    entity.setId(generateId());
+    entity.setId(anyObjectId());
     return entity;
   }
 
   public static <T extends AuditModel> T createAuditableEntity(T entity) {
-    entity.setId(generateId());
+    entity.setId(anyObjectId());
     entity.setCreateDate(new DateTime());
     entity.setLastModified(new DateTime());
     return entity;
@@ -50,19 +48,19 @@ public class EntityTestUtils {
     return createAuditableEntity(builder.build());
   }
 
-  public static Team createTeam(String companyId, String name) {
+  public static Team createTeam(ObjectId companyId, String name) {
     TeamBuilder builder = Team.builder().companyId(companyId).name(name);
 
     return createAuditableEntity(builder.build());
   }
 
-  public static User createUser(String companyId, String teamId) {
+  public static User createUser(ObjectId companyId, ObjectId teamId) {
     UserBuilder builder = User.builder().companyId(companyId).teamId(teamId);
 
     return createAuditableEntity(builder.build());
   }
 
-  public static Call createCall(String userId) {
+  public static Call createCall(ObjectId userId) {
     return createAuditableEntity(Call.builder().userId(userId).build());
   }
 

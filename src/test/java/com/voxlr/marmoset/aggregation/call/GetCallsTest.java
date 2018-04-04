@@ -3,12 +3,14 @@ package com.voxlr.marmoset.aggregation.call;
 import com.voxlr.marmoset.aggregation.dto.CallAggregateDTO;
 import com.voxlr.marmoset.aggregation.field.CallAggregationFields;
 import com.voxlr.marmoset.model.persistence.Call;
+import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
 import static com.voxlr.marmoset.util.AssertUtils.containsMatch;
+import static com.voxlr.marmoset.util.MatcherUtils.anyObjectId;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -136,7 +138,7 @@ public class GetCallsTest extends CallAggregationBaseTest {
     DateTime endDate = new DateTime().minusDays(1);
     Call withinRange = createCall(startDate.plusDays(1));
     Call withinRange2 = createCall(startDate.plusDays(2));
-    withinRange2.setCompanyId("123");
+    withinRange2.setCompanyId(anyObjectId());
 
     persistenceUtils.save(withinRange, withinRange2);
 
@@ -274,7 +276,7 @@ public class GetCallsTest extends CallAggregationBaseTest {
     DateTime endDate = new DateTime().minusDays(1);
     Call withinRange = createCall(startDate.plusDays(1));
     Call withinRange2 = createCall(startDate.plusDays(2));
-    withinRange2.setUserId("123");
+    withinRange2.setUserId(anyObjectId());
 
     persistenceUtils.save(withinRange, withinRange2);
 

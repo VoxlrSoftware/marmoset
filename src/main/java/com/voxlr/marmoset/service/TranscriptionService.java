@@ -43,7 +43,7 @@ public class TranscriptionService {
   public String transcribeCall(Call call) {
     String recordingPath = call.getRecordingUrl();
     if (recordingPath != null) {
-      return sendForTranscription(call.getId(), recordingPath);
+      return sendForTranscription(call.getId().toHexString(), recordingPath);
     }
 
     return null;
@@ -89,7 +89,7 @@ public class TranscriptionService {
 
         ObjectMetadata metadata = new ObjectMetadata();
         Map<String, String> userMetadata = new HashMap<String, String>();
-        userMetadata.put("callId", call.getId());
+        userMetadata.put("callId", call.getId().toHexString());
         userMetadata.put("transcriptionId", result.getEntityId());
         userMetadata.put("platform", platform.getName());
         metadata.setUserMetadata(userMetadata);

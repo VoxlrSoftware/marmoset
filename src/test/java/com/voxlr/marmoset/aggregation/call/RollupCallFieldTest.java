@@ -1,6 +1,7 @@
 package com.voxlr.marmoset.aggregation.call;
 
 import static com.voxlr.marmoset.util.ListUtils.listOf;
+import static com.voxlr.marmoset.util.MatcherUtils.anyObjectId;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -239,7 +240,7 @@ public class RollupCallFieldTest extends CallAggregationBaseTest {
 
     Call call1 = createCall(aggDate1);
     Call call2 = createCall(aggDate2);
-    call2.setCompanyId("123");
+    call2.setCompanyId(anyObjectId());
     call2.getStatistics().setTotalTalkTime(2000);
     persistenceUtils.save(call1, call2);
 
@@ -266,7 +267,7 @@ public class RollupCallFieldTest extends CallAggregationBaseTest {
 
     Call call1 = createCall(aggDate1);
     Call call2 = createCall(aggDate2);
-    call2.setUserId("123");
+    call2.setUserId(anyObjectId());
     call2.getStatistics().setTotalTalkTime(2000);
     persistenceUtils.save(call1, call2);
 

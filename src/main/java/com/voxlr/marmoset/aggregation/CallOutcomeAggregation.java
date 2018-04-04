@@ -11,6 +11,7 @@ import com.voxlr.marmoset.aggregation.field.CallAggregationFields.CallField;
 import com.voxlr.marmoset.model.persistence.Call;
 import java.util.List;
 import java.util.function.Function;
+import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.MatchOperation;
@@ -45,7 +46,7 @@ public class CallOutcomeAggregation extends AbstractAggregation<Call, CallField>
   }
 
   public AggregateResultDTO getCallOutcomesByUser(
-      String userId, DateTime startDate, DateTime endDate) {
+      ObjectId userId, DateTime startDate, DateTime endDate) {
     Criteria matchCriteria =
         CallAggregation.getUserConstrained(userId)
             .andOperator(getDateConstrained(startDate, endDate));
@@ -54,7 +55,7 @@ public class CallOutcomeAggregation extends AbstractAggregation<Call, CallField>
   }
 
   public AggregateResultDTO getCallOutcomesByCompany(
-      String companyId, DateTime startDate, DateTime endDate) {
+      ObjectId companyId, DateTime startDate, DateTime endDate) {
     Criteria matchCriteria =
         CallAggregation.getCompanyConstrained(companyId)
             .andOperator(getDateConstrained(startDate, endDate));

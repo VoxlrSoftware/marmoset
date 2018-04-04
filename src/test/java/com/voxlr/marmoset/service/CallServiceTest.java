@@ -10,6 +10,7 @@ import static com.voxlr.marmoset.util.EntityTestUtils.createCompany;
 import static com.voxlr.marmoset.util.EntityTestUtils.createTeam;
 import static com.voxlr.marmoset.util.EntityTestUtils.createUser;
 import static com.voxlr.marmoset.util.ListUtils.listOf;
+import static com.voxlr.marmoset.util.MatcherUtils.anyObjectId;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -56,7 +57,7 @@ public class CallServiceTest extends DataTest {
     wrapAssertException(
         () -> {
           AuthUser authUser = createAuthUser();
-          Call call = callService.get("123", authUser);
+          Call call = callService.get(anyObjectId(), authUser);
         },
         EntityNotFoundException.class);
   }
@@ -161,7 +162,7 @@ public class CallServiceTest extends DataTest {
 
   @Test
   public void updateShouldThrowExceptionIfEntityDoesNotExist() throws Exception {
-    CallUpdateDTO callUpdateDTO = CallUpdateDTO.builder().id("123").callOutcome(VOICEMAIL).build();
+    CallUpdateDTO callUpdateDTO = CallUpdateDTO.builder().id(anyObjectId()).callOutcome(VOICEMAIL).build();
     wrapAssertException(
         () -> {
           AuthUser authUser = createAuthUser();
@@ -201,11 +202,11 @@ public class CallServiceTest extends DataTest {
     List<AuthUser> authUsers =
         listOf(
             createAuthUser(UserRole.ADMIN),
-            createAuthUser(UserRole.COMPANY_ADMIN).setCompanyId("123"),
+            createAuthUser(UserRole.COMPANY_ADMIN).setCompanyId(anyObjectId()),
             createAuthUser(UserRole.COMPANY_READONLY).setCompanyId(mockCompany.getId()),
-            createAuthUser(UserRole.TEAM_ADMIN).setTeamId("123"),
+            createAuthUser(UserRole.TEAM_ADMIN).setTeamId(anyObjectId()),
             createAuthUser(UserRole.TEAM_READONLY).setTeamId(mockCompany.getId()),
-            createAuthUser(UserRole.MEMBER).setId("123"));
+            createAuthUser(UserRole.MEMBER).setId(anyObjectId()));
 
     CallUpdateDTO callUpdateDTO =
         CallUpdateDTO.builder().id(mockCall.getId()).callOutcome(VOICEMAIL).build();
@@ -228,7 +229,7 @@ public class CallServiceTest extends DataTest {
     wrapAssertException(
         () -> {
           AuthUser authUser = createAuthUser();
-          callService.delete("123", authUser);
+          callService.delete(anyObjectId(), authUser);
         },
         EntityNotFoundException.class);
   }
@@ -259,11 +260,11 @@ public class CallServiceTest extends DataTest {
     List<AuthUser> authUsers =
         listOf(
             createAuthUser(UserRole.ADMIN),
-            createAuthUser(UserRole.COMPANY_ADMIN).setCompanyId("123"),
+            createAuthUser(UserRole.COMPANY_ADMIN).setCompanyId(anyObjectId()),
             createAuthUser(UserRole.COMPANY_READONLY).setCompanyId(mockCompany.getId()),
-            createAuthUser(UserRole.TEAM_ADMIN).setTeamId("123"),
+            createAuthUser(UserRole.TEAM_ADMIN).setTeamId(anyObjectId()),
             createAuthUser(UserRole.TEAM_READONLY).setTeamId(mockCompany.getId()),
-            createAuthUser(UserRole.MEMBER).setId("123"));
+            createAuthUser(UserRole.MEMBER).setId(anyObjectId()));
 
     persistenceUtils.save(mockCall);
 

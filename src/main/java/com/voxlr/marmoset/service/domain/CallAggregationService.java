@@ -12,6 +12,7 @@ import com.voxlr.marmoset.model.persistence.User;
 import com.voxlr.marmoset.repositories.CallRepository;
 import com.voxlr.marmoset.service.AggregationService;
 import java.util.List;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,7 +26,7 @@ public class CallAggregationService extends AggregationService<CallField> {
   @Autowired private CallRepository callRepository;
 
   public Page<CallAggregateDTO> getCallsByCompanyId(
-      String companyId,
+      ObjectId companyId,
       AuthUser authUser,
       DateConstrained dateConstrained,
       List<String> fields,
@@ -43,7 +44,7 @@ public class CallAggregationService extends AggregationService<CallField> {
   }
 
   public Page<CallAggregateDTO> getCallsByUserId(
-      String userId,
+      ObjectId userId,
       AuthUser authUser,
       DateConstrained dateConstrained,
       List<String> fields,
@@ -61,7 +62,7 @@ public class CallAggregationService extends AggregationService<CallField> {
   }
 
   public RollupResultDTO averageCallsByCompanyId(
-      String companyId, AuthUser authUser, DateConstrained dateConstrained, List<String> fields)
+      ObjectId companyId, AuthUser authUser, DateConstrained dateConstrained, List<String> fields)
       throws Exception {
     validate(authUser, dateConstrained);
     Company company = companyService.get(companyId, authUser);
@@ -71,7 +72,7 @@ public class CallAggregationService extends AggregationService<CallField> {
   }
 
   public List<RollupResultDTO> rollupCallsByCompanyId(
-      String companyId,
+      ObjectId companyId,
       AuthUser authUser,
       DateConstrained dateConstrained,
       String cadence,
@@ -89,7 +90,7 @@ public class CallAggregationService extends AggregationService<CallField> {
   }
 
   public RollupResultDTO averageCallsByUserId(
-      String userId, AuthUser authUser, DateConstrained dateConstrained, List<String> fields)
+      ObjectId userId, AuthUser authUser, DateConstrained dateConstrained, List<String> fields)
       throws Exception {
     validate(authUser, dateConstrained);
     User user = userService.get(userId, authUser);
@@ -99,7 +100,7 @@ public class CallAggregationService extends AggregationService<CallField> {
   }
 
   public List<RollupResultDTO> rollupCallsByUserId(
-      String userId,
+      ObjectId userId,
       AuthUser authUser,
       DateConstrained dateConstrained,
       String cadence,
@@ -118,7 +119,7 @@ public class CallAggregationService extends AggregationService<CallField> {
   }
 
   public AggregateResultDTO getCallOutcomesByCompany(
-      String companyId, AuthUser authUser, DateConstrained dateConstrained) throws Exception {
+      ObjectId companyId, AuthUser authUser, DateConstrained dateConstrained) throws Exception {
     validate(authUser, dateConstrained);
     Company company = companyService.get(companyId, authUser);
     return callRepository.getCallOutcomesByCompany(
@@ -126,7 +127,7 @@ public class CallAggregationService extends AggregationService<CallField> {
   }
 
   public AggregateResultDTO getCallOutcomesByUser(
-      String userId, AuthUser authUser, DateConstrained dateConstrained) throws Exception {
+      ObjectId userId, AuthUser authUser, DateConstrained dateConstrained) throws Exception {
     validate(authUser, dateConstrained);
     User user = userService.get(userId, authUser);
     return callRepository.getCallOutcomesByUser(

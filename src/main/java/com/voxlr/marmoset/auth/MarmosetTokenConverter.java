@@ -1,6 +1,7 @@
 package com.voxlr.marmoset.auth;
 
 import com.voxlr.marmoset.model.AuthUser;
+import org.bson.types.ObjectId;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
@@ -22,9 +23,9 @@ public class MarmosetTokenConverter extends DefaultUserAuthenticationConverter {
             authentication.getPrincipal().toString(),
             authentication.getCredentials().toString(),
             authentication.getAuthorities());
-    user.setCompanyId(map.get("companyId").toString());
-    user.setTeamId(map.get("teamId").toString());
-    user.setId(map.get("id").toString());
+    user.setCompanyId(new ObjectId(map.get("companyId").toString()));
+    user.setTeamId(new ObjectId(map.get("teamId").toString()));
+    user.setId(new ObjectId(map.get("id").toString()));
     user.setRoleString(map.get("role").toString());
 
     return new UsernamePasswordAuthenticationToken(

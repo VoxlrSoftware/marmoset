@@ -7,6 +7,7 @@ import com.voxlr.marmoset.auth.UserRole;
 import com.voxlr.marmoset.model.persistence.Company;
 import com.voxlr.marmoset.model.persistence.Team;
 import com.voxlr.marmoset.model.persistence.User;
+import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -19,8 +20,8 @@ public class DBM_001_InitializeVoxlr {
 
   private final BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
-  private String companyId;
-  private String teamId;
+  private ObjectId companyId;
+  private ObjectId teamId;
 
   @ChangeSet(order = "0001", id = "createAdminCompany", author = "mgagliardo", runAlways = true)
   public void createAdminCompany(MongoTemplate mongoTemplate) throws Exception {
@@ -32,7 +33,7 @@ public class DBM_001_InitializeVoxlr {
       throw new Exception("Unable to create admin company");
     }
 
-    companyId = mongoTemplate.findOne(query, Company.class).getId().toString();
+    companyId = mongoTemplate.findOne(query, Company.class).getId();
   }
 
   @ChangeSet(order = "0002", id = "createAdminTeam", author = "mgagliardo", runAlways = true)
@@ -42,12 +43,12 @@ public class DBM_001_InitializeVoxlr {
     UpdateResult result =
         mongoTemplate.upsert(
             query,
-            new Update().set("companyId", "companyId").set("name", "VoxlrAdmin"),
+            new Update().set("companyId", companyId).set("name", "VoxlrAdmin"),
             Team.class);
     if (!(result.getUpsertedId() != null || result.getMatchedCount() == 1)) {
       throw new Exception("Unable to create admin team");
     }
-    teamId = mongoTemplate.findOne(query, Team.class).getId().toString();
+    teamId = mongoTemplate.findOne(query, Team.class).getId();
   }
 
   @ChangeSet(order = "0003", id = "createSuperAdmin", author = "mgagliardo", runAlways = true)

@@ -1,7 +1,9 @@
 package com.voxlr.marmoset.model;
 
+import org.bson.types.ObjectId;
+
 public interface CallScoped {
-  String getId();
+  ObjectId getId();
 
   String getCallSid();
 }

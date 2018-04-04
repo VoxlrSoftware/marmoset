@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 import static com.voxlr.marmoset.util.AssertUtils.wrapAssertException;
 import static com.voxlr.marmoset.util.AssertUtils.wrapNoException;
 import static com.voxlr.marmoset.util.ListUtils.listOf;
+import static com.voxlr.marmoset.util.MatcherUtils.anyObjectId;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsMapContaining.hasKey;
@@ -153,7 +154,7 @@ public class AverageCallFieldTest extends CallAggregationBaseTest {
 
     Call call1 = createCall(startDate.plusDays(1));
     Call call2 = createCall(startDate.plusDays(1));
-    call2.setCompanyId("123");
+    call2.setCompanyId(anyObjectId());
     persistenceUtils.save(call1, call2);
 
     RollupResultDTO resultDTO =
@@ -170,7 +171,7 @@ public class AverageCallFieldTest extends CallAggregationBaseTest {
 
     Call call1 = createCall(startDate.plusDays(1));
     Call call2 = createCall(startDate.plusDays(1));
-    call2.setUserId("123");
+    call2.setUserId(anyObjectId());
     persistenceUtils.save(call1, call2);
 
     RollupResultDTO resultDTO =

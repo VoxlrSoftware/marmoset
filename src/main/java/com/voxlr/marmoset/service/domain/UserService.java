@@ -9,6 +9,7 @@ import com.voxlr.marmoset.model.persistence.dto.UserUpdateDTO;
 import com.voxlr.marmoset.repositories.UserRepository;
 import com.voxlr.marmoset.service.AuthorizationService;
 import com.voxlr.marmoset.service.ValidateableService;
+import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -35,7 +36,7 @@ public class UserService extends ValidateableService {
     return userRepository.findEmailByEmail(email) == null;
   }
 
-  public User getInternal(String id) throws EntityNotFoundException {
+  public User getInternal(ObjectId id) throws EntityNotFoundException {
     Optional<User> user = userRepository.findById(id);
 
     if (!user.isPresent()) {
@@ -49,7 +50,7 @@ public class UserService extends ValidateableService {
     return get(authUser.getId(), authUser);
   }
 
-  public User get(String id, AuthUser authUser) throws EntityNotFoundException {
+  public User get(ObjectId id, AuthUser authUser) throws EntityNotFoundException {
     User user = getInternal(id);
 
     if (!authorizationService.canRead(authUser, user)) {
@@ -59,7 +60,7 @@ public class UserService extends ValidateableService {
     return user;
   }
 
-  public Page<User> getUsersByCompany(String companyId, Pageable pageable, AuthUser authUser)
+  public Page<User> getUsersByCompany(ObjectId companyId, Pageable pageable, AuthUser authUser)
       throws EntityNotFoundException {
     Company company = companyService.get(companyId, authUser);
 
@@ -113,7 +114,7 @@ public class UserService extends ValidateableService {
     return user;
   }
 
-  public User delete(String id, AuthUser authUser) throws EntityNotFoundException {
+  public User delete(ObjectId id, AuthUser authUser) throws EntityNotFoundException {
     User user = getInternal(id);
 
     if (!authorizationService.canWrite(authUser, user)) {

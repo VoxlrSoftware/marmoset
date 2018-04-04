@@ -31,13 +31,11 @@ import javax.json.JsonObject;
 
 import static com.voxlr.marmoset.util.EntityTestUtils.createAuditableEntity;
 import static com.voxlr.marmoset.util.JsonUtils.jsonFromString;
+import static com.voxlr.marmoset.util.MatcherUtils.anyObjectId;
 import static com.voxlr.marmoset.util.matcher.ContainsKeyMatcher.containsKey;
 import static javax.json.Json.createObjectBuilder;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -69,8 +67,8 @@ public class UserControllerTest extends ControllerTest {
             User.builder()
                 .firstName("First")
                 .lastName("Last")
-                .companyId("123")
-                .teamId("345")
+                .companyId(anyObjectId())
+                .teamId(anyObjectId())
                 .email("first.last@email.com")
                 .build());
     expected = mapper.writeValueAsString(modelMapper.map(mockUser, UserDTO.class));
@@ -78,7 +76,7 @@ public class UserControllerTest extends ControllerTest {
 
   @Test
   public void getShouldReturnExceptionIfEntityDoesNotExist() throws Exception {
-    when(userService.get(anyString(), any(AuthUser.class)))
+    when(userService.get(anyObjectId(), any(AuthUser.class)))
         .thenAnswer(
             new Answer<User>() {
 
@@ -116,8 +114,8 @@ public class UserControllerTest extends ControllerTest {
   public void postShouldReturnValidUser() throws Exception {
     when(userService.create(any(UserCreateDTO.class), any(AuthUser.class))).thenReturn(mockUser);
     when(userService.validateUniqueEmail(anyString())).thenReturn(true);
-    when(companyService.validateExists(anyString())).thenReturn(true);
-    when(teamService.validateExists(anyString())).thenReturn(true);
+    when(companyService.validateExists(anyObjectId())).thenReturn(true);
+    when(teamService.validateExists(anyObjectId())).thenReturn(true);
 
     MvcResult result = doPostWithUser();
 
@@ -130,8 +128,8 @@ public class UserControllerTest extends ControllerTest {
   public void postShouldReturnErrorWhenEmailIsNotUnique() throws Exception {
     when(userService.create(any(UserCreateDTO.class), any(AuthUser.class))).thenReturn(mockUser);
     when(userService.validateUniqueEmail(anyString())).thenReturn(false);
-    when(companyService.validateExists(anyString())).thenReturn(true);
-    when(teamService.validateExists(anyString())).thenReturn(true);
+    when(companyService.validateExists(anyObjectId())).thenReturn(true);
+    when(teamService.validateExists(anyObjectId())).thenReturn(true);
 
     MvcResult result = doPostWithUser();
 
@@ -148,8 +146,8 @@ public class UserControllerTest extends ControllerTest {
   public void postShouldReturnErrorWhenCompanyDoesNotExist() throws Exception {
     when(userService.create(any(UserCreateDTO.class), any(AuthUser.class))).thenReturn(mockUser);
     when(userService.validateUniqueEmail(anyString())).thenReturn(true);
-    when(companyService.validateExists(anyString())).thenReturn(false);
-    when(teamService.validateExists(anyString())).thenReturn(true);
+    when(companyService.validateExists(anyObjectId())).thenReturn(false);
+    when(teamService.validateExists(anyObjectId())).thenReturn(true);
 
     MvcResult result = doPostWithUser();
 
@@ -167,8 +165,8 @@ public class UserControllerTest extends ControllerTest {
   public void postShouldReturnErrorWhenTeamDoesNotExist() throws Exception {
     when(userService.create(any(UserCreateDTO.class), any(AuthUser.class))).thenReturn(mockUser);
     when(userService.validateUniqueEmail(anyString())).thenReturn(true);
-    when(companyService.validateExists(anyString())).thenReturn(true);
-    when(teamService.validateExists(anyString())).thenReturn(false);
+    when(companyService.validateExists(anyObjectId())).thenReturn(true);
+    when(teamService.validateExists(anyObjectId())).thenReturn(false);
 
     MvcResult result = doPostWithUser();
 
@@ -243,8 +241,8 @@ public class UserControllerTest extends ControllerTest {
   private MvcResult doPostWithUser() throws Exception {
     String body =
         createObjectBuilder()
-            .add("companyId", mockUser.getCompanyId())
-            .add("teamId", mockUser.getTeamId())
+            .add("companyId", mockUser.getCompanyId().toHexString())
+            .add("teamId", mockUser.getTeamId().toHexString())
             .add("firstName", mockUser.getFirstName())
             .add("lastName", mockUser.getLastName())
             .add("password", "Password")

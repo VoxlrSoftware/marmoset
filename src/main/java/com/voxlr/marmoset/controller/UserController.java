@@ -10,6 +10,7 @@ import com.voxlr.marmoset.model.persistence.dto.UserDTO;
 import com.voxlr.marmoset.model.persistence.dto.UserUpdateDTO;
 import com.voxlr.marmoset.service.domain.UserService;
 import com.voxlr.marmoset.util.MapperUtils;
+import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -38,7 +39,7 @@ public class UserController extends ApiController {
   //    @Autowired private JavaMailSender emailSender;
 
   @RequestMapping(method = RequestMethod.GET, value = USER + "/{id}")
-  public ResponseEntity<?> get(@PathVariable String id, @AuthenticationPrincipal AuthUser authUser)
+  public ResponseEntity<?> get(@PathVariable ObjectId id, @AuthenticationPrincipal AuthUser authUser)
       throws EntityNotFoundException {
     User user = userService.get(id, authUser);
     UserDTO userDTO = modelMapper.map(user, UserDTO.class);
@@ -47,7 +48,7 @@ public class UserController extends ApiController {
 
   @RequestMapping(method = RequestMethod.GET, value = COMPANY_USER)
   public ResponseEntity<?> getUsersByCompany(
-      @PathVariable String companyId, Pageable pageable, @AuthenticationPrincipal AuthUser authUser)
+      @PathVariable ObjectId companyId, Pageable pageable, @AuthenticationPrincipal AuthUser authUser)
       throws EntityNotFoundException {
     Pageable pageContext = page(pageable);
     Page<User> users = userService.getUsersByCompany(companyId, pageContext, authUser);
@@ -68,7 +69,7 @@ public class UserController extends ApiController {
 
   @RequestMapping(method = RequestMethod.PUT, value = USER + "/{id}")
   public ResponseEntity<?> update(
-      @PathVariable String id,
+      @PathVariable ObjectId id,
       @Valid @RequestBody UserUpdateDTO userUpdateDTO,
       @AuthenticationPrincipal AuthUser authUser)
       throws Exception {
@@ -81,7 +82,7 @@ public class UserController extends ApiController {
 
   @RequestMapping(method = RequestMethod.DELETE, value = USER + "/{id}")
   public ResponseEntity<?> delete(
-      @PathVariable String id, @AuthenticationPrincipal AuthUser authUser)
+      @PathVariable ObjectId id, @AuthenticationPrincipal AuthUser authUser)
       throws EntityNotFoundException {
     userService.delete(id, authUser);
 

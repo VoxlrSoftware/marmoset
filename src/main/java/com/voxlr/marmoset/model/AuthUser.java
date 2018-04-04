@@ -6,6 +6,7 @@ import com.voxlr.marmoset.model.persistence.User;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.bson.types.ObjectId;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -19,9 +20,9 @@ import java.util.stream.Collectors;
 public class AuthUser extends org.springframework.security.core.userdetails.User
     implements TeamScopedEntity {
 
-  private String id;
-  private String teamId;
-  private String companyId;
+  private ObjectId id;
+  private ObjectId teamId;
+  private ObjectId companyId;
   private UserRole role;
   private Set<Authority> authoritySet;
 

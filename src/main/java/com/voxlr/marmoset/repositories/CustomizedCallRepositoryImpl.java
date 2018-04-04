@@ -7,6 +7,7 @@ import com.voxlr.marmoset.aggregation.dto.CallAggregateDTO;
 import com.voxlr.marmoset.aggregation.dto.RollupResultDTO;
 import com.voxlr.marmoset.aggregation.field.CallAggregationFields.CallField;
 import com.voxlr.marmoset.exception.InvalidArgumentsException;
+import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -23,7 +24,7 @@ public class CustomizedCallRepositoryImpl implements CustomizedCallRepository {
 
   @Override
   public Page<CallAggregateDTO> getCallsByCompany(
-      String companyId,
+      ObjectId companyId,
       DateTime startDate,
       DateTime endDate,
       List<CallField> fields,
@@ -34,7 +35,7 @@ public class CustomizedCallRepositoryImpl implements CustomizedCallRepository {
 
   @Override
   public Page<CallAggregateDTO> getCallsByUser(
-      String userId,
+      ObjectId userId,
       DateTime startDate,
       DateTime endDate,
       List<CallField> fields,
@@ -45,7 +46,7 @@ public class CustomizedCallRepositoryImpl implements CustomizedCallRepository {
 
   @Override
   public RollupResultDTO averageCallFieldByUser(
-      String userId, DateTime startDate, DateTime endDate, List<CallField> fields)
+      ObjectId userId, DateTime startDate, DateTime endDate, List<CallField> fields)
       throws InvalidArgumentsException {
     return aCallAggregation(mongoTemplate)
         .averageCallFieldsByUser(userId, startDate, endDate, fields);
@@ -53,7 +54,7 @@ public class CustomizedCallRepositoryImpl implements CustomizedCallRepository {
 
   @Override
   public RollupResultDTO averageCallFieldByCompany(
-      String companyId, DateTime startDate, DateTime endDate, List<CallField> fields)
+      ObjectId companyId, DateTime startDate, DateTime endDate, List<CallField> fields)
       throws InvalidArgumentsException {
     return aCallAggregation(mongoTemplate)
         .averageCallFieldsByCompany(companyId, startDate, endDate, fields);
@@ -61,7 +62,7 @@ public class CustomizedCallRepositoryImpl implements CustomizedCallRepository {
 
   @Override
   public List<RollupResultDTO> rollupCallFieldByUser(
-      String userId,
+      ObjectId userId,
       DateTime startDate,
       DateTime endDate,
       RollupCadence cadence,
@@ -73,7 +74,7 @@ public class CustomizedCallRepositoryImpl implements CustomizedCallRepository {
 
   @Override
   public List<RollupResultDTO> rollupCallFieldByCompany(
-      String companyId,
+      ObjectId companyId,
       DateTime startDate,
       DateTime endDate,
       RollupCadence cadence,
@@ -85,14 +86,14 @@ public class CustomizedCallRepositoryImpl implements CustomizedCallRepository {
 
   @Override
   public AggregateResultDTO getCallOutcomesByCompany(
-      String companyId, DateTime startDate, DateTime endDate) {
+      ObjectId companyId, DateTime startDate, DateTime endDate) {
     return new CallOutcomeAggregation(mongoTemplate)
         .getCallOutcomesByCompany(companyId, startDate, endDate);
   }
 
   @Override
   public AggregateResultDTO getCallOutcomesByUser(
-      String userId, DateTime startDate, DateTime endDate) {
+      ObjectId userId, DateTime startDate, DateTime endDate) {
     return new CallOutcomeAggregation(mongoTemplate)
         .getCallOutcomesByUser(userId, startDate, endDate);
   }

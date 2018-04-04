@@ -14,6 +14,7 @@ import com.voxlr.marmoset.aggregation.field.UserAggregationFields.UserField;
 import com.voxlr.marmoset.model.persistence.User;
 import java.util.List;
 import java.util.function.Function;
+import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -40,7 +41,7 @@ public class UserAggregation extends AbstractAggregation<User, UserField> {
         ));
   }
 
-  public static Criteria getCompanyConstrained(String companyId) {
+  public static Criteria getCompanyConstrained(ObjectId companyId) {
     return Criteria.where(UserField.COMPANY_ID.getName()).is(companyId);
   }
 
@@ -62,7 +63,7 @@ public class UserAggregation extends AbstractAggregation<User, UserField> {
     return executePagedAggregation(matchOperation, pageable, aggregation, UserAggregateDTO.class);
   }
 
-  public Page<UserAggregateDTO> getUsersByCompany(String companyId, DateTime startDate, DateTime endDate, List<UserField> fields, Pageable pageable) {
+  public Page<UserAggregateDTO> getUsersByCompany(ObjectId companyId, DateTime startDate, DateTime endDate, List<UserField> fields, Pageable pageable) {
     Criteria matchCriteria = getCompanyConstrained(companyId).andOperator(getDateConstrained(startDate, endDate));
     return getUserSummary(matchCriteria, fields, pageable);
   }

@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -30,8 +31,8 @@ import org.springframework.data.mongodb.core.mapping.Field;
 })
 @Accessors(chain = true)
 public class User extends AuditModel implements TeamScopedEntity, Phoneable<User> {
-  private String companyId;
-  private String teamId;
+  private ObjectId companyId;
+  private ObjectId teamId;
   private String firstName;
   private String lastName;
   private String password;

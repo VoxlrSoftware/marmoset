@@ -13,6 +13,7 @@ import com.voxlr.marmoset.model.persistence.dto.CallUpdateDTO;
 import com.voxlr.marmoset.repositories.CallRepository;
 import com.voxlr.marmoset.service.domain.CallService;
 import com.voxlr.marmoset.test.ControllerTest;
+import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
@@ -36,14 +37,12 @@ import static com.voxlr.marmoset.util.EntityTestUtils.createAuditableEntity;
 import static com.voxlr.marmoset.util.JsonUtils.jsonFromString;
 import static com.voxlr.marmoset.util.JsonUtils.pluck;
 import static com.voxlr.marmoset.util.ListUtils.listOf;
+import static com.voxlr.marmoset.util.MatcherUtils.anyObjectId;
 import static com.voxlr.marmoset.util.matcher.ContainsKeyMatcher.containsKey;
 import static javax.json.Json.createArrayBuilder;
 import static javax.json.Json.createObjectBuilder;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -70,16 +69,16 @@ public class CallControllerTest extends ControllerTest {
                 .callSid(UUID.randomUUID().toString())
                 .employeeNumber(new PhoneNumberHolder("+19099446352"))
                 .customerNumber(new PhoneNumberHolder("+19099446352"))
-                .companyId("123")
+                .companyId(new ObjectId())
                 .callStrategy(CallStrategy.createNew())
-                .userId("123")
+                .userId(anyObjectId())
                 .build());
     expected = mapper.writeValueAsString(modelMapper.map(mockCall, CallDTO.class));
   }
 
   @Test
   public void getShouldReturnExceptionIfEntityDoesNotExist() throws Exception {
-    when(callService.get(anyString(), any(AuthUser.class)))
+    when(callService.get(anyObjectId(), any(AuthUser.class)))
         .thenAnswer(
             new Answer<Call>() {
 

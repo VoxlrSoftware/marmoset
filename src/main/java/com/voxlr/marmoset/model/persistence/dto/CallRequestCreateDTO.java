@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
+import org.bson.types.ObjectId;
 
 @Getter
 @Setter
@@ -16,5 +17,5 @@ public class CallRequestCreateDTO {
   @PhoneNumberValidConstraint(required = true)
   private PhoneNumberHolder callerId;
 
-  @NotNull private String strategyId;
+  @NotNull private ObjectId strategyId;
 }

@@ -19,6 +19,7 @@ import com.voxlr.marmoset.repositories.CallRequestRepository;
 import com.voxlr.marmoset.service.AuthorizationService;
 import com.voxlr.marmoset.service.ValidateableService;
 import java.util.Optional;
+import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
@@ -59,7 +60,11 @@ public class CallService extends ValidateableService {
     return call.get();
   }
 
-  public Call getInternal(String id) throws EntityNotFoundException {
+  public Call getInternalByString(String id) throws EntityNotFoundException {
+    return getInternal(new ObjectId(id));
+  }
+
+  public Call getInternal(ObjectId id) throws EntityNotFoundException {
     Optional<Call> call = callRepository.findById(id);
 
     if (!call.isPresent()) {
@@ -86,7 +91,7 @@ public class CallService extends ValidateableService {
     return call;
   }
 
-  public Call get(String id, AuthUser authUser) throws Exception {
+  public Call get(ObjectId id, AuthUser authUser) throws Exception {
     Call call = getInternal(id);
 
     if (!authorizationService.canRead(authUser, call)) {
@@ -185,7 +190,7 @@ public class CallService extends ValidateableService {
     return callRepository.update(update);
   }
 
-  public void delete(String id, AuthUser authUser) throws Exception {
+  public void delete(ObjectId id, AuthUser authUser) throws Exception {
     Call call = getInternal(id);
 
     if (!authorizationService.canWrite(authUser, call)) {

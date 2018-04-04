@@ -3,6 +3,7 @@ package com.voxlr.marmoset.model.persistence;
 import com.voxlr.marmoset.model.PhoneNumberHolder;
 import com.voxlr.marmoset.model.UserScopedEntity;
 import lombok.*;
+import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -36,9 +37,9 @@ import static com.voxlr.marmoset.model.CallOutcome.NONE;
 @Builder
 @AllArgsConstructor
 public class Call extends AuditModel implements UserScopedEntity {
-  private String companyId;
-  private String teamId;
-  private String userId;
+  private ObjectId companyId;
+  private ObjectId teamId;
+  private ObjectId userId;
   @Indexed private String callSid;
   @Indexed private String transcriptionId;
 

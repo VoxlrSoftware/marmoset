@@ -9,6 +9,7 @@ import com.voxlr.marmoset.model.persistence.dto.CompanyDTO;
 import com.voxlr.marmoset.model.persistence.dto.CompanyUpdateDTO;
 import com.voxlr.marmoset.repositories.CompanyRepository;
 import com.voxlr.marmoset.service.domain.CompanyService;
+import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,7 +31,7 @@ public class CompanyController extends ApiController {
 
   @RequestMapping(method = RequestMethod.GET, value = COMPANY + "/{id}")
   public ResponseEntity<?> getCompany(
-      @PathVariable String id, @AuthenticationPrincipal AuthUser authUser)
+      @PathVariable ObjectId id, @AuthenticationPrincipal AuthUser authUser)
       throws EntityNotFoundException {
     Company company = companyService.get(id, authUser);
     CompanyDTO companyDTO = modelMapper.map(company, CompanyDTO.class);
@@ -50,7 +51,7 @@ public class CompanyController extends ApiController {
 
   @RequestMapping(method = RequestMethod.PUT, value = COMPANY + "/{id}")
   public ResponseEntity<?> updateCompany(
-      @PathVariable String id,
+      @PathVariable ObjectId id,
       @Valid @RequestBody CompanyUpdateDTO companyUpdateDTO,
       @AuthenticationPrincipal AuthUser authUser)
       throws EntityNotFoundException {
@@ -63,7 +64,7 @@ public class CompanyController extends ApiController {
 
   @RequestMapping(method = RequestMethod.DELETE, value = COMPANY + "/{id}")
   public ResponseEntity<?> deleteCompany(
-      @PathVariable String id, @AuthenticationPrincipal AuthUser authUser)
+      @PathVariable ObjectId id, @AuthenticationPrincipal AuthUser authUser)
       throws EntityNotFoundException {
     companyService.delete(id, authUser);
 

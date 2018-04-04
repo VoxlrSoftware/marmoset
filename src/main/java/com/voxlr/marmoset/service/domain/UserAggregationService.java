@@ -8,6 +8,7 @@ import com.voxlr.marmoset.model.persistence.Company;
 import com.voxlr.marmoset.repositories.UserRepository;
 import com.voxlr.marmoset.service.AggregationService;
 import java.util.List;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,7 +26,7 @@ public class UserAggregationService extends AggregationService<UserField> {
   }
 
   public Page<UserAggregateDTO> getUsersSummaryByCompany(
-      String companyId,
+      ObjectId companyId,
       AuthUser authUser,
       DateConstrained dateConstrained,
       List<String> fields,

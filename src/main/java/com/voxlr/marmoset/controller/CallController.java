@@ -15,6 +15,7 @@ import com.voxlr.marmoset.model.persistence.dto.CallUpdateDTO;
 import com.voxlr.marmoset.service.domain.CallService;
 import com.voxlr.marmoset.util.MapperUtils;
 import javax.validation.Valid;
+import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -42,7 +43,7 @@ public class CallController extends ApiController {
   @Autowired private MapperUtils mapperUtils;
 
   @RequestMapping(method = RequestMethod.GET, value = CALL + "/{id}")
-  public ResponseEntity<?> get(@PathVariable String id, @AuthenticationPrincipal AuthUser authUser)
+  public ResponseEntity<?> get(@PathVariable ObjectId id, @AuthenticationPrincipal AuthUser authUser)
       throws Exception {
     Call call = callService.get(id, authUser);
     CallDTO callDTO = modelMapper.map(call, CallDTO.class);
@@ -81,7 +82,7 @@ public class CallController extends ApiController {
 
   @RequestMapping(method = RequestMethod.PUT, value = CALL + "/{id}")
   public ResponseEntity<?> update(
-      @PathVariable String id,
+      @PathVariable ObjectId id,
       @Valid @RequestBody CallUpdateDTO callUpdateDTO,
       @AuthenticationPrincipal AuthUser authUser)
       throws Exception {

@@ -55,7 +55,7 @@ public class TwilioRecording extends CallbackHandler<String> {
           CallRecordingRequest.builder()
               .recordingUrl(recordingUrl)
               .callSid(callSid)
-              .callId(call.getId())
+              .callId(call.getId().toHexString())
               .recordingDuration(duration)
               .extension(extension)
               .build();

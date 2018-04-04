@@ -14,6 +14,7 @@ import com.voxlr.marmoset.util.MapperUtils;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -37,7 +38,7 @@ public class CallAggregationController extends ApiController {
 
   @RequestMapping(method = RequestMethod.GET, value = COMPANY_CALL)
   public ResponseEntity<?> getCallsByCompany(
-      @PathVariable String companyId,
+      @PathVariable ObjectId companyId,
       @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime startDate,
       @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime endDate,
       @Valid @NotNull @RequestParam List<String> fields,
@@ -55,7 +56,7 @@ public class CallAggregationController extends ApiController {
 
   @RequestMapping(method = RequestMethod.GET, value = COMPANY_CALL + "/average")
   public ResponseEntity<?> averageCallsByCompany(
-      @PathVariable String companyId,
+      @PathVariable ObjectId companyId,
       @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime startDate,
       @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime endDate,
       @Valid @NotNull @RequestParam List<String> fields,
@@ -70,7 +71,7 @@ public class CallAggregationController extends ApiController {
 
   @RequestMapping(method = RequestMethod.GET, value = COMPANY_CALL + "/rollup")
   public ResponseEntity<?> rollupCallsByCompany(
-      @PathVariable String companyId,
+      @PathVariable ObjectId companyId,
       @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime startDate,
       @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime endDate,
       @Valid @NotNull @RequestParam List<String> fields,
@@ -86,7 +87,7 @@ public class CallAggregationController extends ApiController {
 
   @RequestMapping(method = RequestMethod.GET, value = USER_CALL)
   public ResponseEntity<?> getCallsByUser(
-      @PathVariable String userId,
+      @PathVariable ObjectId userId,
       @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime startDate,
       @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime endDate,
       @Valid @NotNull @RequestParam List<String> fields,
@@ -103,7 +104,7 @@ public class CallAggregationController extends ApiController {
 
   @RequestMapping(method = RequestMethod.GET, value = USER_CALL + "/average")
   public ResponseEntity<?> averageCallsByUser(
-      @PathVariable String userId,
+      @PathVariable ObjectId userId,
       @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime startDate,
       @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime endDate,
       @Valid @NotNull @RequestParam List<String> fields,
@@ -118,7 +119,7 @@ public class CallAggregationController extends ApiController {
 
   @RequestMapping(method = RequestMethod.GET, value = USER_CALL + "/rollup")
   public ResponseEntity<?> rollupCallsByUser(
-      @PathVariable String userId,
+      @PathVariable ObjectId userId,
       @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime startDate,
       @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime endDate,
       @Valid @NotNull @RequestParam List<String> fields,
@@ -134,7 +135,7 @@ public class CallAggregationController extends ApiController {
 
   @RequestMapping(method = RequestMethod.GET, value = USER_CALL + "/outcomes")
   public ResponseEntity<?> getCallOutcomesByUser(
-      @PathVariable String userId,
+      @PathVariable ObjectId userId,
       @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime startDate,
       @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime endDate,
       @AuthenticationPrincipal AuthUser authUser)
@@ -148,7 +149,7 @@ public class CallAggregationController extends ApiController {
 
   @RequestMapping(method = RequestMethod.GET, value = COMPANY_CALL + "/outcomes")
   public ResponseEntity<?> getCallOutcomesByCompany(
-      @PathVariable String companyId,
+      @PathVariable ObjectId companyId,
       @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime startDate,
       @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime endDate,
       @AuthenticationPrincipal AuthUser authUser)

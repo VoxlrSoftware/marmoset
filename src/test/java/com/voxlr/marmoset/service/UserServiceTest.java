@@ -10,6 +10,7 @@ import com.voxlr.marmoset.model.persistence.dto.UserCreateDTO;
 import com.voxlr.marmoset.model.persistence.dto.UserUpdateDTO;
 import com.voxlr.marmoset.service.domain.UserService;
 import com.voxlr.marmoset.test.DataTest;
+import org.bson.types.ObjectId;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -21,6 +22,7 @@ import static com.voxlr.marmoset.util.AssertUtils.wrapAssertException;
 import static com.voxlr.marmoset.util.AssertUtils.wrapNoException;
 import static com.voxlr.marmoset.util.EntityTestUtils.*;
 import static com.voxlr.marmoset.util.ListUtils.listOf;
+import static com.voxlr.marmoset.util.MatcherUtils.anyObjectId;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -60,7 +62,7 @@ public class UserServiceTest extends DataTest {
     wrapAssertException(
         () -> {
           AuthUser authUser = createAuthUser();
-          User user = userService.get("123", authUser);
+          User user = userService.get(anyObjectId(), authUser);
         },
         EntityNotFoundException.class);
   }
@@ -95,8 +97,8 @@ public class UserServiceTest extends DataTest {
   public void getShouldFailForUsersWithDifferentCompanies() throws Exception {
     List<AuthUser> authUsers =
         listOf(
-            createAuthUser(UserRole.COMPANY_ADMIN).setCompanyId("123"),
-            createAuthUser(UserRole.COMPANY_READONLY).setCompanyId("123"));
+            createAuthUser(UserRole.COMPANY_ADMIN).setCompanyId(anyObjectId()),
+            createAuthUser(UserRole.COMPANY_READONLY).setCompanyId(anyObjectId()));
 
     persistenceUtils.save(mockUser);
 
@@ -116,8 +118,8 @@ public class UserServiceTest extends DataTest {
   public void getShouldFailForUsersWithDifferentTeams() throws Exception {
     List<AuthUser> authUsers =
         listOf(
-            createAuthUser(UserRole.TEAM_ADMIN).setTeamId("123"),
-            createAuthUser(UserRole.TEAM_READONLY).setTeamId("123"));
+            createAuthUser(UserRole.TEAM_ADMIN).setTeamId(anyObjectId()),
+            createAuthUser(UserRole.TEAM_READONLY).setTeamId(anyObjectId()));
 
     persistenceUtils.save(mockUser);
 
@@ -235,7 +237,7 @@ public class UserServiceTest extends DataTest {
   @Test
   public void createShouldReplaceCompanyAndTeamIdForTeamAdmin() throws Exception {
     AuthUser authUser =
-        createAuthUser(UserRole.TEAM_ADMIN).setCompanyId("company456").setTeamId("team456");
+        createAuthUser(UserRole.TEAM_ADMIN).setCompanyId(new ObjectId()).setTeamId(new ObjectId());
 
     userCreateDTO.setCompanyId(null);
     userCreateDTO.setTeamId(null);
@@ -252,7 +254,7 @@ public class UserServiceTest extends DataTest {
             createAuthUser(UserRole.ADMIN),
             createAuthUser(UserRole.COMPANY_READONLY).setCompanyId(company.getId()),
             createAuthUser(UserRole.TEAM_READONLY).setTeamId(team.getId()),
-            createAuthUser(UserRole.MEMBER).setId("123"));
+            createAuthUser(UserRole.MEMBER).setId(anyObjectId()));
 
     authUsers
         .stream()
@@ -309,7 +311,7 @@ public class UserServiceTest extends DataTest {
             createAuthUser(UserRole.ADMIN),
             createAuthUser(UserRole.COMPANY_READONLY).setCompanyId(company.getId()),
             createAuthUser(UserRole.TEAM_READONLY).setTeamId(team.getId()),
-            createAuthUser(UserRole.MEMBER).setId("123"));
+            createAuthUser(UserRole.MEMBER).setId(anyObjectId()));
 
     UserUpdateDTO userUpdateDTO =
         UserUpdateDTO.builder()
@@ -363,7 +365,7 @@ public class UserServiceTest extends DataTest {
             createAuthUser(UserRole.ADMIN),
             createAuthUser(UserRole.COMPANY_READONLY).setCompanyId(company.getId()),
             createAuthUser(UserRole.TEAM_READONLY).setTeamId(team.getId()),
-            createAuthUser(UserRole.MEMBER).setId("123"));
+            createAuthUser(UserRole.MEMBER).setId(anyObjectId()));
 
     persistenceUtils.save(mockUser);
 

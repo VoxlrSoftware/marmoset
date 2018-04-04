@@ -13,20 +13,17 @@ public class TypeConverter {
 
   public static <T, U> Function<U, ConvertResult<T>> getConvertFunction(
       Class<T> clazz, BiFunction<U, Class<T>, T> converter) {
-    return new Function<U, ConvertResult<T>>() {
-      @Override
-      public ConvertResult<T> apply(U source) {
-        try {
-          T value = converter.apply(source, clazz);
+    return (source) -> {
+      try {
+        T value = converter.apply(source, clazz);
 
-          if (value == null) {
-            throw new Exception();
-          }
-
-          return new ConvertSuccessResult<T>(converter.apply(source, clazz));
-        } catch (Exception e) {
-          return new ConvertFailedResult<T, U>(source);
+        if (value == null) {
+          throw new Exception();
         }
+
+        return new ConvertSuccessResult<>(converter.apply(source, clazz));
+      } catch (Exception e) {
+        return new ConvertFailedResult<>(source);
       }
     };
   }

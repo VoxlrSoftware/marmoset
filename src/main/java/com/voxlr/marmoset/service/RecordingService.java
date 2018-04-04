@@ -25,7 +25,7 @@ public class RecordingService {
   public void postRecordingRequest(Call call, CallRecordingRequest callRecordingRequest)
       throws Exception {
     producerService.sendMessage(
-        SQSConfig.QUEUE_CALL_RECORDING, callRecordingRequest, call.getUserId());
+        SQSConfig.QUEUE_CALL_RECORDING, callRecordingRequest, call.getUserId().toHexString());
   }
 
   public void postRecordingResult(CallRecordingResult callRecordingResult) throws Exception {

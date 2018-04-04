@@ -3,6 +3,7 @@ package com.voxlr.marmoset.model.persistence;
 import com.voxlr.marmoset.model.PhoneNumberHolder;
 import com.voxlr.marmoset.model.UserScopedEntity;
 import lombok.*;
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
@@ -22,8 +23,8 @@ import java.util.Date;
   @CompoundIndex(name = "userId_entityId", def = "{'userId' : 1, 'entityId': 1}"),
 })
 public class ValidationRequest extends Entity implements UserScopedEntity {
-  private String userId;
-  private String entityId;
+  private ObjectId userId;
+  private ObjectId entityId;
   private String entityType;
 
   @Indexed private String requestId;

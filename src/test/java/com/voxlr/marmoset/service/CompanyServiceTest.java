@@ -22,6 +22,7 @@ import static com.voxlr.marmoset.util.AssertUtils.wrapNoException;
 import static com.voxlr.marmoset.util.EntityTestUtils.createAuthUser;
 import static com.voxlr.marmoset.util.EntityTestUtils.createCompany;
 import static com.voxlr.marmoset.util.ListUtils.listOf;
+import static com.voxlr.marmoset.util.MatcherUtils.anyObjectId;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -48,7 +49,7 @@ public class CompanyServiceTest extends DataTest {
     wrapAssertException(
         () -> {
           AuthUser authUser = createAuthUser();
-          Company company = companyService.get("123", authUser);
+          Company company = companyService.get(anyObjectId(), authUser);
         },
         EntityNotFoundException.class);
   }
@@ -105,8 +106,8 @@ public class CompanyServiceTest extends DataTest {
   public void getShouldFailWhenCompanyIdIsDifferent() throws Exception {
     List<AuthUser> authUsers =
         listOf(
-            createAuthUser(UserRole.COMPANY_ADMIN).setCompanyId("123"),
-            createAuthUser(UserRole.COMPANY_READONLY).setCompanyId("123"));
+            createAuthUser(UserRole.COMPANY_ADMIN).setCompanyId(anyObjectId()),
+            createAuthUser(UserRole.COMPANY_READONLY).setCompanyId(anyObjectId()));
 
     persistenceUtils.save(mockCompany);
 
@@ -157,11 +158,11 @@ public class CompanyServiceTest extends DataTest {
     List<AuthUser> authUsers =
         listOf(
             createAuthUser(UserRole.ADMIN),
-            createAuthUser(UserRole.COMPANY_ADMIN).setCompanyId("123"),
-            createAuthUser(UserRole.COMPANY_READONLY).setCompanyId("123"),
-            createAuthUser(UserRole.TEAM_ADMIN).setCompanyId("123"),
-            createAuthUser(UserRole.TEAM_READONLY).setCompanyId("123"),
-            createAuthUser(UserRole.MEMBER).setCompanyId("123"));
+            createAuthUser(UserRole.COMPANY_ADMIN).setCompanyId(anyObjectId()),
+            createAuthUser(UserRole.COMPANY_READONLY).setCompanyId(anyObjectId()),
+            createAuthUser(UserRole.TEAM_ADMIN).setCompanyId(anyObjectId()),
+            createAuthUser(UserRole.TEAM_READONLY).setCompanyId(anyObjectId()),
+            createAuthUser(UserRole.MEMBER).setCompanyId(anyObjectId()));
 
     CompanyCreateDTO companyCreateDTO = CompanyCreateDTO.builder().name("TestCompany").build();
 
@@ -184,7 +185,7 @@ public class CompanyServiceTest extends DataTest {
         () -> {
           AuthUser authUser = createAuthUser();
           CompanyUpdateDTO companyUpdateDTO =
-              CompanyUpdateDTO.builder().id("123").name("Test").build();
+              CompanyUpdateDTO.builder().id(anyObjectId()).name("Test").build();
           Company company = companyService.update(companyUpdateDTO, authUser);
         },
         EntityNotFoundException.class);
@@ -219,10 +220,10 @@ public class CompanyServiceTest extends DataTest {
     List<AuthUser> authUsers =
         listOf(
             createAuthUser(UserRole.ADMIN),
-            createAuthUser(UserRole.COMPANY_READONLY).setCompanyId("123"),
-            createAuthUser(UserRole.TEAM_ADMIN).setCompanyId("123"),
-            createAuthUser(UserRole.TEAM_READONLY).setCompanyId("123"),
-            createAuthUser(UserRole.MEMBER).setCompanyId("123"));
+            createAuthUser(UserRole.COMPANY_READONLY).setCompanyId(anyObjectId()),
+            createAuthUser(UserRole.TEAM_ADMIN).setCompanyId(anyObjectId()),
+            createAuthUser(UserRole.TEAM_READONLY).setCompanyId(anyObjectId()),
+            createAuthUser(UserRole.MEMBER).setCompanyId(anyObjectId()));
 
     CompanyUpdateDTO companyUpdateDTO = modelMapper.map(mockCompany, CompanyUpdateDTO.class);
     companyUpdateDTO.setName("New name");
@@ -277,7 +278,7 @@ public class CompanyServiceTest extends DataTest {
     wrapAssertException(
         () -> {
           AuthUser authUser = createAuthUser();
-          companyService.delete("123", authUser);
+          companyService.delete(anyObjectId(), authUser);
         },
         EntityNotFoundException.class);
   }
@@ -287,7 +288,7 @@ public class CompanyServiceTest extends DataTest {
     List<AuthUser> authUsers =
         listOf(
             createAuthUser(UserRole.SUPER_ADMIN),
-            createAuthUser(UserRole.COMPANY_ADMIN).setCompanyId("123"));
+            createAuthUser(UserRole.COMPANY_ADMIN).setCompanyId(anyObjectId()));
 
     authUsers
         .stream()
@@ -308,10 +309,10 @@ public class CompanyServiceTest extends DataTest {
     List<AuthUser> authUsers =
         listOf(
             createAuthUser(UserRole.ADMIN),
-            createAuthUser(UserRole.COMPANY_READONLY).setCompanyId("123"),
-            createAuthUser(UserRole.TEAM_ADMIN).setCompanyId("123"),
-            createAuthUser(UserRole.TEAM_READONLY).setCompanyId("123"),
-            createAuthUser(UserRole.MEMBER).setCompanyId("123"));
+            createAuthUser(UserRole.COMPANY_READONLY).setCompanyId(anyObjectId()),
+            createAuthUser(UserRole.TEAM_ADMIN).setCompanyId(anyObjectId()),
+            createAuthUser(UserRole.TEAM_READONLY).setCompanyId(anyObjectId()),
+            createAuthUser(UserRole.MEMBER).setCompanyId(anyObjectId()));
 
     persistenceUtils.save(mockCompany);
 

@@ -4,6 +4,7 @@ import com.voxlr.marmoset.model.PhoneNumberHolder;
 import com.voxlr.marmoset.model.UserScopedEntity;
 import com.voxlr.marmoset.service.CallbackService;
 import lombok.*;
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -19,9 +20,9 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CallRequest extends Entity implements UserScopedEntity {
-  private String userId;
-  private String teamId;
-  private String companyId;
+  private ObjectId userId;
+  private ObjectId teamId;
+  private ObjectId companyId;
 
   @Field("empNum")
   private PhoneNumberHolder employeeNumber;

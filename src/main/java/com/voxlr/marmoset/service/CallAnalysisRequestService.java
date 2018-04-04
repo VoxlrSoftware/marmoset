@@ -46,11 +46,11 @@ public class CallAnalysisRequestService {
         log.debug("Queueing call to be analyzed");
         CallAnalysisRequest request =
             CallAnalysisRequest.builder()
-                .callId(call.getId())
+                .callId(call.getId().toHexString())
                 .transcriptionId(call.getTranscriptionId())
                 .transcriptionUrl(call.getTranscriptionUrl())
                 .build();
-        producerService.sendMessage(SQSConfig.QUEUE_CALL_ANALYSIS, request, call.getUserId());
+        producerService.sendMessage(SQSConfig.QUEUE_CALL_ANALYSIS, request, call.getUserId().toHexString());
       }
     } catch (Exception e) {
       // TODO: Handle requests that fail instead of swallowing them
@@ -60,7 +60,7 @@ public class CallAnalysisRequestService {
 
   public void processAnalysisRequest(CallAnalysisRequest request) {
     try {
-      Call call = callService.getInternal(request.getCallId());
+      Call call = callService.getInternalByString(request.getCallId());
       log.debug("Processing analysis request for call [" + call.getId() + "]");
 
       if (!call.getTranscriptionId().equals(request.getTranscriptionId())) {
@@ -114,7 +114,7 @@ public class CallAnalysisRequestService {
 
       CallAnalysisRequestDTO requestDTO =
           CallAnalysisRequestDTO.builder()
-              .callId(call.getId())
+              .callId(call.getId().toHexString())
               .callbackUrl(callbackService.getCallbackPath(CallbackType.ANALYSIS, Platform.VOXLR))
               .searchPhrases(call.getCallStrategyPhrases())
               .text(transcript)

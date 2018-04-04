@@ -27,12 +27,11 @@ import javax.json.JsonObject;
 
 import static com.voxlr.marmoset.util.EntityTestUtils.createCompany;
 import static com.voxlr.marmoset.util.JsonUtils.jsonFromString;
+import static com.voxlr.marmoset.util.MatcherUtils.anyObjectId;
 import static com.voxlr.marmoset.util.matcher.ContainsKeyMatcher.containsKey;
 import static javax.json.Json.createObjectBuilder;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -62,7 +61,7 @@ public class CompanyControllerTest extends ControllerTest {
 
   @Test
   public void getShouldReturnValidCompany() throws Exception {
-    when(companyService.get(anyString(), any(AuthUser.class))).thenReturn(mockCompany);
+    when(companyService.get(anyObjectId(), any(AuthUser.class))).thenReturn(mockCompany);
 
     RequestBuilder requestBuilder =
         get("/api/company/" + mockCompany.getId()).accept(APPLICATION_JSON);

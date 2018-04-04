@@ -8,6 +8,7 @@ import com.voxlr.marmoset.aggregation.field.CallAggregationFields.CallField;
 import com.voxlr.marmoset.exception.InvalidArgumentsException;
 import com.voxlr.marmoset.model.persistence.Call;
 import java.util.function.Function;
+import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -50,11 +51,11 @@ public class CallAggregation extends AbstractAggregation<Call, CallField> {
     return new CallAggregation(mongoTemplate);
   }
 
-  public static Criteria getUserConstrained(String userId) {
+  public static Criteria getUserConstrained(ObjectId userId) {
     return Criteria.where(CallField.USER_ID.getName()).is(userId);
   }
 
-  public static Criteria getCompanyConstrained(String companyId) {
+  public static Criteria getCompanyConstrained(ObjectId companyId) {
     return Criteria.where(CallField.COMPANY_ID.getName()).is(companyId);
   }
 
@@ -79,7 +80,7 @@ public class CallAggregation extends AbstractAggregation<Call, CallField> {
   }
 
   public Page<CallAggregateDTO> getCallsByCompany(
-      String companyId,
+      ObjectId companyId,
       DateTime startDate,
       DateTime endDate,
       List<CallField> fields,
@@ -92,7 +93,7 @@ public class CallAggregation extends AbstractAggregation<Call, CallField> {
   }
 
   public Page<CallAggregateDTO> getCallsByUser(
-      String userId,
+      ObjectId userId,
       DateTime startDate,
       DateTime endDate,
       List<CallField> fields,
@@ -134,7 +135,7 @@ public class CallAggregation extends AbstractAggregation<Call, CallField> {
   }
 
   public RollupResultDTO averageCallFieldsByCompany(
-      String companyId, DateTime startDate, DateTime endDate, List<CallField> fields)
+      ObjectId companyId, DateTime startDate, DateTime endDate, List<CallField> fields)
       throws InvalidArgumentsException {
     Criteria matchCriteria =
         getCompanyConstrained(companyId)
@@ -144,7 +145,7 @@ public class CallAggregation extends AbstractAggregation<Call, CallField> {
   }
 
   public RollupResultDTO averageCallFieldsByUser(
-      String userId, DateTime startDate, DateTime endDate, List<CallField> fields)
+      ObjectId userId, DateTime startDate, DateTime endDate, List<CallField> fields)
       throws InvalidArgumentsException {
     Criteria matchCriteria =
         getUserConstrained(userId)
@@ -191,7 +192,7 @@ public class CallAggregation extends AbstractAggregation<Call, CallField> {
   }
 
   public List<RollupResultDTO> rollupCallFieldByCompany(
-      String companyId,
+      ObjectId companyId,
       DateTime startDate,
       DateTime endDate,
       RollupCadence cadence,
@@ -205,7 +206,7 @@ public class CallAggregation extends AbstractAggregation<Call, CallField> {
   }
 
   public List<RollupResultDTO> rollupCallFieldByUser(
-      String userId,
+      ObjectId userId,
       DateTime startDate,
       DateTime endDate,
       RollupCadence cadence,

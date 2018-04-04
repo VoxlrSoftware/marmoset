@@ -5,12 +5,13 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
+import org.bson.types.ObjectId;
 
 @Getter
 @Setter
 @NoArgsConstructor
 public class CallAnalysisResult {
-  private String callId;
+  private ObjectId callId;
   private List<PhraseResult> phrases;
 
   @Getter

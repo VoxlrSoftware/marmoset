@@ -2,14 +2,15 @@ package com.voxlr.marmoset.model.dto;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.bson.types.ObjectId;
 
 @Getter
 @Setter
 public class RemovedEntityDTO {
-  private String id;
+  private ObjectId id;
   private boolean deleted = true;
 
-  public RemovedEntityDTO(String id) {
+  public RemovedEntityDTO(ObjectId id) {
     this.id = id;
   }
 }

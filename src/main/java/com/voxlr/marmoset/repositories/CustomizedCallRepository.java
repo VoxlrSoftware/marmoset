@@ -6,6 +6,7 @@ import com.voxlr.marmoset.aggregation.dto.CallAggregateDTO;
 import com.voxlr.marmoset.aggregation.dto.RollupResultDTO;
 import com.voxlr.marmoset.aggregation.field.CallAggregationFields.CallField;
 import com.voxlr.marmoset.exception.InvalidArgumentsException;
+import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,29 +15,29 @@ import java.util.List;
 
 public interface CustomizedCallRepository {
   Page<CallAggregateDTO> getCallsByCompany(
-      String companyId,
+      ObjectId companyId,
       DateTime startDate,
       DateTime endDate,
       List<CallField> fields,
       Pageable pageable);
 
   Page<CallAggregateDTO> getCallsByUser(
-      String userId,
+      ObjectId userId,
       DateTime startDate,
       DateTime endDate,
       List<CallField> fields,
       Pageable pageable);
 
   RollupResultDTO averageCallFieldByUser(
-      String userId, DateTime startDate, DateTime endDate, List<CallField> fields)
+      ObjectId userId, DateTime startDate, DateTime endDate, List<CallField> fields)
       throws InvalidArgumentsException;
 
   RollupResultDTO averageCallFieldByCompany(
-      String companyId, DateTime startDate, DateTime endDate, List<CallField> fields)
+      ObjectId companyId, DateTime startDate, DateTime endDate, List<CallField> fields)
       throws InvalidArgumentsException;
 
   List<RollupResultDTO> rollupCallFieldByUser(
-      String userId,
+      ObjectId userId,
       DateTime startDate,
       DateTime endDate,
       RollupCadence cadence,
@@ -44,7 +45,7 @@ public interface CustomizedCallRepository {
       throws InvalidArgumentsException;
 
   List<RollupResultDTO> rollupCallFieldByCompany(
-      String companyId,
+      ObjectId companyId,
       DateTime startDate,
       DateTime endDate,
       RollupCadence cadence,
@@ -52,7 +53,7 @@ public interface CustomizedCallRepository {
       throws InvalidArgumentsException;
 
   AggregateResultDTO getCallOutcomesByCompany(
-      String companyId, DateTime startDate, DateTime endDate);
+      ObjectId companyId, DateTime startDate, DateTime endDate);
 
-  AggregateResultDTO getCallOutcomesByUser(String userId, DateTime startDate, DateTime endDate);
+  AggregateResultDTO getCallOutcomesByUser(ObjectId userId, DateTime startDate, DateTime endDate);
 }

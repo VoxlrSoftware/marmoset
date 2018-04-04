@@ -5,6 +5,7 @@ import com.voxlr.marmoset.model.PhoneNumberHolder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.sql.Date;
@@ -14,7 +15,7 @@ import java.sql.Date;
 @Setter
 @NoArgsConstructor
 public class CallAnalysis extends Entity implements CallScopedEntity {
-  private String callId;
+  private ObjectId callId;
   private String companyId;
   private String userId;
   private PhoneNumberHolder employeeNumber;

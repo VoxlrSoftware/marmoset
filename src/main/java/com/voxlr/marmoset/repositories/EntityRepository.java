@@ -1,6 +1,9 @@
 package com.voxlr.marmoset.repositories;
 
+import com.voxlr.marmoset.model.persistence.Call;
 import com.voxlr.marmoset.model.persistence.Entity;
+import java.util.Optional;
+import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.NoRepositoryBean;
@@ -8,5 +11,8 @@ import org.springframework.data.repository.NoRepositoryBean;
 @NoRepositoryBean
 public interface EntityRepository<T extends Entity> extends CrudRepository<T, String> {
   @Query(value = "{ '_id': ?0 }", fields = "{ '_id': 1 }")
-  T findIdById(String id);
+  T findIdById(ObjectId id);
+
+  @Query(value = "{ '_id': ?0 }")
+  Optional<T> findById(ObjectId id);
 }

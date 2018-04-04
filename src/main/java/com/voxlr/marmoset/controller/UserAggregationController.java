@@ -11,6 +11,7 @@ import com.voxlr.marmoset.util.MapperUtils;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -36,7 +37,7 @@ public class UserAggregationController extends ApiController {
 
   @RequestMapping(method = RequestMethod.GET, value = COMPANY_USER + SUMMARY)
   public ResponseEntity<?> getUsersByCompany(
-      @PathVariable String companyId,
+      @PathVariable ObjectId companyId,
       @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime startDate,
       @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) DateTime endDate,
       @Valid @NotNull @RequestParam List<String> fields,

@@ -2,6 +2,7 @@ package com.voxlr.marmoset.jms.model;
 
 import com.voxlr.marmoset.model.CallScoped;
 import lombok.*;
+import org.bson.types.ObjectId;
 
 @Getter
 @Setter
@@ -14,7 +15,7 @@ public class CallRecordingResult implements CallScoped {
   private String callSid;
   private String callId;
 
-  public String getId() {
-    return callId;
+  public ObjectId getId() {
+    return new ObjectId(callId);
   }
 }

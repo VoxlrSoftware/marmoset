@@ -4,6 +4,7 @@ import com.voxlr.marmoset.model.persistence.Company;
 import com.voxlr.marmoset.model.persistence.Team;
 import com.voxlr.marmoset.model.persistence.dto.TeamCreateDTO;
 import com.voxlr.marmoset.repositories.TeamRepository;
+import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,7 +15,7 @@ public class TeamService {
 
   @Autowired TeamRepository teamRepository;
 
-  public boolean validateExists(String teamId) {
+  public boolean validateExists(ObjectId teamId) {
     return teamRepository.findIdById(teamId) != null;
   }
 

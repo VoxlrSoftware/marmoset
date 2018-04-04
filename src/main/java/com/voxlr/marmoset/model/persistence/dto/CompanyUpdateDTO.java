@@ -5,6 +5,7 @@ import com.voxlr.marmoset.validation.constraint.PhoneNumberValidConstraint;
 import lombok.*;
 
 import java.util.List;
+import org.bson.types.ObjectId;
 
 @Getter
 @Setter
@@ -13,7 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 public class CompanyUpdateDTO {
 
-  private String id;
+  private ObjectId id;
   private String name;
 
   @PhoneNumberValidConstraint private PhoneNumberHolder phoneNumber;

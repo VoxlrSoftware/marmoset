@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.util.StdDateFormat;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
+import com.voxlr.marmoset.convert.ObjectIdConverter;
+import com.voxlr.marmoset.convert.ObjectIdToStringConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
@@ -18,7 +20,7 @@ public class CustomWebMvcConfigurerAdapter implements WebMvcConfigurer {
 
   @Override
   public void addFormatters(FormatterRegistry registry) {
-    //      registry.addConverter();
+    registry.addConverter(new ObjectIdConverter());
   }
 
   @Autowired private ObjectMapper objectMapper;

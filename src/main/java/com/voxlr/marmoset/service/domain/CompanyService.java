@@ -9,6 +9,7 @@ import com.voxlr.marmoset.model.persistence.dto.CompanyUpdateDTO;
 import com.voxlr.marmoset.model.persistence.dto.TeamCreateDTO;
 import com.voxlr.marmoset.repositories.CompanyRepository;
 import com.voxlr.marmoset.service.AuthorizationService;
+import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
@@ -30,11 +31,11 @@ public class CompanyService {
 
   @Autowired private TeamService teamService;
 
-  public boolean validateExists(String id) {
+  public boolean validateExists(ObjectId id) {
     return companyRepository.findIdById(id) != null;
   }
 
-  public Company getInternalAndThrow(String companyId) throws EntityNotFoundException {
+  public Company getInternalAndThrow(ObjectId companyId) throws EntityNotFoundException {
     Optional<Company> result = companyRepository.findById(companyId);
 
     if (!result.isPresent()) {
@@ -44,7 +45,7 @@ public class CompanyService {
     return result.get();
   }
 
-  public CallStrategy findCallStrategy(String companyId, String strategyId)
+  public CallStrategy findCallStrategy(ObjectId companyId, ObjectId strategyId)
       throws EntityNotFoundException {
     Company company = getInternalAndThrow(companyId);
 
@@ -58,7 +59,7 @@ public class CompanyService {
     return strategy.get();
   }
 
-  public Company get(String id, AuthUser authUser) throws EntityNotFoundException {
+  public Company get(ObjectId id, AuthUser authUser) throws EntityNotFoundException {
     Company company = getInternalAndThrow(id);
 
     if (!authorizationService.canRead(authUser, company)) {
@@ -138,7 +139,7 @@ public class CompanyService {
     return company;
   }
 
-  public void delete(String id, AuthUser authUser) throws EntityNotFoundException {
+  public void delete(ObjectId id, AuthUser authUser) throws EntityNotFoundException {
     Company company = getInternalAndThrow(id);
 
     if (!authorizationService.canWrite(authUser, company)) {

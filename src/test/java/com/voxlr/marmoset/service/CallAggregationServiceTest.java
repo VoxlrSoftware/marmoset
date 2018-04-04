@@ -8,6 +8,7 @@ import static com.voxlr.marmoset.util.EntityTestUtils.createCompany;
 import static com.voxlr.marmoset.util.EntityTestUtils.createTeam;
 import static com.voxlr.marmoset.util.EntityTestUtils.createUser;
 import static com.voxlr.marmoset.util.ListUtils.listOf;
+import static com.voxlr.marmoset.util.MatcherUtils.anyObjectId;
 
 import com.voxlr.marmoset.aggregation.field.CallAggregationFields.CallField;
 import com.voxlr.marmoset.auth.UserRole;
@@ -127,7 +128,7 @@ public class CallAggregationServiceTest extends DataTest {
     listOf(
         createAuthUser(UserRole.TEAM_ADMIN).setTeamId(mockCompany.getId()),
         createAuthUser(UserRole.TEAM_READONLY).setTeamId(mockCompany.getId()),
-        createAuthUser(UserRole.MEMBER).setId("123"))
+        createAuthUser(UserRole.MEMBER).setId(anyObjectId()))
         .stream()
         .forEach(
             authUser -> {
