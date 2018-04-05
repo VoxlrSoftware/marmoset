@@ -16,7 +16,7 @@ public class MarmosetTokenEnhancer extends JwtAccessTokenConverter {
       OAuth2AccessToken accessToken, OAuth2Authentication authentication) {
     AuthUser user = (AuthUser) authentication.getPrincipal();
     Map<String, Object> info =
-        new LinkedHashMap<String, Object>(accessToken.getAdditionalInformation());
+        new LinkedHashMap<>(accessToken.getAdditionalInformation());
 
     info.put("companyId", user.getCompanyId().toHexString());
     info.put("teamId", user.getTeamId().toHexString());
