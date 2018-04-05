@@ -1,8 +1,10 @@
 package com.voxlr.marmoset.aggregation;
 
 import static com.voxlr.marmoset.aggregation.field.UserAggregationFields.field;
+import static com.voxlr.marmoset.aggregation.operation.LookupPipelineOperation.lookupPipeline;
 import static com.voxlr.marmoset.util.ListUtils.listOf;
 import static com.voxlr.marmoset.util.ListUtils.reduce;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.lookup;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.match;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.project;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.sort;
@@ -11,6 +13,7 @@ import com.voxlr.marmoset.aggregation.dto.UserAggregateDTO;
 import com.voxlr.marmoset.aggregation.field.AggregationField;
 import com.voxlr.marmoset.aggregation.field.UserAggregationFields;
 import com.voxlr.marmoset.aggregation.field.UserAggregationFields.UserField;
+import com.voxlr.marmoset.aggregation.operation.LookupPipelineOperation;
 import com.voxlr.marmoset.model.persistence.User;
 import java.util.List;
 import java.util.function.Function;
@@ -20,6 +23,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
+import org.springframework.data.mongodb.core.aggregation.LookupOperation;
 import org.springframework.data.mongodb.core.aggregation.MatchOperation;
 import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
 import org.springframework.data.mongodb.core.aggregation.TypedAggregation;
@@ -49,9 +54,16 @@ public class UserAggregation extends AbstractAggregation<User, UserField> {
     return UserAggregationFields::field;
   }
 
+  private List<AggregationOperation> aggregateCalls() {
+//    LookupOperation lookupOperation = lookup()
+  }
+
   private Page<UserAggregateDTO> getUserSummary(
       Criteria matchCriteria, List<UserField> fields, Pageable pageable) {
     MatchOperation matchOperation = match(matchCriteria);
+//    LookupPipelineOperation lookupPipelineOperation = lookupPipeline("calls", "calls")
+//        .let("userId", "_id")
+//        .pipeline()
     ProjectionOperation projectOperation = reduce(project(), getFields(fields), AggregationField::projectField);
     TypedAggregation<User> aggregation =
         anAggregation()
